@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cuadrante de Turnos</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f2937">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cuadrante">
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f5f6f8;color:#222}
+header{background:#1f2937;color:#fff;padding:14px 24px;box-sizing:border-box}
+.header-inner{max-width:1700px;margin:0 auto}
+.header-title-row{display:flex;justify-content:center;margin-bottom:10px}
+.header-actions-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-start}
+h1{font-size:20px;margin:0;text-align:center}#companyTitle[contenteditable="true"]{outline:2px dashed #60a5fa;outline-offset:3px;cursor:text}.print-label{font-weight:bold}.print-btn{background:#e8eefc;font-weight:bold}@media print{body{background:#fff}header{display:block!important;background:#fff;color:#000;padding:0;text-align:center}header>span,header>button,.toolbar,.date-nav,#printPanel,.legend,#consultStats,#balanceAlert,.panel,.small{display:none!important}main{padding:0;max-width:none}.tablewrap{box-shadow:none;overflow:visible}table{min-width:0;width:100%;font-size:10px}th,td{font-size:10px}h1{display:block!important;color:#000;text-align:center;margin:0 0 10px}.worker{position:static!important} }button,select,input{font:inherit;padding:7px 10px;border:1px solid #bbb;border-radius:6px}button{cursor:pointer;background:#fff}
+main{padding:16px;max-width:1600px;margin:auto}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.month{font-weight:bold;min-width:180px;text-align:center}
+.date-nav{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.tablewrap{overflow:auto;-webkit-overflow-scrolling:touch;background:#fff;border-radius:8px;box-shadow:0 2px 10px #0001}
+table{border-collapse:collapse;min-width:1100px;width:100%}th,td{border:1px solid #ddd;text-align:center;padding:4px;font-size:12px}
+th{background:#eef0f3;position:sticky;top:0;z-index:2}.today{outline:2px solid #111;outline-offset:-2px}th.worker,td.worker{position:sticky;left:0;background:#fff;z-index:3;text-align:left;font-weight:bold;min-width:125px}th.worker{background:#eef0f3;z-index:4}
+td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;color:#555}.inactive{background:#f7f7f7!important;color:#aaa}
+.legend{margin:12px 0;font-size:13px;display:flex;gap:8px;flex-wrap:wrap}.badge{padding:4px 8px;border-radius:5px;border:1px solid #ccc}
+.status-AP{background:#fff3cd}.status-V{background:#d1e7dd}.status-SS{background:#cfe2ff}.status-NAV{background:#e2d9f3}.status-LC{background:#cff4fc}.status-N{background:#e9d5ff}.status-B{background:#f8d7da}.status-LE{background:#fde2e2}.status-CS{background:#d9f2e6}
+.worker-row-secondary{background:#e9ecef}.worker-row-secondary td.worker{background:#dde1e6}
+#editState{font-size:13px;padding:5px 8px;border-radius:5px;background:#fff;color:#333}.panel{display:none;background:#fff;border:1px solid #ddd;border-radius:8px;padding:14px;margin:12px 0}.panel h3{margin-top:0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}.row input{min-width:160px}.danger{background:#f8d7da}.save{background:#d1e7dd;font-weight:bold}.small{font-size:12px;color:#666}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}.statcard{border:1px solid #ddd;border-radius:6px;padding:10px;background:#fafafa}.patternpreview{font-family:monospace;white-space:pre-wrap;margin-top:8px;padding:8px;background:#f7f7f7;border-radius:5px}
+.pattern-table{min-width:1050px}.pattern-table th,.pattern-table td{min-width:48px;height:32px}.pattern-table th.dayhead{font-size:11px}.pattern-table th.weekhead{background:#dde3ea;font-size:11px}.pattern-table td.pattern-name{min-width:145px;text-align:left;font-weight:bold;position:sticky;left:0;background:#fff;z-index:3}.pattern-table th.pattern-name{position:sticky;left:0;z-index:4}.pattern-table td[contenteditable=true]{cursor:text;background:#fff}.pattern-table td[contenteditable=true]:focus{outline:2px solid #2563eb;outline-offset:-2px}.pattern-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.del-pattern-row{float:right;border:0;background:transparent;cursor:pointer;font-size:14px;line-height:1;padding:2px 5px}.del-pattern-row:hover{font-weight:bold}.pattern-name{position:relative;padding-right:34px}.pattern-name .del-pattern-row{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:inline-flex!important;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid #bbb;border-radius:5px;background:#fff;color:#b00020;cursor:pointer;z-index:20;pointer-events:auto;font-weight:700}
+.pattern-table .pattern-name{display:none}
+.pattern-action-head{min-width:95px;position:sticky;left:0;z-index:4;background:#eef0f3}
+.pattern-action{min-width:95px;position:sticky;left:0;background:#fff;z-index:3;text-align:center}
+.delete-worker-btn{display:inline-block!important;visibility:visible!important;opacity:1!important;padding:6px 8px!important;border:1px solid #b00020!important;border-radius:5px!important;background:#f8d7da!important;color:#8b0015!important;cursor:pointer!important;font-weight:700!important;white-space:nowrap!important}
+.delete-worker-btn:hover{background:#f1bfc5!important}
+.move-worker-btn{padding:6px 9px;border:1px solid #bbb;border-radius:5px;background:#eef0f3;cursor:pointer;font-weight:700}
+.move-worker-btn:hover{background:#dde3ea}
+.worker-code{min-width:70px}.grid-shift-select{width:100%;min-width:42px;box-sizing:border-box;padding:5px 2px;border:0;border-radius:0;background:transparent;text-align:center;font-weight:inherit;font-size:12px;cursor:pointer}
+.grid-shift-select:focus{outline:2px solid #2563eb;outline-offset:-2px}
+.grid-shift-select.status-AP{background:#fff3cd}.grid-shift-select.status-V{background:#d1e7dd}.grid-shift-select.status-SS{background:#cfe2ff}.grid-shift-select.status-NAV{background:#e2d9f3}.grid-shift-select.status-LC{background:#cff4fc}.grid-shift-select.status-N{background:#e9d5ff}.grid-shift-select.status-B{background:#f8d7da}.grid-shift-select.status-LE{background:#fde2e2}.grid-shift-select.status-CS{background:#d9f2e6}.grid-shift-select.status-INC{background:#fce4ec}.grid-shift-select.change-red{background:#f44336!important;color:#111!important;font-weight:bold}.change-red{background:#f44336!important;color:#111!important}
+
+.worker-code{width:34px;min-width:34px;max-width:34px;text-align:center;font-weight:bold;text-transform:uppercase}
+.worker-code-cell{width:34px;min-width:34px;text-align:center;font-weight:bold}
+#grid.hide-type-col .worker-code-cell{display:none}
+td:not(.worker-code-cell){font-size:13px}
+.worker-edit-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}
+.worker-edit-row input.worker-name{min-width:160px;flex:1}
+.worker-edit-row input.worker-code{flex:0 0 34px}
+.add-worker-btn{background:#d1e7dd;font-weight:bold}
+.change-request-btn{background:#e8eefc;font-weight:bold}.change-request-btn.pending{background:#28a745;color:#fff;border-color:#1e7e34}
+.change-request-panel .request-card{border:1px solid #ddd;border-radius:7px;padding:10px;margin:8px 0;background:#fafafa}.change-request-panel .request-card.pending{border-left:5px solid #62b77b}.change-request-panel .request-card.accepted{border-left:5px solid #d33;background:#fde2e2}.change-request-panel .request-card.denied{border-left:5px solid #999;opacity:.7}.change-request-panel .request-card.cancelled{border-left:5px solid #999;opacity:.55;text-decoration:line-through}.change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}
+.balance-alert{display:block;background:#fff3cd;border-color:#ffe69c;color:#7a5b00}.balance-alert b{color:#7a5b00}.balance-badge{background:#fff;border-color:#e0b400;color:#7a5b00;font-weight:bold}
+.imbalance-col{box-shadow:inset 0 0 0 9999px rgba(255,193,7,.35)}
+.scroll-hint{display:none;font-size:11px;color:#888;text-align:center;padding:4px 0}
+@media (max-width:700px){
+  main{padding:8px}
+  header{padding:10px 12px;gap:6px}
+  h1{font-size:16px}
+  #editState{font-size:11px;padding:4px 6px}
+  button,select,input{padding:8px 9px;font-size:13px;border-radius:5px}
+  .toolbar{gap:6px;margin-bottom:8px}
+  .date-nav{gap:6px;margin-bottom:8px}
+  .toolbar button{flex:0 0 auto}
+  .month{min-width:120px;font-size:14px}
+  #printPanel{gap:6px}
+  .row{gap:6px}
+  .row input,.row select{min-width:0;flex:1 1 120px}
+  table{min-width:900px}
+  th,td{padding:3px;font-size:11px}
+  td:not(.worker-code-cell){font-size:12px}
+  td{min-width:30px;height:34px}
+  th.worker,td.worker{min-width:98px}
+  .grid-shift-select{font-size:11px;padding:6px 1px}
+  .legend{font-size:11px;gap:5px}
+  .badge{padding:3px 6px}
+  .statgrid{grid-template-columns:1fr}
+  .panel{padding:10px}
+  .worker-edit-row,.pattern-actions{gap:6px}
+  .scroll-hint{display:block}
+}
+@media (max-width:420px){
+  h1{font-size:14px}
+  .toolbar button{padding:8px}
+  table{min-width:820px}
+  th.worker,td.worker{min-width:86px}
+}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+<div id="cloudLoading" style="position:fixed;inset:0;background:#f5f6f8;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:9999;font-family:Arial,sans-serif;text-align:center;padding:20px">
+  <div style="font-size:28px">🔄</div>
+  <div style="font-size:15px;color:#333">Conectando con la base de datos...</div>
+</div>
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:320px;width:90%;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <h3 style="margin-top:0">🔐 Acceso de administrador</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="loginEmail" type="email" placeholder="Correo del administrador" autocomplete="off" name="admin-user-field">
+      <input id="loginPassword" type="password" placeholder="Contraseña" autocomplete="new-password" name="admin-pass-field">
+      <div id="loginError" style="display:none;color:#b00020;font-size:13px"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+        <button type="button" onclick="closeLoginModal()">Cancelar</button>
+        <button type="button" class="save" onclick="submitLogin()">Entrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="changePassModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:320px;width:90%;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <h3 style="margin-top:0">🔑 Cambiar contraseña</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="oldPassword" type="password" placeholder="Contraseña actual" autocomplete="off" name="old-pass-field">
+      <input id="newPassword1" type="password" placeholder="Nueva contraseña (mín. 6 caracteres)" autocomplete="new-password" name="new-pass-field-1">
+      <input id="newPassword2" type="password" placeholder="Repite la nueva contraseña" autocomplete="new-password" name="new-pass-field-2">
+      <div id="changePassError" style="display:none;color:#b00020;font-size:13px"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+        <button type="button" onclick="closeChangePasswordModal()">Cancelar</button>
+        <button type="button" class="save" onclick="submitChangePassword()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<header>
+  <div class="header-inner">
+  <div class="header-title-row"><h1 id="companyTitle" title="En modo edición puedes cambiar el nombre">Cuadrante de Turnos</h1></div>
+  <div class="header-actions-row">
+    <span id="editState">Consulta</span>
+    <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición<span id="editBtnDot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #1f2937"></span></button>
+    <div id="statsMenuWrap" style="position:relative">
+      <button id="statsMenuBtn" onclick="toggleStatsMenu()">📊 Estadísticas ▾</button>
+      <div id="statsMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:280px;overflow:hidden">
+        <button type="button" onclick="openStatView('fridayYear')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px">🗓️ Viernes tarde — año actual</button>
+        <button type="button" onclick="openStatView('fridayAll')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🗓️ Viernes tarde — cómputo general</button>
+        <button type="button" onclick="openStatView('changes')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔄 Cambios solicitados</button>
+        <button id="statMenuMornings" type="button" onclick="openStatView('mornings')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌅 Mañanas trabajadas</button>
+        <button id="statMenuAfternoons" type="button" onclick="openStatView('afternoons')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌇 Tardes trabajadas</button>
+        <button id="statMenuVacation" type="button" onclick="openStatView('vacation')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🏖️ Vacaciones disfrutadas</button>
+        <button id="statMenuAP" type="button" onclick="openStatView('ap')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">📋 Asuntos propios disfrutados</button>
+        <button id="statMenuINC" type="button" onclick="openStatView('inc')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">⚠️ Incidencias realizadas</button>
+        <button id="statMenuResetFriday" type="button" onclick="closeStatsMenu();resetFridayOffsets()" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee;color:#b00020">🔄 Resetear compensación de viernes</button>
+      </div>
+    </div>
+    <div id="securityMenuWrap" style="position:relative;display:none">
+      <button id="securityBtn" onclick="toggleSecurityMenu()">🔐 Seguridad ▾</button>
+      <div id="securityMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:180px;overflow:hidden">
+        <button type="button" onclick="closeSecurityMenu();openChangePassword()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px">🔑 Cambiar contraseña</button>
+        <button type="button" onclick="closeSecurityMenu();logout()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔓 Cerrar sesión</button>
+      </div>
+    </div>
+    <button id="saveBtn" class="save" onclick="saveAndView()" style="display:none">✓ Guardar cambios y volver a consulta</button>
+    <button onclick="exitApp()">🚪 Salir</button>
+  </div>
+  </div>
+</header>
+<div id="statViewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:20px;max-width:420px;width:92%;max-height:80vh;overflow:auto;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <h3 id="statViewTitle" style="margin-top:0"></h3>
+    <div id="statViewBody"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button onclick="closeStatView()">Cerrar</button></div>
+  </div>
+</div>
+<main>
+<div class="date-nav">
+<label>Año: <select id="yearSelect" onchange="setYear(this.value)"></select></label>
+<button onclick="changeMonth(-1)">‹</button><select id="monthSelect" onchange="setMonth(this.value)"></select><button onclick="changeMonth(1)">›</button>
+</div>
+<div class="toolbar">
+<button id="workersBtn" onclick="toggleWorkers()" style="display:none">👥 Trabajadores</button>
+<button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">🖨️ Imprimir</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+
+<div id="printPanel" class="panel"><h3>🖨️ Imprimir cuadrante</h3><div class="row"><label>Mes: <select id="printMonthSelect"></select></label><label>Año: <select id="printYearSelect"></select></label><button class="print-btn" onclick="printSelectedMonth()">🖨️ Imprimir / PDF</button><button onclick="closePanels()">Cerrar</button></div></div>
+
+<div id="workerPanel" class="panel"><h3>Trabajadores</h3>
+<div class="small">Puedes añadir, eliminar, cambiar el nombre y asignar una categoría (I, S, O, P o PP). Los cambios se aplican desde la fecha indicada; el histórico anterior conserva la plantilla anterior.</div>
+<div id="workerRows"></div>
+<button class="add-worker-btn" onclick="addWorkerRow()">＋ Añadir trabajador</button>
+<button onclick="applyWorkers()">✓ Aplicar cambios</button>
+<button onclick="closePanels()">Cerrar</button></div>
+
+
+<div id="patternPanel" class="panel"><h3>🔄 Patrones de turnos</h3>
+<div class="small"><b>Igual que en el Excel:</b> cada fila representa un trabajador y arriba aparecen solamente los días laborables. Sábado y domingo no forman parte de la secuencia. Puedes cambiar cualquier turno, el nombre de la fila, añadir o eliminar filas y crear otros patrones.</div>
+<div class="row"><label>Patrón: <select id="patternSelect" onchange="loadPatternEditor()"></select></label>
+<label>Empezar desde trabajador: <select id="patternWorker"></select></label>
+<label>Fecha de inicio: <input id="patternStart" type="date"></label>
+<label><input id="skipHolidays" type="checkbox"> No aplicar en festivos</label>
+<button class="save" onclick="applyPatternByWorkers()">▶ Aplicar patrón</button></div>
+<div id="patternEditor"></div>
+<div class="pattern-actions"><button onclick="addPatternRow()">＋ Añadir trabajador al patrón</button><button onclick="newPattern()">＋ Nuevo patrón</button><button class="danger" onclick="deletePattern()">Eliminar patrón</button><button onclick="savePattern()">💾 Guardar patrón</button><button onclick="closePanels()">Cerrar</button></div>
+</div>
+<div id="statsPanel" class="panel"><h3>📊 Viernes de tarde</h3>
+<div class="small">Solo muestra trabajadores de tipo S, O o P y cuenta los viernes en los que cada trabajador tiene turno <b>T</b>.</div>
+<div id="statsRows"></div>
+</div>
+<div id="holidayPanel" class="panel"><h3>Festivos de <span id="holidayYear"></span></h3>
+<div class="small">Los festivos automáticos se calculan cada año. Puedes añadir, modificar o eliminar festivos manuales. Todos aparecen en gris, como sábados y domingos.</div>
+<div id="holidayRows"></div>
+<button onclick="addHolidayRow()">＋ Añadir festivo</button>
+<button class="save" onclick="saveHolidays()">✓ Guardar festivos</button>
+<button onclick="closePanels()">Cerrar</button>
+</div>
+
+<div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Solicitar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede solicitar un cambio con otro trabajador de tipo S, O o P. Indica el día y los dos trabajadores.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>solicita cambiar con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Solicitar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
+
+<div id="permissionRequestPanel" class="panel change-request-panel"><h3>📄 Solicitar permiso</h3><div id="permissionRequestFormWrap"><div class="small">Cualquier trabajador (I, S, O, P o PP) puede solicitar un permiso. Indica el trabajador, el periodo de fechas y el tipo de permiso.</div><div class="row"><label>Trabajador: <select id="permissionRequestWorker"></select></label><label>Desde: <input id="permissionRequestStart" type="date"></label><label>Hasta: <input id="permissionRequestEnd" type="date"></label><label>Tipo de permiso: <select id="permissionRequestType">
+<option value="AP">AP Asuntos propios</option><option value="V">V Vacaciones</option><option value="LC">LC Libre compensado</option><option value="NAV">NAV Navidad</option><option value="SS">SS Semana Santa</option>
+</select></label><button class="save" onclick="submitPermissionRequest()">✓ Solicitar</button></div></div><div id="permissionRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de permisos</summary><div id="permissionRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
+
+<div class="scroll-hint">👉 Desliza el cuadrante para ver más días</div>
+<div class="tablewrap"><table id="grid"></table></div>
+<div id="balanceAlert" class="panel balance-alert" style="display:none"></div>
+<div class="legend"><span class="badge">M Mañana</span><span class="badge">T Tarde</span><span class="badge">N Noche</span><span class="badge">AP Ausencia</span><span class="badge">V Vacaciones</span><span class="badge">SS Semana Santa</span><span class="badge">NAV Navidad</span><span class="badge">LC Libre compensado</span><span class="badge">B Baja</span><span class="badge">LE Permiso enfermedad</span><span class="badge">CS Comisión</span><span class="badge">L Libre</span><span class="badge">INC Incidencias</span></div>
+</main>
+<script>
+/* ====================================================================
+   CONFIGURACIÓN DE FIREBASE — sustituye estos valores por los de TU
+   proyecto (Firebase Console > Configuración del proyecto > Tus apps).
+   ==================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyBLjoNpHWUFBNXh5pt8bICDGngi_gFIFMs",
+  authDomain: "cuadrante-ufam.firebaseapp.com",
+  databaseURL: "https://cuadrante-ufam-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "cuadrante-ufam",
+  storageBucket: "cuadrante-ufam.firebasestorage.app",
+  messagingSenderId: "822942800304",
+  appId: "1:822942800304:web:048c8d9b03a7ee24e75e75"
+};
+firebase.initializeApp(firebaseConfig);
+const dbRef = firebase.database().ref("cuadrante_data");
+const auth = firebase.auth();
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
+let isAdmin=false;
+
+/* ====================================================================
+   CAPA DE SINCRONIZACIÓN: sustituye el localStorage del navegador por
+   una copia en memoria sincronizada en tiempo real con Firebase, para
+   que todo el resto del código (que usa localStorage) funcione igual
+   pero compartiendo los datos entre todos los que abran el enlace.
+   ==================================================================== */
+let cloudStore={};
+const encFbKey=k=>encodeURIComponent(k), decFbKey=k=>decodeURIComponent(k);
+let batchDepth=0,batchPending={};
+function beginBatch(){batchDepth++}
+function endBatch(){
+  batchDepth=Math.max(0,batchDepth-1);
+  if(batchDepth===0&&Object.keys(batchPending).length){
+    const toSend=batchPending;batchPending={};
+    dbRef.update(toSend);
+  }
+}
+let rosterDateIndex=[],typesDateIndex=[];
+function rebuildDateIndexes(){
+  rosterDateIndex=[];typesDateIndex=[];
+  for(const k in cloudStore){
+    if(k.startsWith("q_roster_date_"))rosterDateIndex.push(k.slice("q_roster_date_".length));
+    else if(k.startsWith("q_worker_types_date_"))typesDateIndex.push(k.slice("q_worker_types_date_".length));
+  }
+  rosterDateIndex.sort();typesDateIndex.sort();
+}
+const localStorage={
+  getItem(k){return Object.prototype.hasOwnProperty.call(cloudStore,k)?cloudStore[k]:null},
+  setItem(k,v){
+    v=String(v);cloudStore[k]=v;
+    if(k.startsWith("q_roster_date_")||k.startsWith("q_worker_types_date_"))rebuildDateIndexes();
+    if(batchDepth>0){batchPending[encFbKey(k)]=v}
+    else{dbRef.child(encFbKey(k)).set(v)}
+  },
+  removeItem(k){
+    delete cloudStore[k];
+    if(k.startsWith("q_roster_date_")||k.startsWith("q_worker_types_date_"))rebuildDateIndexes();
+    if(batchDepth>0){batchPending[encFbKey(k)]=null}
+    else{dbRef.child(encFbKey(k)).remove()}
+  },
+  get length(){return Object.keys(cloudStore).length},
+  key(i){return Object.keys(cloudStore)[i]}
+};
+let appInitialized=false;
+dbRef.on("value",snap=>{
+  const val=snap.val()||{};
+  const next={};
+  Object.keys(val).forEach(ek=>{next[decFbKey(ek)]=val[ek]});
+  cloudStore=next;
+  rebuildDateIndexes();
+  if(!appInitialized){
+    appInitialized=true;
+    document.getElementById("cloudLoading")?.remove();
+    checkYearRollover();
+  }
+  render();
+},err=>{
+  const el=document.getElementById("cloudLoading");
+  if(el)el.innerHTML='<div style="font-size:28px">⚠️</div><div style="font-size:15px;color:#900;max-width:320px">No se pudo conectar con la base de datos.<br>Revisa la configuración de Firebase (firebaseConfig) y las reglas de acceso.</div>';
+  console.error(err);
+});
+auth.onAuthStateChanged(user=>{
+  isAdmin=!!user;
+  if(!isAdmin){
+    editing=false;sessionStorage.removeItem("quadEdit");
+  }else if(sessionStorage.getItem("quadEdit")==="1"){
+    editing=true;
+  }
+  if(appInitialized)render();
+});
+const initialWorkers=["ISABEL","ANTONIO","CARLOS","CONCHI","FIDEL","LUIS","MARTA","HERRERO","FELIX","ELADIO","BEA"];
+const codes=["","M","T","N","AP","V","SS","NAV","LC","B","LE","CS","L","INC"];
+const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+let year=new Date().getFullYear(),month=new Date().getMonth(),editing=false;
+const q=k=>localStorage.getItem(k), set=(k,v)=>localStorage.setItem(k,v);
+const shiftKey=(y,m,d,w)=>`q_shift_${y}_${m}_${d}_${w}`, rosterKey=(y,m)=>`q_roster_${y}_${m}`, rosterDateKey=(date)=>`q_roster_date_${date}`, manualHolidayKey=y=>`q_holidays_${y}`;
+const getShift=(y,m,d,w)=>q(shiftKey(y,m,d,w))||"", setShift=(y,m,d,w,v)=>set(shiftKey(y,m,d,w),v);
+
+function renderWorkerDeletePanel(){
+  const sel=document.getElementById("workerToDelete");
+  if(!sel)return;
+  const list=_originalGetWorkers(year,month);
+  sel.innerHTML=list.map((w,i)=>`<option value="${i}">${escapeHtml(w)}</option>`).join("");
+}
+function deleteSelectedWorkerFromDate(){
+  const sel=document.getElementById("workerToDelete");
+  const date=document.getElementById("workerDeleteDate")?.value;
+  if(!sel || !date)return;
+  deleteWorkerFromDate(Number(sel.value),date);
+}
+
+function deleteWorkerFromDate(workerIndex, effectiveDate){
+  const d=new Date(effectiveDate+"T00:00:00");
+  if(Number.isNaN(d.getTime())){ alert("Selecciona una fecha válida."); return; }
+  const y=d.getFullYear();
+  const m=d.getMonth();
+  const day=d.getDate();
+  const list=getWorkers(y,m).slice();
+  const worker=list[workerIndex];
+  if(!worker){ alert("No se ha encontrado el trabajador."); return; }
+  if(!confirm("¿Eliminar a "+worker+" desde el "+effectiveDate+"?\\n\\nSe conservará todo el histórico anterior a esa fecha.")) return;
+
+  // Store dated roster changes in localStorage. The existing getWorkers()
+  // is wrapped below so the change is effective only from the selected date.
+  const changes=JSON.parse(localStorage.getItem("quadWorkerChanges")||"[]");
+  changes.push({type:"remove",name:worker,date:effectiveDate});
+  changes.sort((a,b)=>a.date.localeCompare(b.date));
+  localStorage.setItem("quadWorkerChanges",JSON.stringify(changes));
+  renderAll();
+  renderWorkerEditor();
+}
+
+function pad(n){return String(n).padStart(2,"0")} function fmt(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+
+function easter(Y){let a=Y%19,b=Math.floor(Y/100),c=Y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);return new Date(Y,m+2-1,h+l-7*m+1)}
+const excludedAutoHolidayKey=y=>`q_holidays_excluded_${y}`;
+function excludedAutoHolidays(y){try{return JSON.parse(q(excludedAutoHolidayKey(y))||"[]")}catch(e){return[]}}
+function rawAutoHolidayDates(y){
+ const h=[`${y}-01-01`,`${y}-01-06`,`${y}-05-01`,`${y}-08-15`,`${y}-10-12`,`${y}-11-01`,`${y}-12-06`,`${y}-12-08`,`${y}-12-25`,`${y}-04-23`];
+ const e=easter(y),a=new Date(e),b=new Date(e);a.setDate(a.getDate()-3);b.setDate(b.getDate()-2);h.push(fmt(a),fmt(b));
+ return h;
+}
+function autoHolidays(y){
+ // Salamanca 2027: se cargan como manuales y pueden editarse/eliminarse.
+ const excluded=new Set(excludedAutoHolidays(y));
+ return new Set(rawAutoHolidayDates(y).filter(d=>!excluded.has(d)));
+}
+function manualHolidays(y){try{return JSON.parse(q(manualHolidayKey(y))||"[]")}catch(e){return[]}}
+function allHolidays(y){let a=[...autoHolidays(y),...manualHolidays(y).map(x=>x.date)];return new Set(a)}
+function getWorkersAtDate(date){
+  let bestDate="";
+  for(const rd of rosterDateIndex){if(rd<=date&&rd>bestDate)bestDate=rd}
+  if(bestDate){try{const r=q("q_roster_date_"+bestDate);if(r)return JSON.parse(r)}catch(e){}}
+  const z=new Date(date+"T00:00:00"),y=z.getFullYear(),m=z.getMonth();let best=null;
+  for(let yy=2020;yy<=y;yy++)for(let mm=0;mm<12;mm++){if(yy>y||(yy===y&&mm>m))break;let r=q(rosterKey(yy,mm));if(r)try{best=JSON.parse(r)}catch(e){}}
+  return best||[...initialWorkers];
+}
+function _originalGetWorkers(y,m){return getWorkersAtDate(`${y}-${pad(m+1)}-01`)}
+function workerIsActiveOnDate(name, dateObj){
+  const changes=JSON.parse(localStorage.getItem("quadWorkerChanges")||"[]");
+  const d=new Date(dateObj.getFullYear(),dateObj.getMonth(),dateObj.getDate());
+  const latest=changes
+    .filter(c=>c.type==="remove" && c.name===name)
+    .sort((a,b)=>b.date.localeCompare(a.date))[0];
+  if(!latest)return true;
+  return d < new Date(latest.date+"T00:00:00");
+}
+
+function getWorkers(year,month){
+  const base=_originalGetWorkers(year,month).slice();
+  const changes=JSON.parse(localStorage.getItem("quadWorkerChanges")||"[]");
+  const cutoff=new Date(year,month,1);
+  const active=base.filter(name=>{
+    const removed=changes
+      .filter(c=>c.type==="remove" && c.name===name && new Date(c.date+"T00:00:00")<=cutoff)
+      .sort((a,b)=>b.date.localeCompare(a.date))[0];
+    return !removed;
+  });
+  return active;
+}
+
+
+
+
+const defaultPatternsV6=[];
+
+function getPatterns(){
+ try{
+  const x=JSON.parse(q("q_patterns_v6")||"null");
+  if(Array.isArray(x)&&x.length){
+   const existingNames=new Set(x.map(p=>p.name));
+   const missing=defaultPatternsV6.filter(p=>!existingNames.has(p.name));
+   if(missing.length){
+    const merged=x.concat(JSON.parse(JSON.stringify(missing)));
+    set("q_patterns_v6",JSON.stringify(merged));
+    return merged;
+   }
+   return x;
+  }
+ }catch(e){}
+ const x=JSON.parse(JSON.stringify(defaultPatternsV6)); set("q_patterns_v6",JSON.stringify(x)); return x;
+}
+function eliminarFilaPatron(btn){
+  const tr=btn.closest("tr");
+  if(!tr)return;
+  const tbody=tr.parentElement;
+  const total=tbody.querySelectorAll("tr").length;
+  if(total<=1){
+    alert("El patrón debe tener al menos un trabajador.");
+    return;
+  }
+  const nombre=(tr.querySelector(".pattern-name")?.textContent||"").replace("✕","").trim();
+  if(confirm("¿Eliminar esta fila del patrón"+(nombre?": "+nombre:"")+"?")){
+    tr.remove();
+  }
+}
+
+function savePatterns(x){set("q_patterns_v6",JSON.stringify(x))}
+function fillPatternSelect(){
+ const ps=getPatterns(),sel=document.getElementById("patternSelect");
+ sel.innerHTML=ps.map((p,i)=>`<option value="${i}">${escapeHtml(p.name)}</option>`).join("");
+}
+function normalizeRow(r){
+ let a=Array.isArray(r)?r.slice():[];
+ return a.map(v=>codes.includes(v)?v:"");
+}
+function rowHasShifts(r){return normalizeRow(r).some(Boolean)}
+function patternLength(p){return Math.max(1,...p.rows.map(r=>normalizeRow(r).length),25)}
+function weekCount(p){return Math.max(1,Math.ceil(patternLength(p)/5))}
+function loadPatternEditor(){
+ const ps=getPatterns();
+ if(!ps.length){
+   document.getElementById("patternEditor").innerHTML='<div class="small">No hay ningún patrón guardado. Pulsa "＋ Nuevo patrón" para crear el primero, con las filas y turnos que quieras (no está ligado a ningún trabajador concreto: al aplicarlo, se reparte desde el trabajador que elijas hacia abajo).</div>';
+   return;
+ }
+ const i=+document.getElementById("patternSelect").value||0,p=ps[i];
+ const len=Math.max(5,patternLength(p)),weeks=Math.ceil(len/5);
+ let html=`<div class="row"><label>Nombre del patrón: <input id="patternName" value="${escapeHtml(p.name)}"></label>
+ <span class="small">Los nombres de la izquierda son los trabajadores actuales, en su orden. La secuencia de turnos se puede modificar libremente.</span></div>`;
+ html+=`<div class="tablewrap"><table class="pattern-table"><thead><tr><th class="pattern-name">Trabajador</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks},(_,w)=>`<th class="weekhead" colspan="5">${w+1}ª semana</th>`).join("")}</tr><tr><th class="pattern-name">Trabajador</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks*5},(_,c)=>`<th class="dayhead">${["L","M","X","J","V"][c%5]}<br>${(c%5)+1}</th>`).join("")}</tr></thead><tbody>`;
+ const rows=p.rows.length?p.rows:[{name:"",shifts:Array(25).fill("")}];
+ const rosterForNames=getWorkers(year,month);
+ for(let r=0;r<rows.length;r++){
+  const row=normalizeRow(rows[r].shifts||rows[r]);
+  const storedName=(rows[r]&&rows[r].name)||"";
+  const name=rosterForNames[r]||storedName||`Trabajador ${r+1}`;
+  html+=`<tr data-row="${r}"><td class="pattern-name" title="Trabajador en el orden actual">${escapeHtml(name)}</td><td class="pattern-action"><button type="button" class="danger delete-worker-btn" onclick="eliminarFilaPatron(this)">🗑 Eliminar</button></td>`;
+  for(let c=0;c<weeks*5;c++){const v=row[c]||"";html+=`<td contenteditable="true" data-pr="${r}" data-pc="${c}">${escapeHtml(v)}</td>`;}
+  html+=`</tr>`;
+ }
+ html+=`</tbody></table></div><div class="small">Turnos admitidos: M, T, N, AP, V, SS, NAV, LC, B, LE, CS y L. En el cuadrante principal también puedes editar sábados, domingos y festivos.</div>`;
+ document.getElementById("patternEditor").innerHTML=html;
+ document.querySelectorAll("#patternEditor td[contenteditable=true]").forEach(td=>td.addEventListener("blur",()=>{
+   let v=td.textContent.trim().toUpperCase();if(!codes.includes(v))v="";td.textContent=v;
+ }));
+}
+function togglePatterns(){
+ if(!editing)return;closePanels();fillPatternSelect();
+ const ws=getWorkers(year,month),sw=document.getElementById("patternWorker");
+ sw.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
+ document.getElementById("patternStart").value=fmt(mondayOf(`${year}-${pad(month+1)}-01`));
+ document.getElementById("skipHolidays").checked=false;
+ loadPatternEditor();document.getElementById("patternPanel").style.display="block";
+}
+function readPatternFromEditor(){
+ const ps=getPatterns();
+ if(!ps.length)return null;
+ const i=+document.getElementById("patternSelect").value||0;
+ const rosterForNames=getWorkers(year,month);
+ const rows=[...document.querySelectorAll("#patternEditor tbody tr")].map((tr,r)=>{
+   const name=rosterForNames[r]||tr.querySelector('[data-role="name"]')?.textContent.trim()||`Fila ${r+1}`;
+   const shifts=[...tr.querySelectorAll('td[data-pr]')].map(td=>{let v=td.textContent.trim().toUpperCase();return codes.includes(v)?v:""});
+   return {name,shifts};
+ });
+ ps[i].name=document.getElementById("patternName").value.trim()||`Patrón ${i+1}`;ps[i].rows=rows;savePatterns(ps);return ps[i];
+}
+
+function savePattern(){
+ if(!readPatternFromEditor()){alert("No hay ningún patrón. Crea uno nuevo primero.");return}
+ fillPatternSelect();alert("Patrón guardado.");
+}
+function newPattern(){
+ let ps=getPatterns();
+ if(ps.length)readPatternFromEditor();
+ ps=getPatterns();
+ ps.push({name:`Patrón ${ps.length+1}`,rows:[{name:"",shifts:Array(25).fill("")}]});
+ savePatterns(ps);fillPatternSelect();document.getElementById("patternSelect").value=ps.length-1;loadPatternEditor();
+}
+function addPatternRow(){
+ if(!getPatterns().length){alert("No hay ningún patrón. Crea uno nuevo primero.");return}
+ readPatternFromEditor();let ps=getPatterns(),i=+document.getElementById("patternSelect").value||0,p=ps[i];
+ const next=p.rows.length+1;p.rows.push({name:"",shifts:Array(patternLength(p)).fill("")});
+ savePatterns(ps);loadPatternEditor();
+}
+function removePatternRow(r){
+ let ps=getPatterns();if(!ps.length)return;
+ let i=+document.getElementById("patternSelect").value||0,p=ps[i];
+ if(p.rows.length<=1){alert("El patrón debe tener al menos una fila.");return}
+ if(confirm("¿Eliminar esta fila del patrón?")){readPatternFromEditor();p=ps[i];p.rows.splice(r,1);savePatterns(ps);loadPatternEditor();}
+}
+function deletePattern(){
+ let ps=getPatterns();
+ if(!ps.length)return;
+ let i=+document.getElementById("patternSelect").value||0;
+ if(ps.length<=1){
+   if(confirm("¿Eliminar este patrón? No quedará ningún patrón guardado.")){ps.splice(i,1);savePatterns(ps);fillPatternSelect();loadPatternEditor();}
+   return;
+ }
+ if(confirm("¿Eliminar este patrón?")){ps.splice(i,1);savePatterns(ps);fillPatternSelect();loadPatternEditor();}
+}
+function applyPatternByWorkers(){
+ const p=readPatternFromEditor();
+ if(!p){alert("No hay ningún patrón para aplicar. Crea uno nuevo primero.");return}
+ const startDate=document.getElementById("patternStart").value,workers=getWorkersAtDate(startDate),startWorker=document.getElementById("patternWorker").value;
+ let startIndex=workers.indexOf(startWorker);if(startIndex<0){alert("Selecciona el trabajador desde el que empezar.");return}
+ let start=mondayOf(document.getElementById("patternStart").value),skipHol=document.getElementById("skipHolidays").checked,written=0,assigned=0;
+ beginBatch();
+ for(let r=0;r<p.rows.length;r++){
+  const row=normalizeRow(p.rows[r].shifts||p.rows[r]);
+  if(!rowHasShifts(row)) continue; // Las filas vacías del Excel no consumen un trabajador.
+  const w=workers[(startIndex+assigned)%workers.length];assigned++;
+  for(let c=0;c<row.length;c++){
+   if(!row[c])continue;
+   let dt=new Date(start);dt.setDate(dt.getDate()+Math.floor(c/5)*7+(c%5));
+   let y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate(),ds=fmt(dt);
+   if(dt.getDay()!==0&&dt.getDay()!==6&&(!skipHol||!allHolidays(y).has(ds))){setShift(y,m,d,w,row[c]);written++;}
+  }
+ }
+ endBatch();
+ closePanels();render();alert(`Se han aplicado ${written} turnos empezando por ${startWorker}.`);
+}
+
+function mondayOf(v){let x=new Date(v+"T00:00:00"),day=x.getDay();x.setDate(x.getDate()-(day===0?6:day-1));return x}
+function getChangeRequests(){try{return JSON.parse(q("q_change_requests")||"[]")}catch(e){return[]}}
+function saveChangeRequests(x){set("q_change_requests",JSON.stringify(x))}
+function changeEligibleWorkers(date){const dt=new Date(date+"T00:00:00");if(Number.isNaN(dt.getTime()))return[];return getWorkersAtDate(date).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,date)))}
+function renderChangeRequestSelectors(){const dateEl=document.getElementById("changeRequestDate");if(!dateEl)return;if(!dateEl.value)dateEl.value=fmt(new Date());const ws=changeEligibleWorkers(dateEl.value),from=document.getElementById("changeRequestFrom"),to=document.getElementById("changeRequestTo"),of=from.value,ot=to.value;from.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");to.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");if(ws.includes(of))from.value=of;if(ws.includes(ot))to.value=ot;from.disabled=to.disabled=ws.length<2;if(ws.length>1&&from.value===to.value)to.value=ws.find(w=>w!==from.value)||ws[1]}
+function renderChangeRequestList(){const box=document.getElementById("changeRequestList");if(!box)return;const rs=getChangeRequests().filter(r=>r.status==="pending").sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));if(!rs.length){box.innerHTML='<div class="small">No hay cambios solicitados pendientes.</div>';return}box.innerHTML=rs.map(r=>`<div class="request-card pending"><b>${escapeHtml(r.date)}</b> — <b>${escapeHtml(r.from)}</b> solicita cambiar con <b>${escapeHtml(r.to)}</b> <span class="badge">Pendiente</span>${editing?`<button class="save" onclick="resolveChangeRequest('${r.id}','accepted')">✓ Aceptar</button><button class="danger" onclick="resolveChangeRequest('${r.id}','denied')">✕ Denegar</button>`:""}</div>`).join("")}
+function initChangeRequestDateListener(){const el=document.getElementById("changeRequestDate");if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",renderChangeRequestSelectors)}}
+function toggleChangeRequests(){closePanels();renderChangeRequestSelectors();initChangeRequestDateListener();renderChangeRequestList();renderChangeRequestHistory();const formWrap=document.getElementById("changeRequestFormWrap");if(formWrap)formWrap.style.display=editing?"none":"block";document.getElementById("changeRequestPanel").style.display="block"}
+function submitChangeRequest(){const date=document.getElementById("changeRequestDate").value,from=document.getElementById("changeRequestFrom").value,to=document.getElementById("changeRequestTo").value;if(!date||!from||!to){alert("Completa la fecha y los dos trabajadores.");return}if(from===to){alert("Los dos trabajadores deben ser diferentes.");return}const eligible=changeEligibleWorkers(date);if(!eligible.includes(from)||!eligible.includes(to)){alert("Los dos trabajadores deben ser de tipo S, O o P en esa fecha.");return}const rs=getChangeRequests();rs.push({id:"cr_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),date,from,to,status:"pending",createdAt:new Date().toISOString()});saveChangeRequests(rs);closePanels();render();alert("Cambio solicitado. Queda pendiente de aceptación.")}
+function markAcceptedChange(y,m,d,w){set(`q_change_red_${y}_${m}_${d}_${w}`,"1")}
+function unmarkAcceptedChange(y,m,d,w){set(`q_change_red_${y}_${m}_${d}_${w}`,"0")}
+function isAcceptedChange(y,m,d,w){return q(`q_change_red_${y}_${m}_${d}_${w}`)==="1"}
+function resolveChangeRequest(id,status){
+  const rs=getChangeRequests(),r=rs.find(x=>x.id===id);
+  if(!r||r.status!=="pending")return;
+  if(status==="accepted"){
+    const dt=new Date(r.date+"T00:00:00");
+    if(Number.isNaN(dt.getTime())){alert("La fecha del cambio no es válida.");return}
+    const y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate();
+    const workers=getWorkersAtDate(r.date);
+    if(!workers.includes(r.from)||!workers.includes(r.to)){alert("Uno de los trabajadores ya no está activo en esa fecha.");return}
+    const a=getShift(y,m,d,r.from),b=getShift(y,m,d,r.to);
+    setShift(y,m,d,r.from,b);
+    setShift(y,m,d,r.to,a);
+    markAcceptedChange(y,m,d,r.from);
+    markAcceptedChange(y,m,d,r.to);
+    r.prevFrom=a;r.prevTo=b;
+  }
+  r.status=status;r.resolvedAt=new Date().toISOString();
+  saveChangeRequests(rs);
+  render();
+  renderChangeRequestList();
+  const formWrap=document.getElementById("changeRequestFormWrap");
+  if(formWrap)formWrap.style.display=editing?"none":"block";
+  renderChangeRequestHistory();
+}
+function cancelChangeRequest(id){
+  const rs=getChangeRequests(),r=rs.find(x=>x.id===id);
+  if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
+  if(!confirm("¿Anular esta solicitud de cambio? "+(r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"")))return;
+  if(r.status==="accepted"){
+    const dt=new Date(r.date+"T00:00:00");
+    if(!Number.isNaN(dt.getTime())){
+      const y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate();
+      if(r.prevFrom!==undefined)setShift(y,m,d,r.from,r.prevFrom);
+      if(r.prevTo!==undefined)setShift(y,m,d,r.to,r.prevTo);
+      unmarkAcceptedChange(y,m,d,r.from);
+      unmarkAcceptedChange(y,m,d,r.to);
+    }
+  }
+  r.status="cancelled";r.resolvedAt=new Date().toISOString();
+  saveChangeRequests(rs);
+  render();
+  renderChangeRequestList();
+  renderChangeRequestHistory();
+}
+function monthKey(y,m){return `${y}-${pad(m+1)}`}
+function renderChangeRequestHistory(){
+  const box=document.getElementById("changeRequestHistory");if(!box)return;
+  const mk=monthKey(year,month);
+  const rs=getChangeRequests().filter(r=>String(r.date||"").slice(0,7)===mk).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+  if(!rs.length){box.innerHTML=`<div class="small">No hay historial de cambios en ${months[month]} de ${year}.</div>`;return}
+  const labels={pending:"Pendiente",accepted:"Aceptado",denied:"Denegado",cancelled:"Anulado"};
+  box.innerHTML=rs.map(r=>`<div class="request-card ${r.status}"><b>${escapeHtml(r.date)}</b> — <b>${escapeHtml(r.from)}</b> ⇄ <b>${escapeHtml(r.to)}</b> <span class="badge">${labels[r.status]||r.status}</span>${(r.status==="pending"||r.status==="accepted")?`<button class="danger" onclick="cancelChangeRequest('${r.id}')">✕ Anular</button>`:""}</div>`).join("");
+}
+const permissionTypeNames={AP:"Asuntos propios",V:"Vacaciones",LC:"Libre compensado",NAV:"Navidad",SS:"Semana Santa"};
+function getPermissionRequests(){try{return JSON.parse(q("q_permission_requests")||"[]")}catch(e){return[]}}
+function savePermissionRequests(x){set("q_permission_requests",JSON.stringify(x))}
+function permissionEligibleWorkers(date){const dt=new Date(date+"T00:00:00");if(Number.isNaN(dt.getTime()))return[];return getWorkersAtDate(date).filter(w=>["I","S","O","P","PP"].includes(workerTypeAtDate(w,date)))}
+function forEachDateInRange(startStr,endStr,cb){const d=new Date(startStr+"T00:00:00"),end=new Date(endStr+"T00:00:00");if(Number.isNaN(d.getTime())||Number.isNaN(end.getTime())||d>end)return;while(d<=end){cb(d.getFullYear(),d.getMonth(),d.getDate(),fmt(d));d.setDate(d.getDate()+1)}}
+function renderPermissionRequestSelectors(){
+  const startEl=document.getElementById("permissionRequestStart");if(!startEl)return;
+  if(!startEl.value)startEl.value=fmt(new Date());
+  const endEl=document.getElementById("permissionRequestEnd");
+  if(!endEl.value)endEl.value=startEl.value;
+  const ws=permissionEligibleWorkers(startEl.value),sel=document.getElementById("permissionRequestWorker"),ov=sel.value;
+  sel.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
+  if(ws.includes(ov))sel.value=ov;
+  sel.disabled=ws.length<1;
+}
+function initPermissionRequestDateListener(){
+  const s=document.getElementById("permissionRequestStart"),e=document.getElementById("permissionRequestEnd");
+  if(s&&!s.dataset.bound){s.dataset.bound="1";s.addEventListener("change",()=>{if(e&&e.value<s.value)e.value=s.value;renderPermissionRequestSelectors()})}
+  if(e&&!e.dataset.bound){e.dataset.bound="1";e.addEventListener("change",()=>{if(s&&e.value<s.value)e.value=s.value})}
+}
+function renderPermissionRequestList(){
+  const box=document.getElementById("permissionRequestList");if(!box)return;
+  const rs=getPermissionRequests().filter(r=>r.status==="pending").sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+  if(!rs.length){box.innerHTML='<div class="small">No hay permisos solicitados pendientes.</div>';return}
+  box.innerHTML=rs.map(r=>`<div class="request-card pending"><b>${escapeHtml(r.worker)}</b> solicita <b>${escapeHtml(r.type)} (${escapeHtml(permissionTypeNames[r.type]||r.type)})</b> del <b>${escapeHtml(r.start)}</b> al <b>${escapeHtml(r.end)}</b> <span class="badge">Pendiente</span>${editing?`<button class="save" onclick="resolvePermissionRequest('${r.id}','accepted')">✓ Aceptar</button><button class="danger" onclick="resolvePermissionRequest('${r.id}','denied')">✕ Denegar</button>`:""}</div>`).join("");
+}
+function togglePermissionRequests(){
+  closePanels();
+  renderPermissionRequestSelectors();
+  initPermissionRequestDateListener();
+  renderPermissionRequestList();
+  renderPermissionRequestHistory();
+  const formWrap=document.getElementById("permissionRequestFormWrap");
+  if(formWrap)formWrap.style.display=editing?"none":"block";
+  document.getElementById("permissionRequestPanel").style.display="block";
+}
+function submitPermissionRequest(){
+  const worker=document.getElementById("permissionRequestWorker").value,
+        start=document.getElementById("permissionRequestStart").value,
+        end=document.getElementById("permissionRequestEnd").value,
+        type=document.getElementById("permissionRequestType").value;
+  if(!worker||!start||!end||!type){alert("Completa el trabajador, las fechas y el tipo de permiso.");return}
+  if(end<start){alert("La fecha de fin no puede ser anterior a la de inicio.");return}
+  const eligible=permissionEligibleWorkers(start);
+  if(!eligible.includes(worker)){alert("El trabajador debe ser de tipo I, S, O, P o PP en esa fecha.");return}
+  const rs=getPermissionRequests();
+  rs.push({id:"pr_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),worker,start,end,type,status:"pending",createdAt:new Date().toISOString()});
+  savePermissionRequests(rs);
+  closePanels();render();
+  alert("Permiso solicitado. Queda pendiente de aceptación.");
+}
+function resolvePermissionRequest(id,status){
+  const rs=getPermissionRequests(),r=rs.find(x=>x.id===id);
+  if(!r||r.status!=="pending")return;
+  beginBatch();
+  if(status==="accepted"){
+    const skipNonWorkdays=["V","SS","NAV","AP","LC","LE"].includes(r.type);
+    const applied=[];
+    forEachDateInRange(r.start,r.end,(y,m,d,ds)=>{
+      if(skipNonWorkdays){
+        const dow=new Date(y,m,d).getDay();
+        if(dow===0||dow===6||allHolidays(y).has(ds))return;
+      }
+      const workers=getWorkersAtDate(ds);
+      if(workers.includes(r.worker)){
+        const prev=getShift(y,m,d,r.worker);
+        applied.push({y,m,d,prev});
+        setShift(y,m,d,r.worker,r.type);
+      }
+    });
+    r.applied=applied;
+  }
+  r.status=status;r.resolvedAt=new Date().toISOString();
+  savePermissionRequests(rs);
+  endBatch();
+  render();
+  renderPermissionRequestList();
+  const formWrap=document.getElementById("permissionRequestFormWrap");
+  if(formWrap)formWrap.style.display=editing?"none":"block";
+  renderPermissionRequestHistory();
+}
+function cancelPermissionRequest(id){
+  const rs=getPermissionRequests(),r=rs.find(x=>x.id===id);
+  if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
+  if(!confirm("¿Anular esta solicitud de permiso? "+(r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"")))return;
+  if(r.status==="accepted"&&Array.isArray(r.applied)){
+    beginBatch();
+    r.applied.forEach(a=>setShift(a.y,a.m,a.d,r.worker,a.prev));
+    endBatch();
+  }
+  r.status="cancelled";r.resolvedAt=new Date().toISOString();
+  savePermissionRequests(rs);
+  render();
+  renderPermissionRequestList();
+  renderPermissionRequestHistory();
+}
+function monthOverlapsRange(y,m,startStr,endStr){
+  const first=fmt(new Date(y,m,1)),last=fmt(new Date(y,m+1,0));
+  return startStr<=last&&endStr>=first;
+}
+function renderPermissionRequestHistory(){
+  const box=document.getElementById("permissionRequestHistory");if(!box)return;
+  const rs=getPermissionRequests().filter(r=>monthOverlapsRange(year,month,r.start,r.end)).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+  if(!rs.length){box.innerHTML=`<div class="small">No hay historial de permisos en ${months[month]} de ${year}.</div>`;return}
+  const labels={pending:"Pendiente",accepted:"Aceptado",denied:"Denegado",cancelled:"Anulado"};
+  box.innerHTML=rs.map(r=>`<div class="request-card ${r.status}"><b>${escapeHtml(r.worker)}</b> — <b>${escapeHtml(r.type)} (${escapeHtml(permissionTypeNames[r.type]||r.type)})</b> del <b>${escapeHtml(r.start)}</b> al <b>${escapeHtml(r.end)}</b> <span class="badge">${labels[r.status]||r.status}</span>${(r.status==="pending"||r.status==="accepted")?`<button class="danger" onclick="cancelPermissionRequest('${r.id}')">✕ Anular</button>`:""}</div>`).join("");
+}
+function toggleStats(){renderStats();document.getElementById("statsPanel").style.display="block"}
+function computeDayCounts(y,m,d,ds){
+  const activeWorkers=getWorkersAtDate(ds).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,ds)));
+  let mCount=0,tCount=0;
+  activeWorkers.forEach(w=>{
+    const v=getShift(y,m,d,w);
+    if(v==="M")mCount++;else if(v==="T")tCount++;
+  });
+  return{m:mCount,t:tCount};
+}
+function imbalanceOverrideKey(y,m,d){return `q_imbalance_ok_${y}_${m}_${d}`}
+function isImbalanceOverridden(y,m,d){return q(imbalanceOverrideKey(y,m,d))==="1"}
+function computeImbalances(y,m){
+  const hol=allHolidays(y),n=daysInMonth(y,m),out=[];
+  for(let d=1;d<=n;d++){
+    const date=new Date(y,m,d),ds=fmt(date),offWeekend=date.getDay()===0||date.getDay()===6;
+    if(offWeekend||hol.has(ds))continue;
+    if(isImbalanceOverridden(y,m,d))continue;
+    const{m:mCount,t:tCount}=computeDayCounts(y,m,d,ds);
+    const total=mCount+tCount;
+    if(total===0)continue;
+    const expectedM=Math.ceil(total/2),expectedT=Math.floor(total/2);
+    if(mCount!==expectedM||tCount!==expectedT)out.push({d,weekday:["D","L","M","X","J","V","S"][date.getDay()],m:mCount,t:tCount});
+  }
+  return out;
+}
+function confirmDismissImbalance(d){
+  if(!editing)return;
+  if(confirm("¿Desmarcar descuadre por necesidades del servicio?")){
+    set(imbalanceOverrideKey(year,month,d),"1");
+    render();
+  }
+}
+function renderBalanceAlert(imbalances){
+  const box=document.getElementById("balanceAlert");if(!box)return;
+  if(!imbalances||!imbalances.length){box.style.display="none";box.innerHTML="";return}
+  box.style.display="block";
+  box.innerHTML=`<b>⚠️ Cuadrante descompensado en ${months[month]} ${year}</b><div class="small">Días descuadrados (distinto número de mañanas y tardes entre S, O y P)${editing?" — pincha un día para desmarcarlo":""}:</div>`+
+    imbalances.map(x=>`<span class="badge balance-badge"${editing?` style="cursor:pointer" onclick="confirmDismissImbalance(${x.d})"`:""}>${x.d} ${x.weekday}</span>`).join(" ");
+}
+function countFridayT(y,w){let total=0;for(let m=0;m<12;m++)for(let d=1;d<=daysInMonth(y,m);d++){let dt=new Date(y,m,d);if(dt.getDay()===5&&getShift(y,m,d,w)==="T")total++}return total}
+function countMonthFridayT(y,m,w){let total=0;for(let d=1;d<=daysInMonth(y,m);d++){let dt=new Date(y,m,d);if(dt.getDay()===5&&getShift(y,m,d,w)==="T")total++}return total}
+function renderStats(){
+ const ws=getWorkers(year,month);
+ document.getElementById("statsRows").innerHTML='<div class="statgrid">'+ws.map(w=>`<div class="statcard"><b>${escapeHtml(w)}</b><br>Viernes T en ${year}: <b>${effectiveFridayCount(year,w)}</b><br>Viernes T en ${months[month]}: <b>${countMonthFridayT(year,month,w)}</b></div>`).join("")+'</div>';
+}
+function getCompanyName(){return q("q_company_name")||"Cuadrante de Turnos"}
+function saveCompanyName(){const el=document.getElementById("companyTitle");if(!el)return;const name=el.textContent.trim()||"Cuadrante de Turnos";set("q_company_name",name);el.textContent=name}
+function initCompanyTitle(){const el=document.getElementById("companyTitle");if(!el)return;el.textContent=getCompanyName();el.contentEditable=editing?"true":"false";if(!el.dataset.bound){el.dataset.bound="1";el.addEventListener("blur",saveCompanyName);el.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();el.blur()}})}}
+function initPrintSelectors(){const ms=document.getElementById("printMonthSelect"),ys=document.getElementById("printYearSelect");if(!ms||!ys)return;const oldM=ms.value,oldY=ys.value;ms.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");const years=[];for(let y=Math.min(2020,year-2);y<=Math.max(2035,year+3);y++)years.push(y);ys.innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join("");ms.value=oldM!==""?oldM:String(month);ys.value=oldY!==""&&years.includes(+oldY)?oldY:String(year)}
+function printSelectedMonth(){const ms=document.getElementById("printMonthSelect"),ys=document.getElementById("printYearSelect");if(!ms||!ys)return;const targetM=+ms.value,targetY=+ys.value;year=targetY;month=targetM;render();setTimeout(()=>window.print(),100)}
+function render(){
+ initCompanyTitle();initPrintSelectors();
+ document.getElementById("holidayYear").textContent=year;
+ const ys=document.getElementById("yearSelect");
+ const realYear=new Date().getFullYear();
+ const minYear=2026,maxYear=Math.max(realYear,year)+3;
+ const wantedYears=[];for(let y=minYear;y<=maxYear;y++)wantedYears.push(y);
+ const curYears=[...ys.options].map(o=>+o.value);
+ if(curYears.length!==wantedYears.length||curYears.some((v,i)=>v!==wantedYears[i])){
+   ys.innerHTML=wantedYears.map(y=>`<option value="${y}">${y}</option>`).join("");
+ }
+ ys.value=year;
+ const ms=document.getElementById("monthSelect");
+ if(!ms.dataset.filled){
+   ms.innerHTML=months.map((mn,i)=>`<option value="${i}">${mn}</option>`).join("");
+   ms.dataset.filled="1";
+ }
+ ms.value=month;
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("workersBtn").style.display=editing?"inline-block":"none";document.getElementById("holidaysBtn").style.display=editing?"inline-block":"none";document.getElementById("patternsBtn").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("printBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Solicitar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
+ const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display=(!editing&&isAdmin&&(pendingChanges||pendingPermissions))?"block":"none";
+ const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
+ for(let d=1;d<=n;d++){const date=new Date(year,month,d);workerSets.push(getWorkersAtDate(fmt(date)))}
+ const imbalances=computeImbalances(year,month),imbalanceDays=new Set(imbalances.map(x=>x.d));
+ const workers=[...new Set(workerSets.flat())];
+ const typeOrder={I:0,S:1,O:2,P:3,PP:4};
+ const sortDate=`${year}-${pad(month+1)}-01`;
+ workers.sort((a,b)=>{
+   const ta=typeOrder[workerTypeAtDate(a,sortDate)]??99,tb=typeOrder[workerTypeAtDate(b,sortDate)]??99;
+   return ta-tb;
+ });
+ let s="<thead><tr><th class='worker-code-cell'>Tipo</th><th class='worker'>Trabajador</th>";
+ for(let d=1;d<=n;d++){let date=new Date(year,month,d),ds=fmt(date),offWeekend=date.getDay()===0||date.getDay()===6,off=offWeekend||hol.has(ds),imb=imbalanceDays.has(d);s+=`<th class="${off?"holiday ":""}${imb?"imbalance-col ":""}${year===new Date().getFullYear()&&month===new Date().getMonth()&&d===new Date().getDate()?"today":""}">${d}<br>${["D","L","M","X","J","V","S"][date.getDay()]}</th>`}s+="</tr></thead><tbody>";
+
+ for(const w of workers){
+   const workerDate=`${year}-${pad(month+1)}-01`,wtype=workerTypeAtDate(w,workerDate);
+   s+=`<tr class="${["I","PP"].includes(wtype)?"worker-row-secondary":""}"><td class="worker-code-cell">${escapeHtml(wtype)}</td><td class="worker">${escapeHtml(w)}</td>`;
+   for(let d=1;d<=n;d++){
+     let v=getShift(year,month,d,w),date=new Date(year,month,d),ds=fmt(date),offWeekend=date.getDay()===0||date.getDay()===6,off=offWeekend||hol.has(ds),active=workerSets[d-1].includes(w),imb=imbalanceDays.has(d);
+     let sp=v&&["AP","V","SS","NAV","LC","N","B","LE","CS","INC"].includes(v)?`status-${v}`:"";const acceptedChange=isAcceptedChange(year,month,d,w);
+     if(editing&&active){
+       const opts=codes.map(c=>`<option value="${escapeHtml(c)}"${c===v?" selected":""}>${escapeHtml(c||"—")}</option>`).join("");
+       s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${imb?" imbalance-col":""}" data-w="${escapeHtml(w)}" data-d="${d}"><select class="grid-shift-select ${sp}${acceptedChange?" change-red":""}${imb?" imbalance-col":""}" aria-label="Turno de ${escapeHtml(w)} día ${d}">${opts}</select></td>`;
+     }else{
+       s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${!active?" inactive":""}${imb?" imbalance-col":""}">${active?escapeHtml(v):""}</td>`;
+     }
+   }
+   s+="</tr>";
+ }
+ s+="</tbody>";document.getElementById("grid").innerHTML=s;document.getElementById("grid").classList.toggle("hide-type-col",!editing);
+ renderBalanceAlert(imbalances);
+ scrollToTodayOnce();
+ if(document.getElementById("changeRequestPanel")?.style.display==="block")renderChangeRequestHistory();
+ if(document.getElementById("permissionRequestPanel")?.style.display==="block")renderPermissionRequestHistory();
+
+ if(editing){
+   document.querySelectorAll(".grid-shift-select").forEach(sel=>{
+     sel.addEventListener("change",()=>{
+       const td=sel.closest("td"),v=sel.value,w=td.dataset.w,d=+td.dataset.d;
+       setShift(year,month,d,w,v);
+       render();
+       focusNextShiftCell(w,d);
+     });
+   });
+ }
+}
+function focusNextShiftCell(w,d){
+  const cells=[...document.querySelectorAll("#grid td[data-w][data-d] select.grid-shift-select")];
+  const idx=cells.findIndex(sel=>{const td=sel.closest("td");return td.dataset.w===w&&+td.dataset.d===d});
+  if(idx>=0&&idx+1<cells.length)cells[idx+1].focus();
+}
+function edit(){
+  if(isAdmin){editing=true;sessionStorage.setItem("quadEdit","1");render();return}
+  document.getElementById("loginEmail").value="";
+  document.getElementById("loginPassword").value="";
+  document.getElementById("loginError").style.display="none";
+  document.getElementById("loginModal").style.display="flex";
+  document.getElementById("loginEmail").focus();
+}
+function closeLoginModal(){document.getElementById("loginModal").style.display="none"}
+function submitLogin(){
+  const email=document.getElementById("loginEmail").value.trim();
+  const pass=document.getElementById("loginPassword").value;
+  const errEl=document.getElementById("loginError");
+  errEl.style.display="none";
+  if(!email||!pass){errEl.textContent="Introduce correo y contraseña.";errEl.style.display="block";return}
+  auth.signInWithEmailAndPassword(email,pass).then(()=>{
+    editing=true;sessionStorage.setItem("quadEdit","1");
+    closeLoginModal();
+    render();
+  }).catch(()=>{
+    errEl.textContent="Correo o contraseña incorrectos.";
+    errEl.style.display="block";
+  });
+}
+function saveAndView(){editing=false;sessionStorage.removeItem("quadEdit");closePanels();render();alert("Cambios guardados y modo consulta activado.")}
+function logout(){auth.signOut();editing=false;sessionStorage.removeItem("quadEdit");closePanels();render()}
+function exitApp(){
+  if(!confirm("¿Seguro que quieres salir del cuadrante?"))return;
+  window.close();
+  setTimeout(()=>{
+    document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial,sans-serif;font-size:18px;color:#333;text-align:center;padding:20px">Ya puedes cerrar esta pestaña.</div>';
+  },300);
+}
+function toggleSecurityMenu(){
+  const m=document.getElementById("securityMenu");
+  m.style.display=m.style.display==="block"?"none":"block";
+}
+function closeSecurityMenu(){document.getElementById("securityMenu").style.display="none"}
+document.addEventListener("click",e=>{
+  const wrap=document.getElementById("securityMenuWrap");
+  if(wrap&&!wrap.contains(e.target))closeSecurityMenu();
+});
+function openChangePassword(){
+  document.getElementById("oldPassword").value="";
+  document.getElementById("newPassword1").value="";
+  document.getElementById("newPassword2").value="";
+  document.getElementById("changePassError").style.display="none";
+  document.getElementById("changePassModal").style.display="flex";
+  document.getElementById("oldPassword").focus();
+}
+function closeChangePasswordModal(){document.getElementById("changePassModal").style.display="none"}
+function submitChangePassword(){
+  const oldPass=document.getElementById("oldPassword").value;
+  const p1=document.getElementById("newPassword1").value;
+  const p2=document.getElementById("newPassword2").value;
+  const errEl=document.getElementById("changePassError");
+  errEl.style.display="none";
+  const user=auth.currentUser;
+  if(!user){errEl.textContent="No hay ninguna sesión activa.";errEl.style.display="block";return}
+  if(!oldPass||!p1||!p2){errEl.textContent="Rellena los tres campos.";errEl.style.display="block";return}
+  if(p1.length<6){errEl.textContent="La nueva contraseña debe tener al menos 6 caracteres.";errEl.style.display="block";return}
+  if(p1!==p2){errEl.textContent="Las dos contraseñas nuevas no coinciden.";errEl.style.display="block";return}
+  const cred=firebase.auth.EmailAuthProvider.credential(user.email,oldPass);
+  user.reauthenticateWithCredential(cred).then(()=>user.updatePassword(p1)).then(()=>{
+    closeChangePasswordModal();
+    alert("Contraseña actualizada correctamente. Úsala la próxima vez que inicies sesión.");
+  }).catch(()=>{
+    errEl.textContent="La contraseña actual no es correcta o ha ocurrido un error.";
+    errEl.style.display="block";
+  });
+}
+function changeMonth(d){
+  const prevYear=year;
+  month+=d;
+  if(month>11){month=0;year++}
+  if(month<0){month=11;year--}
+  if(year!==prevYear)onYearChanged(year);
+  render();
+}
+function setYear(v){
+  const nv=+v;
+  if(nv!==year)onYearChanged(nv);
+  year=nv;
+  render();
+}
+function setMonth(v){month=+v;render()}
+function closePanels(){document.getElementById("workerPanel").style.display="none";document.getElementById("holidayPanel").style.display="none";document.getElementById("patternPanel").style.display="none";document.getElementById("statsPanel").style.display="none";document.getElementById("changeRequestPanel").style.display="none";document.getElementById("permissionRequestPanel").style.display="none";document.getElementById("printPanel").style.display="none"}
+function togglePrintPanel(){if(!editing)return;closePanels();initPrintSelectors();document.getElementById("printPanel").style.display="block"}
+function workerTypesAtDate(date){
+  // Los tipos también son efectivos por fecha para que el histórico conserve su configuración.
+  let bestDate="";
+  for(const rd of typesDateIndex){if(rd<=date&&rd>bestDate)bestDate=rd}
+  if(bestDate){try{const raw=q("q_worker_types_date_"+bestDate);if(raw)return JSON.parse(raw)}catch(e){}}
+  try{return JSON.parse(q("q_worker_types")||"{}")}catch(e){return {}}
+}
+function workerTypeAtDate(name,date){
+  const types=workerTypesAtDate(date);
+  const v=String(types[name]||"").toUpperCase();
+  return ["I","S","O","P","PP"].includes(v)?v:"";
+}
+function saveWorkerTypesAtDate(date,names,codesByName){
+  const out={};
+  names.forEach((name,i)=>{out[name]=codesByName[i]||""});
+  set("q_worker_types_date_"+date,JSON.stringify(out));
+  set("q_worker_types",JSON.stringify(out));
+}
+function workerEditorRows(){
+  const rows=document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]");
+  return [...rows].map((row,i)=>({
+    name:row.querySelector(".worker-name").value.trim().toUpperCase(),
+    code:row.querySelector(".worker-code").value.trim().toUpperCase(),
+    original:(row.dataset.original||"").trim().toUpperCase()
+  }));
+}
+function addWorkerRow(){
+  const box=document.getElementById("workerRows");
+  const rows=box.querySelectorAll(".worker-edit-row[data-worker-row]");
+  const i=rows.length;
+  const div=document.createElement("div");
+  div.className="worker-edit-row";div.dataset.workerRow="1";div.dataset.original="";
+  div.innerHTML=`<b>${i+1}.</b>
+    <select class="worker-code" title="Categoría: I, S, O, P o PP"><option value="">—</option><option value="I">I</option><option value="S">S</option><option value="O">O</option><option value="P">P</option><option value="PP">PP</option></select>
+    <input class="worker-name" placeholder="Nombre del trabajador">
+    <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,-1)" title="Subir">▲</button>
+    <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,1)" title="Bajar">▼</button>
+    <button class="danger delete-worker-btn" type="button" onclick="removeWorkerRow(this)">🗑 Eliminar</button>`;
+  box.appendChild(div);
+  refreshWorkerRowNumbers();
+}
+function removeWorkerRow(btn){
+  const row=btn.closest(".worker-edit-row");
+  if(row)row.remove();
+  refreshWorkerRowNumbers();
+}
+function moveWorkerRow(btn,dir){
+  const row=btn.closest(".worker-edit-row");
+  if(!row)return;
+  if(dir<0){
+    const prev=row.previousElementSibling;
+    if(prev&&prev.classList.contains("worker-edit-row"))row.parentElement.insertBefore(row,prev);
+  }else{
+    const next=row.nextElementSibling;
+    if(next&&next.classList.contains("worker-edit-row"))row.parentElement.insertBefore(next,row);
+  }
+  refreshWorkerRowNumbers();
+}
+function refreshWorkerRowNumbers(){
+  document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{
+    const n=row.querySelector("b");if(n)n.textContent=(i+1)+".";
+  });
+}
+function renderWorkerEditor(){
+  const ws=getWorkers(year,month);
+  const d=`${year}-${pad(month+1)}-01`;
+  const types=workerTypesAtDate(d);
+  document.getElementById("workerRows").innerHTML=
+    `<div class="row"><label><b>Aplicar cambios desde:</b> <input id="workerStart" type="date" value="${d}" min="2020-01-01"></label></div>`+
+    ws.map((w,i)=>`<div class="worker-edit-row" data-worker-row="1" data-original="${escapeHtml(w)}">
+      <b>${i+1}.</b>
+      <select class="worker-code" title="Categoría: I, S, O, P o PP"><option value="">—</option><option value="I">I</option><option value="S">S</option><option value="O">O</option><option value="P">P</option><option value="PP">PP</option></select>
+      <input class="worker-name" value="${escapeHtml(w)}">
+      <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,-1)" title="Subir">▲</button>
+      <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,1)" title="Bajar">▼</button>
+      <button class="danger delete-worker-btn" type="button" onclick="removeWorkerRow(this)">🗑 Eliminar</button>
+    </div>`).join("");
+  document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{
+    const name=row.querySelector(".worker-name").value.trim().toUpperCase();
+    const sel=row.querySelector(".worker-code");
+    if(sel)sel.value=String(types[name]||"").toUpperCase();
+  });
+  document.getElementById("workerPanel").style.display="block";
+}
+function toggleWorkers(){if(!editing)return;closePanels();renderWorkerEditor()}
+function transferWorkerShifts(oldName,newName,fromDate){
+  if(!oldName||!newName||oldName===newName)return;
+  const prefix="q_shift_",suffix="_"+oldName,toMove=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(!k||!k.startsWith(prefix)||!k.endsWith(suffix))continue;
+    const rest=k.slice(prefix.length,k.length-suffix.length),parts=rest.split("_");
+    if(parts.length!==3)continue;
+    const y=+parts[0],m=+parts[1],d=+parts[2];
+    if(Number.isNaN(y)||Number.isNaN(m)||Number.isNaN(d))continue;
+    let ds;try{ds=fmt(new Date(y,m,d))}catch(e){continue}
+    if(ds>=fromDate)toMove.push({k,y,m,d});
+  }
+  toMove.forEach(({k,y,m,d})=>{
+    const v=q(k);
+    if(v===null)return;
+    localStorage.removeItem(k);
+    setShift(y,m,d,newName,v);
+  });
+}
+function applyWorkers(){
+  const rows=workerEditorRows(),start=document.getElementById("workerStart").value;
+  if(!start){alert("Indica la fecha desde la que se aplicará el cambio.");return}
+  if(rows.some(r=>!r.name)){alert("Revisa los nombres: no pueden estar vacíos.");return}
+  if(new Set(rows.map(r=>r.name)).size!==rows.length){alert("Revisa los nombres: no pueden estar repetidos.");return}
+  if(rows.some(r=>r.code&&!["I","S","O","P","PP"].includes(r.code))){
+    alert("La categoría de cada trabajador solo puede ser I, S, O, P o PP.");
+    return;
+  }
+  const names=rows.map(r=>r.name), typeMap=rows.map(r=>r.code);
+  beginBatch();
+  set(rosterDateKey(start),JSON.stringify(names));
+  saveWorkerTypesAtDate(start,names,typeMap);
+  const changed=rows.some(r=>!r.original||r.original!==r.name);
+  rows.forEach(r=>{if(r.original&&r.original!==r.name)transferWorkerShifts(r.original,r.name,start)});
+  if(changed)rebalanceFridayOffsets(+start.slice(0,4));
+  endBatch();
+  closePanels();render();
+  alert(`Cambios aplicados desde ${start}. Los cuadrantes anteriores conservan los trabajadores y categorías anteriores.`);
+}
+function toggleHolidays(){if(!editing)return;closePanels();renderHolidayRows();document.getElementById("holidayPanel").style.display="block"}
+function renderHolidayRows(){
+ const excluded=new Set(excludedAutoHolidays(year));
+ const auto=[...rawAutoHolidayDates(year)].sort(),man=manualHolidays(year);let rows="";
+ auto.forEach(date=>{
+   const isExcluded=excluded.has(date);
+   rows+=`<div class="row"${isExcluded?' style="opacity:.5"':''}><input type="date" value="${date}" disabled><input value="${escapeHtml(holidayName(date))}" disabled><span class="small">Automático</span>${isExcluded?`<span class="badge">Eliminado</span><button onclick="restoreAutoHoliday('${date}')">↺ Restaurar</button>`:`<button class="danger" onclick="removeAutoHoliday('${date}')">Eliminar</button>`}</div>`;
+ });
+ man.forEach((x,i)=>{rows+=`<div class="row"><input id="hd_${i}" type="date" value="${x.date}"><input id="hn_${i}" value="${escapeHtml(x.name||"Festivo local")}"><button class="danger" onclick="deleteHoliday(${i})">Eliminar</button></div>`});
+ document.getElementById("holidayRows").innerHTML=rows||"<p>No hay festivos.</p>";
+}
+function removeAutoHoliday(date){
+  const ex=excludedAutoHolidays(year);
+  if(!ex.includes(date))ex.push(date);
+  set(excludedAutoHolidayKey(year),JSON.stringify(ex));
+  renderHolidayRows();render();
+}
+function restoreAutoHoliday(date){
+  const ex=excludedAutoHolidays(year).filter(d=>d!==date);
+  set(excludedAutoHolidayKey(year),JSON.stringify(ex));
+  renderHolidayRows();render();
+}
+function holidayName(d){const names={"01-01":"Año Nuevo","01-06":"Epifanía del Señor","05-01":"Fiesta del Trabajo","08-15":"Asunción de la Virgen","10-12":"Fiesta Nacional de España","11-01":"Todos los Santos","12-06":"Día de la Constitución","12-08":"Inmaculada Concepción","12-25":"Navidad","04-23":"Fiesta de Castilla y León"};return names[d.slice(5)]||"Festivo"}
+function addHolidayRow(){let man=manualHolidays(year);man.push({date:`${year}-${pad(month+1)}-01`,name:"Nuevo festivo"});set(manualHolidayKey(year),JSON.stringify(man));renderHolidayRows()}
+function deleteHoliday(i){let man=manualHolidays(year);man.splice(i,1);set(manualHolidayKey(year),JSON.stringify(man));renderHolidayRows();render()}
+function saveHolidays(){let old=manualHolidays(year),out=[];for(let i=0;i<old.length;i++){let date=document.getElementById(`hd_${i}`).value,name=document.getElementById(`hn_${i}`).value.trim()||"Festivo";if(date&&date.startsWith(String(year)))out.push({date,name})}set(manualHolidayKey(year),JSON.stringify(out));closePanels();render();alert("Festivos guardados para "+year+".")}
+function getFridayOffsets(){try{return JSON.parse(q("q_friday_offsets")||"{}")}catch(e){return{}}}
+function saveFridayOffsets(x){set("q_friday_offsets",JSON.stringify(x))}
+function effectiveFridayCount(y,w){const offsets=getFridayOffsets();return Math.max(0,countFridayT(y,w)-(offsets[w]||0))}
+function resetFridayOffsets(){
+  if(!editing)return;
+  if(!confirm("¿Resetear la compensación de viernes de tarde? El conteo del año actual volverá a ser el número real (igual que el cómputo general) y la compensación se irá reconstruyendo desde cero a partir de ahora."))return;
+  set("q_friday_offsets","{}");
+  set("q_friday_last_balance_year",String(new Date().getFullYear()));
+  render();
+  alert("Compensación de viernes reseteada.");
+}
+function rebalanceFridayOffsets(refYear){
+  const today=fmt(new Date());
+  const ws=getWorkersAtDate(today).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,today)));
+  if(!ws.length)return;
+  const offsets=getFridayOffsets();
+  const displayed=ws.map(w=>effectiveFridayCount(refYear,w));
+  const m=Math.min(...displayed);
+  if(m>0){
+    ws.forEach(w=>{offsets[w]=(offsets[w]||0)+m});
+    saveFridayOffsets(offsets);
+  }
+}
+function sopWorkersToday(){
+  const today=fmt(new Date());
+  return getWorkersAtDate(today).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,today)));
+}
+function countCodeYear(y,w,code){let total=0;for(let m=0;m<12;m++)for(let d=1;d<=daysInMonth(y,m);d++){if(getShift(y,m,d,w)===code)total++}return total}
+function toggleStatsMenu(){
+  const m=document.getElementById("statsMenu");
+  const willOpen=m.style.display!=="block";
+  document.getElementById("statMenuMornings").style.display=editing?"block":"none";
+  document.getElementById("statMenuAfternoons").style.display=editing?"block":"none";
+  document.getElementById("statMenuVacation").style.display=editing?"block":"none";
+  document.getElementById("statMenuAP").style.display=editing?"block":"none";
+  document.getElementById("statMenuINC").style.display=editing?"block":"none";
+  document.getElementById("statMenuResetFriday").style.display=editing?"block":"none";
+  m.style.display=willOpen?"block":"none";
+}
+function closeStatsMenu(){document.getElementById("statsMenu").style.display="none"}
+document.addEventListener("click",e=>{
+  const wrap=document.getElementById("statsMenuWrap");
+  if(wrap&&!wrap.contains(e.target))closeStatsMenu();
+});
+function statCardsHtml(rows){
+  if(!rows.length)return '<div class="small">No hay trabajadores con tipo S, O o P.</div>';
+  return '<div class="statgrid">'+rows.map(([name,value])=>`<div class="statcard"><b>${escapeHtml(name)}</b><br>${value}</div>`).join("")+'</div>';
+}
+function openStatView(kind){
+  closeStatsMenu();
+  const ws=sopWorkersToday();
+  let title="",rows=[];
+  if(kind==="fridayYear"){
+    title=`🗓️ Viernes de tarde en ${year}`;
+    rows=ws.map(w=>[w,effectiveFridayCount(year,w)]);
+  }else if(kind==="fridayAll"){
+    title="🗓️ Viernes de tarde — cómputo general";
+    rows=ws.map(w=>{let total=0;for(let y=2026;y<=Math.max(year,new Date().getFullYear());y++)total+=countFridayT(y,w);return[w,total]});
+  }else if(kind==="changes"){
+    title="🔄 Cambios solicitados (aceptados)";
+    const accepted=getChangeRequests().filter(r=>r.status==="accepted");
+    rows=ws.map(w=>[w,accepted.filter(r=>r.from===w).length]);
+  }else if(kind==="mornings"){
+    title=`🌅 Mañanas trabajadas en ${year}`;
+    rows=ws.map(w=>[w,countCodeYear(year,w,"M")]);
+  }else if(kind==="afternoons"){
+    title=`🌇 Tardes trabajadas en ${year}`;
+    rows=ws.map(w=>[w,countCodeYear(year,w,"T")]);
+  }else if(kind==="vacation"){
+    title=`🏖️ Vacaciones (V) disfrutadas en ${year}`;
+    rows=ws.map(w=>[w,countCodeYear(year,w,"V")]);
+  }else if(kind==="ap"){
+    title=`📋 Asuntos propios (AP) disfrutados en ${year}`;
+    rows=ws.map(w=>[w,countCodeYear(year,w,"AP")]);
+  }else if(kind==="inc"){
+    title=`⚠️ Incidencias (INC) realizadas en ${year}`;
+    rows=ws.map(w=>[w,countCodeYear(year,w,"INC")]);
+  }
+  document.getElementById("statViewTitle").textContent=title;
+  document.getElementById("statViewBody").innerHTML=statCardsHtml(rows);
+  document.getElementById("statViewModal").style.display="flex";
+}
+function closeStatView(){document.getElementById("statViewModal").style.display="none"}
+function onYearChanged(newYear){
+  const stored=q("q_friday_last_balance_year");
+  const last=stored?parseInt(stored,10):null;
+  if(last===null){set("q_friday_last_balance_year",String(newYear));return}
+  if(newYear>last){
+    for(let y=last;y<newYear;y++)rebalanceFridayOffsets(y);
+    set("q_friday_last_balance_year",String(newYear));
+  }
+}
+let scrolledToToday=false;
+function scrollToTodayOnce(){
+  if(scrolledToToday)return;
+  const now=new Date();
+  if(year!==now.getFullYear()||month!==now.getMonth())return;
+  const todayCell=document.querySelector("#grid th.today");
+  const wrap=todayCell?todayCell.closest(".tablewrap"):null;
+  if(!todayCell||!wrap)return;
+  scrolledToToday=true;
+  const workerColWidth=(document.querySelector("#grid th.worker")||{offsetWidth:0}).offsetWidth;
+  const target=todayCell.offsetLeft-workerColWidth-wrap.clientWidth/2+todayCell.offsetWidth/2;
+  wrap.scrollLeft=Math.max(0,target);
+}
+function checkYearRollover(){
+  const realYear=new Date().getFullYear();
+  onYearChanged(realYear);
+}
+
+</script>
+
+<div id="datedWorkerDeletePanel" class="panel" style="display:none;margin-top:14px">
+  <h3>Eliminar trabajador desde una fecha</h3>
+  <p class="small">El trabajador seguirá apareciendo en el histórico anterior y desaparecerá de la plantilla a partir de la fecha indicada.</p>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <select id="workerToDelete"></select>
+    <label>Desde: <input id="workerDeleteDate" type="date" value="2027-01-01"></label>
+    <button class="danger" type="button" onclick="deleteSelectedWorkerFromDate()">🗑 Eliminar trabajador</button>
+  </div>
+</div>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
+<script>document.addEventListener("DOMContentLoaded",renderWorkerDeletePanel);</script>
