@@ -17,7 +17,9 @@ header{background:#1f2937;color:#fff;padding:14px 24px;box-sizing:border-box}
 .header-inner{max-width:1700px;margin:0 auto}
 .header-title-row{display:flex;justify-content:center;margin-bottom:10px}
 .header-actions-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-start}
-h1{font-size:20px;margin:0;text-align:center}#companyTitle[contenteditable="true"]{outline:2px dashed #60a5fa;outline-offset:3px;cursor:text}.print-label{font-weight:bold}.print-btn{background:#e8eefc;font-weight:bold}@media print{body{background:#fff}header{display:block!important;background:#fff;color:#000;padding:0;text-align:center}header>span,header>button,.toolbar,.date-nav,#printPanel,.legend,#consultStats,#balanceAlert,.panel,.small{display:none!important}main{padding:0;max-width:none}.tablewrap{box-shadow:none;overflow:visible}table{min-width:0;width:100%;font-size:10px}th,td{font-size:10px}h1{display:block!important;color:#000;text-align:center;margin:0 0 10px}.worker{position:static!important} }button,select,input{font:inherit;padding:7px 10px;border:1px solid #bbb;border-radius:6px}button{cursor:pointer;background:#fff}
+h1{font-size:20px;margin:0;text-align:center}#companyTitle[contenteditable="true"]{outline:2px dashed #60a5fa;outline-offset:3px;cursor:text}.print-label{font-weight:bold}.print-btn{background:#e8eefc;font-weight:bold}@page{size:A4 landscape;margin:6mm}
+#printPdfArea{display:none}
+@media print{body{background:#fff}body>*:not(#printPdfArea){display:none!important}#printPdfArea{display:block!important;width:100%;color:#000}#printPdfArea .pdf-month{break-after:page;page-break-after:always;width:100%;box-sizing:border-box}#printPdfArea .pdf-month:last-child{break-after:auto;page-break-after:auto}#printPdfArea .pdf-title{text-align:center;font-size:16px;font-weight:bold;margin:0 0 5mm}#printPdfArea .tablewrap{box-shadow:none;overflow:visible;background:#fff;width:100%}#printPdfArea table{min-width:0!important;width:100%!important;font-size:8px!important;table-layout:fixed}#printPdfArea th,#printPdfArea td{font-size:8px!important;padding:2px!important;height:18px!important;white-space:nowrap}#printPdfArea th.worker,#printPdfArea td.worker{position:static!important;min-width:80px!important;width:110px!important;text-align:left}#printPdfArea .worker-code-cell{width:28px!important;min-width:28px!important}#printPdfArea .grid-shift-select{border:0!important;padding:0!important;background:transparent!important;appearance:none;-webkit-appearance:none} }button,select,input{font:inherit;padding:7px 10px;border:1px solid #bbb;border-radius:6px}button{cursor:pointer;background:#fff}
 main{padding:16px;max-width:1600px;margin:auto}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.month{font-weight:bold;min-width:180px;text-align:center}
 .date-nav{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
 .tablewrap{overflow:auto;-webkit-overflow-scrolling:touch;background:#fff;border-radius:8px;box-shadow:0 2px 10px #0001}
@@ -172,9 +174,9 @@ td:not(.worker-code-cell){font-size:13px}
 </div>
 <div class="toolbar">
 <button id="workersBtn" onclick="toggleWorkers()" style="display:none">👥 Trabajadores</button>
-<button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">🖨️ Imprimir</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+<button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">📄 PDF</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
-<div id="printPanel" class="panel"><h3>🖨️ Imprimir cuadrante</h3><div class="row"><label>Mes: <select id="printMonthSelect"></select></label><label>Año: <select id="printYearSelect"></select></label><button class="print-btn" onclick="printSelectedMonth()">🖨️ Imprimir / PDF</button><button onclick="closePanels()">Cerrar</button></div></div>
+<div id="printPanel" class="panel"><h3>📄 PDF del cuadrante</h3><div class="row"><label>Desde: <select id="printStartMonthSelect"></select></label><label><select id="printStartYearSelect"></select></label><span>Hasta:</span><label><select id="printEndMonthSelect"></select></label><label><select id="printEndYearSelect"></select></label><button class="print-btn" onclick="printSelectedRange()">📄 PDF</button><button onclick="closePanels()">Cerrar</button></div><div class="small">Puedes seleccionar un solo mes o un intervalo de meses. Cada mes se genera en una página independiente y el cuadrante se ajusta al ancho del PDF.</div></div>
 
 <div id="workerPanel" class="panel"><h3>Trabajadores</h3>
 <div class="small">Puedes añadir, eliminar, cambiar el nombre y asignar una categoría (I, S, O, P o PP). Los cambios se aplican desde la fecha indicada; el histórico anterior conserva la plantilla anterior.</div>
@@ -772,8 +774,51 @@ function renderStats(){
 function getCompanyName(){return q("q_company_name")||"Cuadrante de Turnos"}
 function saveCompanyName(){const el=document.getElementById("companyTitle");if(!el)return;const name=el.textContent.trim()||"Cuadrante de Turnos";set("q_company_name",name);el.textContent=name}
 function initCompanyTitle(){const el=document.getElementById("companyTitle");if(!el)return;el.textContent=getCompanyName();el.contentEditable=editing?"true":"false";if(!el.dataset.bound){el.dataset.bound="1";el.addEventListener("blur",saveCompanyName);el.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();el.blur()}})}}
-function initPrintSelectors(){const ms=document.getElementById("printMonthSelect"),ys=document.getElementById("printYearSelect");if(!ms||!ys)return;const oldM=ms.value,oldY=ys.value;ms.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");const years=[];for(let y=Math.min(2020,year-2);y<=Math.max(2035,year+3);y++)years.push(y);ys.innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join("");ms.value=oldM!==""?oldM:String(month);ys.value=oldY!==""&&years.includes(+oldY)?oldY:String(year)}
-function printSelectedMonth(){const ms=document.getElementById("printMonthSelect"),ys=document.getElementById("printYearSelect");if(!ms||!ys)return;const targetM=+ms.value,targetY=+ys.value;year=targetY;month=targetM;render();setTimeout(()=>window.print(),100)}
+function initPrintSelectors(){
+ const sm=document.getElementById("printStartMonthSelect"),sy=document.getElementById("printStartYearSelect"),em=document.getElementById("printEndMonthSelect"),ey=document.getElementById("printEndYearSelect");
+ if(!sm||!sy||!em||!ey)return;
+ const old={sm:sm.value,sy:sy.value,em:em.value,ey:ey.value};
+ sm.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+ em.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+ const minYear=Math.min(2026,year-2),maxYear=Math.max(new Date().getFullYear(),year)+3,years=[];
+ for(let y=minYear;y<=maxYear;y++)years.push(y);
+ const opts=years.map(y=>`<option value="${y}">${y}</option>`).join("");sy.innerHTML=opts;ey.innerHTML=opts;
+ sm.value=old.sm!==""?old.sm:String(month);sy.value=old.sy!==""&&years.includes(+old.sy)?old.sy:String(year);
+ em.value=old.em!==""?old.em:String(month);ey.value=old.ey!==""&&years.includes(+old.ey)?old.ey:String(year);
+}
+function selectedPrintRange(){
+ const sm=document.getElementById("printStartMonthSelect"),sy=document.getElementById("printStartYearSelect"),em=document.getElementById("printEndMonthSelect"),ey=document.getElementById("printEndYearSelect");
+ if(!sm||!sy||!em||!ey)return null;
+ let start=Number(sy.value)*12+Number(sm.value),end=Number(ey.value)*12+Number(em.value);
+ if(start>end){const a=start;start=end;end=a;}
+ return {start,end};
+}
+function printSelectedRange(){
+ if(!editing)return;
+ const range=selectedPrintRange();if(!range)return;
+ const area=document.getElementById("printPdfArea");if(!area)return;
+ const originalYear=year,originalMonth=month;
+ area.innerHTML="";
+ for(let idx=range.start;idx<=range.end;idx++){
+   const y=Math.floor(idx/12),m=idx%12;
+   year=y;month=m;render();
+   const clone=document.getElementById("grid").cloneNode(true);
+   clone.removeAttribute("id");
+   clone.querySelectorAll("select").forEach(sel=>{
+     const span=document.createElement("span");
+     span.textContent=sel.options[sel.selectedIndex]?.text||"";
+     span.className=sel.className.replace(/\bgrid-shift-select\b/g,"").trim();
+     sel.replaceWith(span);
+   });
+   const wrap=document.createElement("div");wrap.className="pdf-month";
+   const title=document.createElement("div");title.className="pdf-title";title.textContent=`${months[m]} ${y}`;
+   const tableWrap=document.createElement("div");tableWrap.className="tablewrap";tableWrap.appendChild(clone);
+   wrap.appendChild(title);wrap.appendChild(tableWrap);area.appendChild(wrap);
+ }
+ year=originalYear;month=originalMonth;render();
+ setTimeout(()=>window.print(),150);
+}
+window.addEventListener("afterprint",()=>{const area=document.getElementById("printPdfArea");if(area)area.innerHTML="";});
 function render(){
  initCompanyTitle();initPrintSelectors();
  document.getElementById("holidayYear").textContent=year;
