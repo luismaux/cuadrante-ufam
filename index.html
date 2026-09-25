@@ -17,9 +17,77 @@ header{background:#1f2937;color:#fff;padding:14px 24px;box-sizing:border-box}
 .header-inner{max-width:1700px;margin:0 auto}
 .header-title-row{display:flex;justify-content:center;margin-bottom:10px}
 .header-actions-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-start}
-h1{font-size:20px;margin:0;text-align:center}#companyTitle[contenteditable="true"]{outline:2px dashed #60a5fa;outline-offset:3px;cursor:text}.print-label{font-weight:bold}.print-btn{background:#e8eefc;font-weight:bold}@page{size:A4 landscape;margin:6mm}
-#printPdfArea{display:none}
-@media print{body{background:#fff}body>*:not(#printPdfArea){display:none!important}#printPdfArea{display:block!important;width:100%;color:#000}#printPdfArea .pdf-month{break-after:page;page-break-after:always;width:100%;box-sizing:border-box}#printPdfArea .pdf-month:last-child{break-after:auto;page-break-after:auto}#printPdfArea .pdf-title{text-align:center;font-size:16px;font-weight:bold;margin:0 0 5mm}#printPdfArea .tablewrap{box-shadow:none;overflow:visible;background:#fff;width:100%}#printPdfArea table{min-width:0!important;width:100%!important;font-size:8px!important;table-layout:fixed}#printPdfArea th,#printPdfArea td{font-size:8px!important;padding:2px!important;height:18px!important;white-space:nowrap}#printPdfArea th.worker,#printPdfArea td.worker{position:static!important;min-width:80px!important;width:110px!important;text-align:left}#printPdfArea .worker-code-cell{width:28px!important;min-width:28px!important}#printPdfArea .grid-shift-select{border:0!important;padding:0!important;background:transparent!important;appearance:none;-webkit-appearance:none} }button,select,input{font:inherit;padding:7px 10px;border:1px solid #bbb;border-radius:6px}button{cursor:pointer;background:#fff}
+h1{font-size:20px;margin:0;text-align:center}#companyTitle[contenteditable="true"]{outline:2px dashed #60a5fa;outline-offset:3px;cursor:text}.print-label{font-weight:bold}.print-btn{background:#e8eefc;font-weight:bold}@media print{
+@page{size:A4 landscape;margin:8mm}
+body{background:#fff!important;color:#14213d}
+header,.toolbar,.date-nav,#printPanel,.legend,#consultStats,#balanceAlert,.panel,.small,.scroll-hint,.tablewrap{display:none!important}
+main{display:block!important;max-width:none!important;margin:0!important;padding:0!important}
+#pdfPrintArea{display:block!important;width:100%!important}
+.pdf-page{display:block!important;page-break-after:always;break-after:page;padding:0;margin:0;box-sizing:border-box}
+.pdf-page:last-child{page-break-after:auto;break-after:auto}
+.pdf-header{display:flex!important;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 0 5mm;padding:0 1mm}
+.pdf-title{font-size:21px;font-weight:700;line-height:1.1;color:#15365f}
+.pdf-range{font-size:9px;margin-top:2px;color:#4e6b8d}
+.pdf-brand{font-size:12px;font-weight:700;color:#15365f;text-align:right;padding-top:2px}
+.pdf-month{background:#e5f0fa;border:1px solid #c5dced;border-radius:5px 5px 0 0;padding:4px 7px;color:#15365f;font-size:13px;font-weight:700;margin:0}
+.pdf-table-wrap{width:100%!important;overflow:visible!important;border:1px solid #c5dced;border-top:0;border-radius:0 0 5px 5px}
+.pdf-page table{width:100%!important;min-width:0!important;table-layout:fixed;border-collapse:collapse;font-size:7px;background:#fff}
+.pdf-page th,.pdf-page td{font-size:7px!important;padding:1.4px 1px!important;height:auto!important;line-height:1.05;border:1px solid #d3dce5;box-sizing:border-box}
+.pdf-page th:first-child,.pdf-page td:first-child{width:20mm!important;text-align:left}
+.pdf-page th.worker,.pdf-page td.worker{position:static!important;min-width:0!important;width:20mm!important;text-align:left;font-weight:700}
+.pdf-page th{background:#f0f5f9!important;color:#15365f;font-weight:700}
+.pdf-page th.holiday{background:#d9dee4!important;color:#4e5660}
+.pdf-page td.holiday{background:#e6e9ed!important;color:#555}
+.pdf-page tr.worker-row-secondary td{background:#e5e8ec!important}
+.pdf-page tr.worker-row-secondary td.worker{background:#d7dce2!important}
+.pdf-page select{display:none!important}.pdf-page .pdf-shift-value{display:inline!important}
+.pdf-page .status-AP{background:#fff3cd!important}.pdf-page .status-V{background:#d1e7dd!important}.pdf-page .status-SS{background:#cfe2ff!important}.pdf-page .status-NAV{background:#e2d9f3!important}.pdf-page .status-LC{background:#cff4fc!important}.pdf-page .status-N{background:#e9d5ff!important}.pdf-page .status-B{background:#f8d7da!important}.pdf-page .status-LE{background:#fde2e2!important}.pdf-page .status-CS{background:#d9f2e6!important}.pdf-page .status-INC{background:#fce4ec!important}
+.pdf-page .change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}.pdf-page .imbalance-col{box-shadow:none!important;background:#fff3cd!important}
+.pdf-legend{display:flex!important;align-items:center;gap:5px;flex-wrap:wrap;margin-top:4mm;padding:2mm 2mm;border:1px solid #d7e0e8;border-radius:5px;background:#fff;font-size:7px;color:#17324d}
+.pdf-legend-item{display:inline-flex!important;align-items:center;gap:2px;white-space:nowrap}.pdf-legend-badge{display:inline-block!important;min-width:15px;padding:1px 3px;border-radius:3px;text-align:center;font-weight:700;border:1px solid #ccd5de}
+.pdf-page.multi-month{padding:0 1mm!important}
+.pdf-page.multi-month .pdf-header{margin:0 0 3mm!important;padding:0!important}
+.pdf-page.multi-month .pdf-title{font-size:19px!important}
+.pdf-page.multi-month .pdf-range{font-size:8px!important}
+.pdf-page.multi-month .pdf-brand{font-size:11px!important}
+.pdf-month-block{margin:0 0 4mm!important;break-inside:avoid!important;page-break-inside:avoid!important}
+.pdf-month-block:last-of-type{margin-bottom:0!important;break-inside:avoid!important;page-break-inside:avoid!important}
+.pdf-month-block .pdf-month{padding:3px 6px!important;font-size:11px!important;border-radius:4px 4px 0 0!important}
+.pdf-month-block .pdf-table-wrap{border-radius:0 0 4px 4px!important}
+.pdf-month-block table{font-size:6.8px!important}
+.pdf-month-block th,.pdf-month-block td{font-size:6.8px!important;padding:1.5px .8px!important;line-height:1.08!important;min-height:7.5mm!important}
+.pdf-month-block th:first-child,.pdf-month-block td:first-child,.pdf-month-block th.worker,.pdf-month-block td.worker{width:20mm!important}
+.pdf-page.multi-month .pdf-legend{margin-top:2mm!important;padding:1.5mm!important;font-size:6.5px!important;gap:4px!important}
+.pdf-page.multi-month .pdf-legend-badge{min-width:14px!important;padding:.5px 2px!important}
+.pdf-page.five-month{padding:0 1mm!important}
+.pdf-page.five-month .pdf-header{margin:0 0 2mm!important;padding:0!important}
+.pdf-page.five-month .pdf-title{font-size:17px!important}
+.pdf-page.five-month .pdf-range{font-size:7px!important}
+.pdf-page.five-month .pdf-brand{font-size:10px!important}
+.pdf-page.five-month .pdf-month-block{margin:0 0 1.2mm!important}
+.pdf-page.five-month .pdf-month-block .pdf-month{padding:1px 5px!important;font-size:8.5px!important;border-radius:3px 3px 0 0!important}
+.pdf-page.five-month .pdf-month-block table{font-size:4.8px!important}
+.pdf-page.five-month .pdf-month-block th,.pdf-page.five-month .pdf-month-block td{font-size:4.8px!important;padding:.45px .35px!important;line-height:.9!important}
+.pdf-page.five-month .pdf-month-block th:first-child,.pdf-page.five-month .pdf-month-block td:first-child,.pdf-page.five-month .pdf-month-block th.worker,.pdf-page.five-month .pdf-month-block td.worker{width:20mm!important}
+.pdf-page.five-month .pdf-legend{margin-top:1mm!important;padding:1mm!important;font-size:5.5px!important;gap:3px!important}
+.pdf-page.five-month .pdf-legend-badge{min-width:12px!important;padding:.3px 1.5px!important}
+.pdf-page.four-month{padding:0 1mm!important}
+.pdf-page.four-month .pdf-header{margin:0 0 3mm!important;padding:0!important}
+.pdf-page.four-month .pdf-title{font-size:18px!important}
+.pdf-page.four-month .pdf-range{font-size:8px!important}
+.pdf-page.four-month .pdf-brand{font-size:10.5px!important}
+.pdf-page.four-month .pdf-month-block{margin:0 0 3.5mm!important}
+.pdf-page.four-month .pdf-month-block .pdf-month{padding:3px 6px!important;font-size:10.5px!important}
+.pdf-page.four-month .pdf-month-block table{font-size:6.6px!important}
+.pdf-page.four-month .pdf-month-block th,.pdf-page.four-month .pdf-month-block td{font-size:6.6px!important;padding:1.3px .7px!important;line-height:1.05!important;height:7mm!important}
+.pdf-page.four-month .pdf-month-block th:first-child,.pdf-page.four-month .pdf-month-block td:first-child,.pdf-page.four-month .pdf-month-block th.worker,.pdf-page.four-month .pdf-month-block td.worker{width:20mm!important}
+.pdf-page.four-month .pdf-legend{margin-top:1.5mm!important;padding:1.5mm!important;font-size:6.5px!important;gap:4px!important}
+.pdf-page.four-month .pdf-legend-badge{min-width:14px!important;padding:.5px 2px!important}
+
+
+.pdf-legend-holiday{background:#e6e9ed!important;color:#555}.pdf-legend-ap{background:#fff3cd!important}.pdf-legend-v{background:#d1e7dd!important}.pdf-legend-ss{background:#cfe2ff!important}.pdf-legend-nav{background:#e2d9f3!important}.pdf-legend-lc{background:#cff4fc!important}.pdf-legend-n{background:#e9d5ff!important}.pdf-legend-b{background:#f8d7da!important}.pdf-legend-le{background:#fde2e2!important}.pdf-legend-cs{background:#d9f2e6!important}.pdf-legend-m{background:#eef2f7!important}.pdf-legend-t{background:#eef2f7!important}.pdf-legend-l{background:#eef2f7!important}.pdf-legend-inc{background:#fce4ec!important}
+}
+button,select,input{font:inherit;padding:7px 10px;border:1px solid #bbb;border-radius:6px}button{cursor:pointer;background:#fff}
 main{padding:16px;max-width:1600px;margin:auto}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.month{font-weight:bold;min-width:180px;text-align:center}
 .date-nav{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
 .tablewrap{overflow:auto;-webkit-overflow-scrolling:touch;background:#fff;border-radius:8px;box-shadow:0 2px 10px #0001}
@@ -27,7 +95,7 @@ table{border-collapse:collapse;min-width:1100px;width:100%}th,td{border:1px soli
 th{background:#eef0f3;position:sticky;top:0;z-index:2}.today{outline:2px solid #111;outline-offset:-2px}th.worker,td.worker{position:sticky;left:0;background:#fff;z-index:3;text-align:left;font-weight:bold;min-width:125px}th.worker{background:#eef0f3;z-index:4}
 td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;color:#555}.inactive{background:#f7f7f7!important;color:#aaa}
 .legend{margin:12px 0;font-size:13px;display:flex;gap:8px;flex-wrap:wrap}.badge{padding:4px 8px;border-radius:5px;border:1px solid #ccc}
-.status-AP{background:#fff3cd}.status-V{background:#d1e7dd}.status-SS{background:#cfe2ff}.status-NAV{background:#e2d9f3}.status-LC{background:#cff4fc}.status-N{background:#e9d5ff}.status-B{background:#f8d7da}.status-LE{background:#fde2e2}.status-CS{background:#d9f2e6}
+.status-AP{background:#fff3cd}.status-V{background:#d1e7dd}.status-SS{background:#cfe2ff}.status-NAV{background:#e2d9f3}.status-LC{background:#cff4fc}.status-N{background:#e9d5ff}.status-B{background:#f8d7da}.status-LE{background:#fde2e2}.status-CS{background:#d9f2e6}.status-INC{background:#fce4ec}
 .worker-row-secondary{background:#e9ecef}.worker-row-secondary td.worker{background:#dde1e6}
 #editState{font-size:13px;padding:5px 8px;border-radius:5px;background:#fff;color:#333}.panel{display:none;background:#fff;border:1px solid #ddd;border-radius:8px;padding:14px;margin:12px 0}.panel h3{margin-top:0}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}.row input{min-width:160px}.danger{background:#f8d7da}.save{background:#d1e7dd;font-weight:bold}.small{font-size:12px;color:#666}
@@ -174,15 +242,17 @@ td:not(.worker-code-cell){font-size:13px}
 </div>
 <div class="toolbar">
 <button id="workersBtn" onclick="toggleWorkers()" style="display:none">👥 Trabajadores</button>
-<button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">📄 PDF</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+<button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">📄 PDF</button><button id="publishBtn" onclick="publishChanges()" style="display:none">📢 Publicar cambios</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
-<div id="printPanel" class="panel"><h3>📄 PDF del cuadrante</h3><div class="row"><label>Desde: <select id="printStartMonthSelect"></select></label><label><select id="printStartYearSelect"></select></label><span>Hasta:</span><label><select id="printEndMonthSelect"></select></label><label><select id="printEndYearSelect"></select></label><button class="print-btn" onclick="printSelectedRange()">📄 PDF</button><button onclick="closePanels()">Cerrar</button></div><div class="small">Puedes seleccionar un solo mes o un intervalo de meses. Cada mes se genera en una página independiente y el cuadrante se ajusta al ancho del PDF.</div></div>
+<div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta cinco meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
+<div id="pdfPrintArea" style="display:none"></div>
 
 <div id="workerPanel" class="panel"><h3>Trabajadores</h3>
 <div class="small">Puedes añadir, eliminar, cambiar el nombre y asignar una categoría (I, S, O, P o PP). Los cambios se aplican desde la fecha indicada; el histórico anterior conserva la plantilla anterior.</div>
 <div id="workerRows"></div>
 <button class="add-worker-btn" onclick="addWorkerRow()">＋ Añadir trabajador</button>
 <button onclick="applyWorkers()">✓ Aplicar cambios</button>
+<button onclick="manualCompensateFridayYear()" title="Resetea al trabajador nuevo a 0 y resta al resto la cantidad de viernes del trabajador anterior que menos tenga; también actualiza el cómputo general">⚖️ Compensar viernes (año actual)</button>
 <button onclick="closePanels()">Cerrar</button></div>
 
 
@@ -217,7 +287,7 @@ td:not(.worker-code-cell){font-size:13px}
 <div class="scroll-hint">👉 Desliza el cuadrante para ver más días</div>
 <div class="tablewrap"><table id="grid"></table></div>
 <div id="balanceAlert" class="panel balance-alert" style="display:none"></div>
-<div class="legend"><span class="badge">M Mañana</span><span class="badge">T Tarde</span><span class="badge">N Noche</span><span class="badge">AP Asuntos Propios</span><span class="badge">V Vacaciones</span><span class="badge">SS Semana Santa</span><span class="badge">NAV Navidad</span><span class="badge">LC Libre compensado</span><span class="badge">B Baja</span><span class="badge">LE Permiso enfermedad</span><span class="badge">CS Comisión</span><span class="badge">L Libre</span><span class="badge">INC Incidencias</span></div>
+<div class="legend"><span class="badge">M Mañana</span><span class="badge">T Tarde</span><span class="badge">N Noche</span><span class="badge">AP Ausencia</span><span class="badge">V Vacaciones</span><span class="badge">SS Semana Santa</span><span class="badge">NAV Navidad</span><span class="badge">LC Libre compensado</span><span class="badge">B Baja</span><span class="badge">LE Permiso enfermedad</span><span class="badge">CS Comisión</span><span class="badge">L Libre</span><span class="badge">INC Incidencias</span></div>
 </main>
 <script>
 /* ====================================================================
@@ -295,6 +365,7 @@ dbRef.on("value",snap=>{
     checkYearRollover();
   }
   render();
+  checkPublishNotice();
 },err=>{
   const el=document.getElementById("cloudLoading");
   if(el)el.innerHTML='<div style="font-size:28px">⚠️</div><div style="font-size:15px;color:#900;max-width:320px">No se pudo conectar con la base de datos.<br>Revisa la configuración de Firebase (firebaseConfig) y las reglas de acceso.</div>';
@@ -769,57 +840,88 @@ function countFridayT(y,w){let total=0;for(let m=0;m<12;m++)for(let d=1;d<=daysI
 function countMonthFridayT(y,m,w){let total=0;for(let d=1;d<=daysInMonth(y,m);d++){let dt=new Date(y,m,d);if(dt.getDay()===5&&getShift(y,m,d,w)==="T")total++}return total}
 function renderStats(){
  const ws=getWorkers(year,month);
- document.getElementById("statsRows").innerHTML='<div class="statgrid">'+ws.map(w=>`<div class="statcard"><b>${escapeHtml(w)}</b><br>Viernes T en ${year}: <b>${effectiveFridayCount(year,w)}</b><br>Viernes T en ${months[month]}: <b>${countMonthFridayT(year,month,w)}</b></div>`).join("")+'</div>';
+ document.getElementById("statsRows").innerHTML='<div class="statgrid">'+ws.map(w=>`<div class="statcard"><b>${escapeHtml(w)}</b><br>Viernes T en ${year}: <b>${effectiveFridayYearCount(year,w)}</b><br>Viernes T en ${months[month]}: <b>${countMonthFridayT(year,month,w)}</b></div>`).join("")+'</div>';
 }
 function getCompanyName(){return q("q_company_name")||"Cuadrante de Turnos"}
 function saveCompanyName(){const el=document.getElementById("companyTitle");if(!el)return;const name=el.textContent.trim()||"Cuadrante de Turnos";set("q_company_name",name);el.textContent=name}
 function initCompanyTitle(){const el=document.getElementById("companyTitle");if(!el)return;el.textContent=getCompanyName();el.contentEditable=editing?"true":"false";if(!el.dataset.bound){el.dataset.bound="1";el.addEventListener("blur",saveCompanyName);el.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();el.blur()}})}}
 function initPrintSelectors(){
- const sm=document.getElementById("printStartMonthSelect"),sy=document.getElementById("printStartYearSelect"),em=document.getElementById("printEndMonthSelect"),ey=document.getElementById("printEndYearSelect");
- if(!sm||!sy||!em||!ey)return;
- const old={sm:sm.value,sy:sy.value,em:em.value,ey:ey.value};
- sm.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
- em.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
- const minYear=Math.min(2026,year-2),maxYear=Math.max(new Date().getFullYear(),year)+3,years=[];
- for(let y=minYear;y<=maxYear;y++)years.push(y);
- const opts=years.map(y=>`<option value="${y}">${y}</option>`).join("");sy.innerHTML=opts;ey.innerHTML=opts;
- sm.value=old.sm!==""?old.sm:String(month);sy.value=old.sy!==""&&years.includes(+old.sy)?old.sy:String(year);
- em.value=old.em!==""?old.em:String(month);ey.value=old.ey!==""&&years.includes(+old.ey)?old.ey:String(year);
+  const sm=document.getElementById("printStartMonth"),sy=document.getElementById("printStartYear"),em=document.getElementById("printEndMonth"),ey=document.getElementById("printEndYear");
+  if(!sm||!sy||!em||!ey)return;
+  const old={sm:sm.value,sy:sy.value,em:em.value,ey:ey.value};
+  sm.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+  em.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+  const minY=Math.min(2020,year-2),maxY=Math.max(2035,year+3),years=[];
+  for(let y=minY;y<=maxY;y++)years.push(y);
+  const opts=years.map(y=>`<option value="${y}">${y}</option>`).join("");
+  sy.innerHTML=opts;ey.innerHTML=opts;
+  sm.value=old.sm!==""?old.sm:String(month);sy.value=old.sy!==""&&years.includes(+old.sy)?old.sy:String(year);
+  em.value=old.em!==""?old.em:String(month);ey.value=old.ey!==""&&years.includes(+old.ey)?old.ey:String(year);
 }
-function selectedPrintRange(){
- const sm=document.getElementById("printStartMonthSelect"),sy=document.getElementById("printStartYearSelect"),em=document.getElementById("printEndMonthSelect"),ey=document.getElementById("printEndYearSelect");
- if(!sm||!sy||!em||!ey)return null;
- let start=Number(sy.value)*12+Number(sm.value),end=Number(ey.value)*12+Number(em.value);
- if(start>end){const a=start;start=end;end=a;}
- return {start,end};
+function buildPrintTableForMonth(y,m){
+  const savedY=year,savedM=month;
+  year=y;month=m;render();
+  const source=document.getElementById("grid");
+  if(!source){year=savedY;month=savedM;render();return ""}
+  const table=source.cloneNode(true);
+  table.removeAttribute("id");
+  table.querySelectorAll("select.grid-shift-select").forEach(sel=>{
+    const span=document.createElement("span");span.className="pdf-shift-value";span.textContent=sel.options[sel.selectedIndex]?.text||"";sel.replaceWith(span);
+  });
+  // En el PDF no mostramos la columna "Tipo"; solo el nombre del trabajador y los turnos.
+  table.querySelectorAll("tr").forEach(row=>{
+    const first=row.firstElementChild;
+    if(first && first.classList.contains("worker-code-cell")) first.remove();
+  });
+  table.querySelectorAll(".today").forEach(el=>el.classList.remove("today"));
+  return table.outerHTML;
 }
-function printSelectedRange(){
- if(!editing)return;
- const range=selectedPrintRange();if(!range)return;
- const area=document.getElementById("printPdfArea");if(!area)return;
- const originalYear=year,originalMonth=month;
- area.innerHTML="";
- for(let idx=range.start;idx<=range.end;idx++){
-   const y=Math.floor(idx/12),m=idx%12;
-   year=y;month=m;render();
-   const clone=document.getElementById("grid").cloneNode(true);
-   clone.removeAttribute("id");
-   clone.querySelectorAll("select").forEach(sel=>{
-     const span=document.createElement("span");
-     span.textContent=sel.options[sel.selectedIndex]?.text||"";
-     span.className=sel.className.replace(/\bgrid-shift-select\b/g,"").trim();
-     sel.replaceWith(span);
-   });
-   const wrap=document.createElement("div");wrap.className="pdf-month";
-   const title=document.createElement("div");title.className="pdf-title";title.textContent=`${months[m]} ${y}`;
-   const tableWrap=document.createElement("div");tableWrap.className="tablewrap";tableWrap.appendChild(clone);
-   wrap.appendChild(title);wrap.appendChild(tableWrap);area.appendChild(wrap);
- }
- year=originalYear;month=originalMonth;render();
- setTimeout(()=>window.print(),150);
+function monthIndexValue(y,m){return y*12+m}
+function printSelectedMonths(){
+  const sm=document.getElementById("printStartMonth"),sy=document.getElementById("printStartYear"),em=document.getElementById("printEndMonth"),ey=document.getElementById("printEndYear");
+  if(!sm||!sy||!em||!ey)return;
+  const startY=+sy.value,startM=+sm.value,endY=+ey.value,endM=+em.value;
+  if(monthIndexValue(endY,endM)<monthIndexValue(startY,startM)){alert("El mes final no puede ser anterior al mes inicial.");return}
+  const originalY=year,originalM=month,area=document.getElementById("pdfPrintArea");
+  if(!area)return;
+  const pdfTitle=getCompanyName()||"Cuadrante de turnos";
+  const firstDate=new Date(startY,startM,1),lastDate=new Date(endY,endM+1,0);
+  const fmtPdfDate=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  const legend=[
+    ["M","Mañana","m"],["T","Tarde","t"],["N","Noche","n"],["AP","Ausencia","ap"],["V","Vacaciones","v"],["SS","Semana Santa","ss"],["NAV","Navidad","nav"],["LC","Libre compensado","lc"],["B","Baja","b"],["LE","Permiso enfermedad","le"],["CS","Comisión","cs"],["L","Libre","l"],["INC","Incidencias","inc"]
+  ];
+  const legendHtml=legend.map(([code,label,cls])=>`<span class="pdf-legend-item"><span class="pdf-legend-badge pdf-legend-${cls}">${code}</span>${label}</span>`).join("")+`<span class="pdf-legend-item"><span class="pdf-legend-badge pdf-legend-holiday"> </span>Festivo / Fin de semana</span>`;
+
+  // Se agrupan hasta 4 meses en cada página A4 horizontal para mejorar legibilidad.
+  const monthsToPrint=[];
+  for(let idx=monthIndexValue(startY,startM);idx<=monthIndexValue(endY,endM);idx++){
+    monthsToPrint.push({y:Math.floor(idx/12),m:idx%12});
+  }
+
+  let html="";
+  for(let pageStart=0;pageStart<monthsToPrint.length;pageStart+=4){
+    const pageMonths=monthsToPrint.slice(pageStart,pageStart+4);
+    const pageLabel=pageMonths.length===1
+      ? `${months[pageMonths[0].m]} ${pageMonths[0].y}`
+      : `${months[pageMonths[0].m]} ${pageMonths[0].y} – ${months[pageMonths[pageMonths.length-1].m]} ${pageMonths[pageMonths.length-1].y}`;
+    let blocks="";
+    pageMonths.forEach(({y,m})=>{
+      const table=buildPrintTableForMonth(y,m);
+      blocks+=`<div class="pdf-month-block"><div class="pdf-month">${escapeHtml(months[m])} ${y}</div><div class="pdf-table-wrap">${table}</div></div>`;
+    });
+    html+=`<section class="pdf-page multi-month four-month"><div class="pdf-header"><div><div class="pdf-title">${escapeHtml(pdfTitle)}</div><div class="pdf-range">Del ${fmtPdfDate(firstDate)} al ${fmtPdfDate(lastDate)}</div></div><div class="pdf-brand">${escapeHtml(pageLabel)}</div></div>${blocks}<div class="pdf-legend">${legendHtml}</div></section>`;
+  }
+
+  year=originalY;month=originalM;render();
+  area.innerHTML=html;
+  if(!html){alert("No se ha podido preparar el PDF.");return}
+  const cleanup=()=>{area.innerHTML="";area.style.display="none";window.removeEventListener("afterprint",cleanup);render()};
+  area.style.display="block";
+  window.addEventListener("afterprint",cleanup);
+  setTimeout(()=>{try{window.print()}catch(e){cleanup();alert("No se ha podido abrir la impresión del PDF. Usa un navegador con impresión habilitada.")}},250);
 }
-window.addEventListener("afterprint",()=>{const area=document.getElementById("printPdfArea");if(area)area.innerHTML="";});
 function render(){
+ checkYearRollover();
  initCompanyTitle();initPrintSelectors();
  document.getElementById("holidayYear").textContent=year;
  const ys=document.getElementById("yearSelect");
@@ -837,7 +939,7 @@ function render(){
    ms.dataset.filled="1";
  }
  ms.value=month;
- document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("workersBtn").style.display=editing?"inline-block":"none";document.getElementById("holidaysBtn").style.display=editing?"inline-block":"none";document.getElementById("patternsBtn").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("printBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Solicitar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("workersBtn").style.display=editing?"inline-block":"none";document.getElementById("holidaysBtn").style.display=editing?"inline-block":"none";document.getElementById("patternsBtn").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("printBtn").style.display=editing?"inline-block":"none";document.getElementById("publishBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Solicitar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
  const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
  const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display=(!editing&&isAdmin&&(pendingChanges||pendingPermissions))?"block":"none";
  const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
@@ -962,17 +1064,13 @@ function submitChangePassword(){
   });
 }
 function changeMonth(d){
-  const prevYear=year;
   month+=d;
   if(month>11){month=0;year++}
   if(month<0){month=11;year--}
-  if(year!==prevYear)onYearChanged(year);
   render();
 }
 function setYear(v){
-  const nv=+v;
-  if(nv!==year)onYearChanged(nv);
-  year=nv;
+  year=+v;
   render();
 }
 function setMonth(v){month=+v;render()}
@@ -1096,12 +1194,49 @@ function applyWorkers(){
   beginBatch();
   set(rosterDateKey(start),JSON.stringify(names));
   saveWorkerTypesAtDate(start,names,typeMap);
-  const changed=rows.some(r=>!r.original||r.original!==r.name);
   rows.forEach(r=>{if(r.original&&r.original!==r.name)transferWorkerShifts(r.original,r.name,start)});
-  if(changed)rebalanceFridayOffsets(+start.slice(0,4));
   endBatch();
-  closePanels();render();
+  render();
   alert(`Cambios aplicados desde ${start}. Los cuadrantes anteriores conservan los trabajadores y categorías anteriores.`);
+}
+function manualCompensateFridayYear(){
+  if(!editing)return;
+  const start=document.getElementById("workerStart").value;
+  if(!start){alert("Indica primero, arriba, la fecha desde la que se aplica el cambio de trabajadores.");return}
+  const refYear=+start.slice(0,4);
+  const previousDate=new Date(start+"T00:00:00");
+  previousDate.setDate(previousDate.getDate()-1);
+  const previousDateStr=fmt(previousDate);
+  const currentWorkers=getWorkersAtDate(start);
+  const previousWorkers=getWorkersAtDate(previousDateStr);
+  const currentEligible=currentWorkers.filter(w=>["S","O","P"].includes(workerTypeAtDate(w,start)));
+  const previousEligible=previousWorkers.filter(w=>["S","O","P"].includes(workerTypeAtDate(w,previousDateStr)));
+  const existing=currentEligible.filter(w=>previousEligible.includes(w));
+  const newcomers=currentEligible.filter(w=>!previousEligible.includes(w));
+  if(!existing.length){alert("No hay trabajadores anteriores con tipo S, O o P sobre los que aplicar la compensación.");return}
+  const yearOffsets=getFridayYearOffsets();
+  const displayed=existing.map(w=>Math.max(0,countFridayT(refYear,w)-(yearOffsets[w]||0)));
+  const amount=Math.min(...displayed);
+  if(amount<=0){
+    newcomers.forEach(w=>{yearOffsets[w]=countFridayT(refYear,w);});
+    saveFridayYearOffsets(yearOffsets);
+    const generalOffsets=getFridayGeneralOffsets();
+    newcomers.forEach(w=>{generalOffsets[w]=sumFridayRaw(w,refYear);});
+    saveFridayGeneralOffsets(generalOffsets);
+    render();
+    alert("El trabajador nuevo ya queda con 0. No había una cantidad positiva que compensar en los trabajadores anteriores.");
+    return;
+  }
+  if(!confirm(`¿Resetear la compensación de viernes desde ${start}? Se tomará como referencia el trabajador anterior con menos viernes (${amount}). A los trabajadores anteriores se les restarán ${amount}; el trabajador nuevo quedará en 0. La misma compensación se aplicará al cómputo general.`))return;
+  existing.forEach(w=>{yearOffsets[w]=(yearOffsets[w]||0)+amount;});
+  newcomers.forEach(w=>{yearOffsets[w]=countFridayT(refYear,w);});
+  saveFridayYearOffsets(yearOffsets);
+  const generalOffsets=getFridayGeneralOffsets();
+  existing.forEach(w=>{generalOffsets[w]=(generalOffsets[w]||0)+amount;});
+  newcomers.forEach(w=>{generalOffsets[w]=sumFridayRaw(w,refYear);});
+  saveFridayGeneralOffsets(generalOffsets);
+  render();
+  alert(`Compensación aplicada: ${amount} viernes. Se ha actualizado el cómputo anual y el cómputo general.`);
 }
 function toggleHolidays(){if(!editing)return;closePanels();renderHolidayRows();document.getElementById("holidayPanel").style.display="block"}
 function renderHolidayRows(){
@@ -1126,31 +1261,96 @@ function restoreAutoHoliday(date){
   renderHolidayRows();render();
 }
 function holidayName(d){const names={"01-01":"Año Nuevo","01-06":"Epifanía del Señor","05-01":"Fiesta del Trabajo","08-15":"Asunción de la Virgen","10-12":"Fiesta Nacional de España","11-01":"Todos los Santos","12-06":"Día de la Constitución","12-08":"Inmaculada Concepción","12-25":"Navidad","04-23":"Fiesta de Castilla y León"};return names[d.slice(5)]||"Festivo"}
-function addHolidayRow(){let man=manualHolidays(year);man.push({date:`${year}-${pad(month+1)}-01`,name:"Nuevo festivo"});set(manualHolidayKey(year),JSON.stringify(man));renderHolidayRows()}
-function deleteHoliday(i){let man=manualHolidays(year);man.splice(i,1);set(manualHolidayKey(year),JSON.stringify(man));renderHolidayRows();render()}
+function collectHolidayInputsFromDom(){
+  const container=document.getElementById("holidayRows");
+  if(!container)return manualHolidays(year);
+  const inputs=[...container.querySelectorAll('input[id^="hd_"]')];
+  if(!inputs.length)return manualHolidays(year);
+  return inputs.map(inp=>{
+    const i=inp.id.slice(3);
+    return {date:inp.value,name:(document.getElementById(`hn_${i}`)?.value||"").trim()||"Festivo"};
+  });
+}
+function addHolidayRow(){
+  const man=collectHolidayInputsFromDom();
+  man.push({date:`${year}-${pad(month+1)}-01`,name:"Nuevo festivo"});
+  set(manualHolidayKey(year),JSON.stringify(man));
+  renderHolidayRows();
+}
+function deleteHoliday(i){
+  const man=collectHolidayInputsFromDom();
+  man.splice(i,1);
+  set(manualHolidayKey(year),JSON.stringify(man));
+  renderHolidayRows();render();
+}
 function saveHolidays(){let old=manualHolidays(year),out=[];for(let i=0;i<old.length;i++){let date=document.getElementById(`hd_${i}`).value,name=document.getElementById(`hn_${i}`).value.trim()||"Festivo";if(date&&date.startsWith(String(year)))out.push({date,name})}set(manualHolidayKey(year),JSON.stringify(out));closePanels();render();alert("Festivos guardados para "+year+".")}
-function getFridayOffsets(){try{return JSON.parse(q("q_friday_offsets")||"{}")}catch(e){return{}}}
-function saveFridayOffsets(x){set("q_friday_offsets",JSON.stringify(x))}
-function effectiveFridayCount(y,w){const offsets=getFridayOffsets();return Math.max(0,countFridayT(y,w)-(offsets[w]||0))}
+function getFridayYearOffsets(){try{return JSON.parse(q("q_friday_year_offsets")||"{}")}catch(e){return{}}}
+function saveFridayYearOffsets(x){set("q_friday_year_offsets",JSON.stringify(x))}
+function getFridayGeneralOffsets(){try{return JSON.parse(q("q_friday_general_offsets")||"{}")}catch(e){return{}}}
+function saveFridayGeneralOffsets(x){set("q_friday_general_offsets",JSON.stringify(x))}
+function effectiveFridayYearCount(y,w){const offsets=getFridayYearOffsets();return Math.max(0,countFridayT(y,w)-(offsets[w]||0))}
+function sumFridayRaw(w,uptoYear){let total=0;for(let y=2026;y<=uptoYear;y++)total+=countFridayT(y,w);return total}
+function effectiveFridayGeneralCount(w,uptoYear){const offsets=getFridayGeneralOffsets();return Math.max(0,sumFridayRaw(w,uptoYear)-(offsets[w]||0))}
 function resetFridayOffsets(){
   if(!editing)return;
-  if(!confirm("¿Resetear la compensación de viernes de tarde? El conteo del año actual volverá a ser el número real (igual que el cómputo general) y la compensación se irá reconstruyendo desde cero a partir de ahora."))return;
-  set("q_friday_offsets","{}");
+  if(!confirm("¿Resetear toda la compensación de viernes de tarde (año actual y cómputo general)? Ambos conteos volverán a ser los números reales, y la compensación se irá reconstruyendo desde cero a partir de ahora."))return;
+  set("q_friday_year_offsets","{}");
+  set("q_friday_general_offsets","{}");
   set("q_friday_last_balance_year",String(new Date().getFullYear()));
   render();
   alert("Compensación de viernes reseteada.");
 }
-function rebalanceFridayOffsets(refYear){
-  const today=fmt(new Date());
-  const ws=getWorkersAtDate(today).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,today)));
+// Compensa el AÑO EN CURSO al incorporar trabajadores.
+// El mínimo se calcula SOLO entre quienes ya estaban antes de atDate.
+// Los trabajadores nuevos parten de 0 y no alteran el mínimo.
+function rebalanceFridayYearOffsets(refYear,atDate){
+  const dateForRoster=atDate||fmt(new Date());
+  const d=new Date(dateForRoster+"T00:00:00");
+  d.setDate(d.getDate()-1);
+  const previousDate=fmt(d);
+  const current=getWorkersAtDate(dateForRoster).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,dateForRoster)));
+  const previous=getWorkersAtDate(previousDate).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,previousDate)));
+  const existing=current.filter(w=>previous.includes(w));
+  const newcomers=current.filter(w=>!previous.includes(w));
+  if(!existing.length)return;
+  const offsets=getFridayYearOffsets();
+  const displayed=existing.map(w=>Math.max(0,countFridayT(refYear,w)-(offsets[w]||0)));
+  const m=Math.min(...displayed);
+  existing.forEach(w=>{offsets[w]=(offsets[w]||0)+m;});
+  newcomers.forEach(w=>{offsets[w]=countFridayT(refYear,w);});
+  saveFridayYearOffsets(offsets);
+}
+// Se dispara SOLO al pasar de un año a otro: compensa el CÓMPUTO GENERAL (acumulado de todos los años)
+// para que no se desmadre la cifra con el paso del tiempo.
+function rebalanceFridayGeneralOffsets(refYear,atDate){
+  const dateForRoster=atDate||fmt(new Date());
+  const ws=getWorkersAtDate(dateForRoster).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,dateForRoster)));
   if(!ws.length)return;
-  const offsets=getFridayOffsets();
-  const displayed=ws.map(w=>effectiveFridayCount(refYear,w));
+  const offsets=getFridayGeneralOffsets();
+  const displayed=ws.map(w=>effectiveFridayGeneralCount(w,refYear));
   const m=Math.min(...displayed);
   if(m>0){
     ws.forEach(w=>{offsets[w]=(offsets[w]||0)+m});
-    saveFridayOffsets(offsets);
+    saveFridayGeneralOffsets(offsets);
   }
+}
+// Trabajadores que deben aparecer en Estadísticas para el año consultado.
+// Se incluye a cualquiera que haya estado activo en algún momento de ese año,
+// de modo que un trabajador incorporado a mitad de año aparece desde su fecha
+// de incorporación y no queda oculto por no ser trabajador "de hoy".
+function sopWorkersForStatYear(statYear){
+  const seen=new Set();
+  for(let m=0;m<12;m++){
+    const first=fmt(new Date(statYear,m,1));
+    getWorkersAtDate(first).forEach(w=>{
+      if(["S","O","P"].includes(workerTypeAtDate(w,first)))seen.add(w);
+    });
+    const last=fmt(new Date(statYear,m,daysInMonth(statYear,m)));
+    getWorkersAtDate(last).forEach(w=>{
+      if(["S","O","P"].includes(workerTypeAtDate(w,last)))seen.add(w);
+    });
+  }
+  return [...seen];
 }
 function sopWorkersToday(){
   const today=fmt(new Date());
@@ -1179,14 +1379,14 @@ function statCardsHtml(rows){
 }
 function openStatView(kind){
   closeStatsMenu();
-  const ws=sopWorkersToday();
+  const ws=sopWorkersForStatYear(year);
   let title="",rows=[];
   if(kind==="fridayYear"){
     title=`🗓️ Viernes de tarde en ${year}`;
-    rows=ws.map(w=>[w,effectiveFridayCount(year,w)]);
+    rows=ws.map(w=>[w,effectiveFridayYearCount(year,w)]);
   }else if(kind==="fridayAll"){
     title="🗓️ Viernes de tarde — cómputo general";
-    rows=ws.map(w=>{let total=0;for(let y=2026;y<=Math.max(year,new Date().getFullYear());y++)total+=countFridayT(y,w);return[w,total]});
+    rows=ws.map(w=>[w,effectiveFridayGeneralCount(w,Math.max(year,new Date().getFullYear()))]);
   }else if(kind==="changes"){
     title="🔄 Cambios solicitados (aceptados)";
     const accepted=getChangeRequests().filter(r=>r.status==="accepted");
@@ -1212,12 +1412,17 @@ function openStatView(kind){
   document.getElementById("statViewModal").style.display="flex";
 }
 function closeStatView(){document.getElementById("statViewModal").style.display="none"}
+// IMPORTANTE: esta función solo debe invocarse con el año REAL del calendario
+// (ver checkYearRollover). No debe llamarse nunca desde changeMonth/setYear,
+// o el simple hecho de navegar por el cuadrante hacia un año futuro dispararía
+// la compensación de forma prematura y "quemaría" el salto de año real.
 function onYearChanged(newYear){
   const stored=q("q_friday_last_balance_year");
   const last=stored?parseInt(stored,10):null;
   if(last===null){set("q_friday_last_balance_year",String(newYear));return}
   if(newYear>last){
-    for(let y=last;y<newYear;y++)rebalanceFridayOffsets(y);
+    for(let y=last;y<newYear;y++)rebalanceFridayGeneralOffsets(y,`${y}-12-31`);
+    set("q_friday_year_offsets","{}");
     set("q_friday_last_balance_year",String(newYear));
   }
 }
@@ -1250,6 +1455,94 @@ function checkYearRollover(){
     <button class="danger" type="button" onclick="deleteSelectedWorkerFromDate()">🗑 Eliminar trabajador</button>
   </div>
 </div>
+
+<div id="publishNoticeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:340px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <div style="font-size:34px;margin-bottom:6px">📢</div>
+    <h3 style="margin:0 0 8px">Cambios en el cuadrante</h3>
+    <p class="small" style="margin:0 0 16px">Se han realizado cambios en el cuadrante el día <b id="publishNoticeDate"></b>.</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="save" type="button" onclick="closePublishNotice()">Entendido</button>
+    </div>
+  </div>
+</div>
+<div id="installPromptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:340px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <div style="font-size:34px;margin-bottom:6px">📲</div>
+    <h3 style="margin:0 0 8px">Instalar Cuadrante</h3>
+    <p class="small" style="margin:0 0 16px">¿Quieres añadir un acceso directo de la aplicación a este dispositivo?</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button type="button" onclick="declineInstallPrompt()">No</button>
+      <button class="save" type="button" onclick="acceptInstallPrompt()">✓ Instalar</button>
+    </div>
+  </div>
+</div>
+<script>
+let deferredInstallPrompt=null;
+function isRunningStandalone(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;
+}
+window.addEventListener("beforeinstallprompt",e=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  if(isRunningStandalone())return;
+  let dismissed=false;
+  try{dismissed=sessionStorage.getItem("installPromptDismissed")==="1"}catch(err){}
+  if(dismissed)return;
+  document.getElementById("installPromptModal").style.display="flex";
+});
+function acceptInstallPrompt(){
+  document.getElementById("installPromptModal").style.display="none";
+  if(!deferredInstallPrompt)return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.finally(()=>{deferredInstallPrompt=null});
+}
+function declineInstallPrompt(){
+  document.getElementById("installPromptModal").style.display="none";
+  try{sessionStorage.setItem("installPromptDismissed","1")}catch(err){}
+}
+window.addEventListener("appinstalled",()=>{
+  document.getElementById("installPromptModal").style.display="none";
+  deferredInstallPrompt=null;
+});
+document.addEventListener("DOMContentLoaded",()=>{
+  try{
+    if(new URLSearchParams(location.search).get("verInstalarApp")==="1"){
+      document.getElementById("installPromptModal").style.display="flex";
+    }
+  }catch(err){}
+});
+</script>
+<script>
+let lastKnownPublishTs=null;
+function formatPublishDate(ts){
+  const d=new Date(Number(ts));
+  return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear();
+}
+function checkPublishNotice(){
+  const ts=q("q_last_publish_ts");
+  if(!ts||ts===lastKnownPublishTs)return;
+  lastKnownPublishTs=ts;
+  let seen=null;
+  try{seen=window.localStorage.getItem("q_seen_publish_ts")}catch(err){}
+  if(seen===ts)return;
+  document.getElementById("publishNoticeDate").textContent=formatPublishDate(ts);
+  document.getElementById("publishNoticeModal").style.display="flex";
+}
+function closePublishNotice(){
+  document.getElementById("publishNoticeModal").style.display="none";
+  if(lastKnownPublishTs){try{window.localStorage.setItem("q_seen_publish_ts",lastKnownPublishTs)}catch(err){}}
+}
+function publishChanges(){
+  if(!isAdmin)return;
+  if(!confirm("¿Publicar los cambios?\n\nA todos los trabajadores les aparecerá un aviso de que ha habido cambios la próxima vez que abran la aplicación."))return;
+  const ts=String(Date.now());
+  set("q_last_publish_ts",ts);
+  lastKnownPublishTs=ts;
+  try{window.localStorage.setItem("q_seen_publish_ts",ts)}catch(err){}
+  alert("Cambios publicados.");
+}
+</script>
 <script>
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
