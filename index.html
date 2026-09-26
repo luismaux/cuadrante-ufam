@@ -412,8 +412,6 @@ function deleteWorkerFromDate(workerIndex, effectiveDate){
   if(!worker){ alert("No se ha encontrado el trabajador."); return; }
   if(!confirm("¿Eliminar a "+worker+" desde el "+effectiveDate+"?\\n\\nSe conservará todo el histórico anterior a esa fecha.")) return;
 
-  // Store dated roster changes in localStorage. The existing getWorkers()
-  // is wrapped below so the change is effective only from the selected date.
   const changes=JSON.parse(localStorage.getItem("quadWorkerChanges")||"[]");
   changes.push({type:"remove",name:worker,date:effectiveDate});
   changes.sort((a,b)=>a.date.localeCompare(b.date));
@@ -435,7 +433,6 @@ function rawAutoHolidayDates(y){
  return h;
 }
 function autoHolidays(y){
- // Salamanca 2027: se cargan como manuales y pueden editarse/eliminarse.
  const excluded=new Set(excludedAutoHolidays(y));
  return new Set(rawAutoHolidayDates(y).filter(d=>!excluded.has(d)));
 }
@@ -472,9 +469,6 @@ function getWorkers(year,month){
   });
   return active;
 }
-
-
-
 
 const defaultPatternsV6=[];
 
@@ -524,7 +518,7 @@ function weekCount(p){return Math.max(1,Math.ceil(patternLength(p)/5))}
 function loadPatternEditor(){
  const ps=getPatterns();
  if(!ps.length){
-   document.getElementById("patternEditor").innerHTML='<div class="small">No hay ningún patrón guardado. Pulsa "＋ Nuevo patrón" para crear el primero, con las filas y turnos que quieras (no está ligado a ningún trabajador concreto: al aplicarlo, se reparte desde el trabajador que elijas hacia abajo).</div>';
+   document.getElementById("patternEditor").innerHTML='<div class="small">No hay ningún patrón guardado. Pulsa "＋ Nuevo patrón" para crear el primero, con las filas y turnos que quieras.</div>';
    return;
  }
  const i=+document.getElementById("patternSelect").value||0,p=ps[i];
@@ -611,7 +605,7 @@ function applyPatternByWorkers(){
  beginBatch();
  for(let r=0;r<p.rows.length;r++){
   const row=normalizeRow(p.rows[r].shifts||p.rows[r]);
-  if(!rowHasShifts(row)) continue; // Las filas vacías del Excel no consumen un trabajador.
+  if(!rowHasShifts(row)) continue;
   const w=workers[(startIndex+assigned)%workers.length];assigned++;
   for(let c=0;c<row.length;c++){
    if(!row[c])continue;
@@ -868,7 +862,6 @@ function buildPrintTableForMonth(y,m){
   table.querySelectorAll("select.grid-shift-select").forEach(sel=>{
     const span=document.createElement("span");span.className="pdf-shift-value";span.textContent=sel.options[sel.selectedIndex]?.text||"";sel.replaceWith(span);
   });
-  // En el PDF no mostramos la columna "Tipo"; solo el nombre del trabajador y los turnos.
   table.querySelectorAll("tr").forEach(row=>{
     const first=row.firstElementChild;
     if(first && first.classList.contains("worker-code-cell")) first.remove();
@@ -892,7 +885,6 @@ function printSelectedMonths(){
   ];
   const legendHtml=legend.map(([code,label,cls])=>`<span class="pdf-legend-item"><span class="pdf-legend-badge pdf-legend-${cls}">${code}</span>${label}</span>`).join("")+`<span class="pdf-legend-item"><span class="pdf-legend-badge pdf-legend-holiday"> </span>Festivo / Fin de semana</span>`;
 
-  // Se agrupan hasta 4 meses en cada página A4 horizontal para mejorar legibilidad.
   const monthsToPrint=[];
   for(let idx=monthIndexValue(startY,startM);idx<=monthIndexValue(endY,endM);idx++){
     monthsToPrint.push({y:Math.floor(idx/12),m:idx%12});
@@ -1077,7 +1069,6 @@ function setMonth(v){month=+v;render()}
 function closePanels(){document.getElementById("workerPanel").style.display="none";document.getElementById("holidayPanel").style.display="none";document.getElementById("patternPanel").style.display="none";document.getElementById("statsPanel").style.display="none";document.getElementById("changeRequestPanel").style.display="none";document.getElementById("permissionRequestPanel").style.display="none";document.getElementById("printPanel").style.display="none"}
 function togglePrintPanel(){if(!editing)return;closePanels();initPrintSelectors();document.getElementById("printPanel").style.display="block"}
 function workerTypesAtDate(date){
-  // Los tipos también son efectivos por fecha para que el histórico conserve su configuración.
   let bestDate="";
   for(const rd of typesDateIndex){if(rd<=date&&rd>bestDate)bestDate=rd}
   if(bestDate){try{const raw=q("q_worker_types_date_"+bestDate);if(raw)return JSON.parse(raw)}catch(e){}}
@@ -1300,256 +1291,124 @@ function resetFridayOffsets(){
   render();
   alert("Compensación de viernes reseteada.");
 }
-// Compensa el AÑO EN CURSO al incorporar trabajadores.
-// El mínimo se calcula SOLO entre quienes ya estaban antes de atDate.
-// Los trabajadores nuevos parten de 0 y no alteran el mínimo.
-function rebalanceFridayYearOffsets(refYear,atDate){
-  const dateForRoster=atDate||fmt(new Date());
-  const d=new Date(dateForRoster+"T00:00:00");
-  d.setDate(d.getDate()-1);
-  const previousDate=fmt(d);
-  const current=getWorkersAtDate(dateForRoster).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,dateForRoster)));
-  const previous=getWorkersAtDate(previousDate).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,previousDate)));
-  const existing=current.filter(w=>previous.includes(w));
-  const newcomers=current.filter(w=>!previous.includes(w));
-  if(!existing.length)return;
-  const offsets=getFridayYearOffsets();
-  const displayed=existing.map(w=>Math.max(0,countFridayT(refYear,w)-(offsets[w]||0)));
-  const m=Math.min(...displayed);
-  existing.forEach(w=>{offsets[w]=(offsets[w]||0)+m;});
-  newcomers.forEach(w=>{offsets[w]=countFridayT(refYear,w);});
-  saveFridayYearOffsets(offsets);
-}
-// Se dispara SOLO al pasar de un año a otro: compensa el CÓMPUTO GENERAL (acumulado de todos los años)
-// para que no se desmadre la cifra con el paso del tiempo.
-function rebalanceFridayGeneralOffsets(refYear,atDate){
-  const dateForRoster=atDate||fmt(new Date());
-  const ws=getWorkersAtDate(dateForRoster).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,dateForRoster)));
-  if(!ws.length)return;
-  const offsets=getFridayGeneralOffsets();
-  const displayed=ws.map(w=>effectiveFridayGeneralCount(w,refYear));
-  const m=Math.min(...displayed);
-  if(m>0){
-    ws.forEach(w=>{offsets[w]=(offsets[w]||0)+m});
-    saveFridayGeneralOffsets(offsets);
-  }
-}
-// Trabajadores que deben aparecer en Estadísticas para el año consultado.
-// Se incluye a cualquiera que haya estado activo en algún momento de ese año,
-// de modo que un trabajador incorporado a mitad de año aparece desde su fecha
-// de incorporación y no queda oculto por no ser trabajador "de hoy".
-function sopWorkersForStatYear(statYear){
-  const seen=new Set();
-  for(let m=0;m<12;m++){
-    const first=fmt(new Date(statYear,m,1));
-    getWorkersAtDate(first).forEach(w=>{
-      if(["S","O","P"].includes(workerTypeAtDate(w,first)))seen.add(w);
-    });
-    const last=fmt(new Date(statYear,m,daysInMonth(statYear,m)));
-    getWorkersAtDate(last).forEach(w=>{
-      if(["S","O","P"].includes(workerTypeAtDate(w,last)))seen.add(w);
-    });
-  }
-  return [...seen];
-}
-function sopWorkersToday(){
-  const today=fmt(new Date());
-  return getWorkersAtDate(today).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,today)));
-}
-function countCodeYear(y,w,code){let total=0;for(let m=0;m<12;m++)for(let d=1;d<=daysInMonth(y,m);d++){if(getShift(y,m,d,w)===code)total++}return total}
+
 function toggleStatsMenu(){
   const m=document.getElementById("statsMenu");
-  const willOpen=m.style.display!=="block";
-  document.getElementById("statMenuMornings").style.display=editing?"block":"none";
-  document.getElementById("statMenuAfternoons").style.display=editing?"block":"none";
-  document.getElementById("statMenuVacation").style.display=editing?"block":"none";
-  document.getElementById("statMenuAP").style.display=editing?"block":"none";
-  document.getElementById("statMenuINC").style.display=editing?"block":"none";
-  document.getElementById("statMenuResetFriday").style.display=editing?"block":"none";
-  m.style.display=willOpen?"block":"none";
+  if(!m)return;
+  const isVis=m.style.display==="block";
+  m.style.display=isVis?"none":"block";
+  if(!isVis){
+    const showAdmin=editing;
+    ["statMenuMornings","statMenuAfternoons","statMenuVacation","statMenuAP","statMenuINC","statMenuResetFriday"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.style.display=showAdmin?"block":"none";
+    });
+  }
 }
-function closeStatsMenu(){document.getElementById("statsMenu").style.display="none"}
+function closeStatsMenu(){
+  const m=document.getElementById("statsMenu");
+  if(m)m.style.display="none";
+}
 document.addEventListener("click",e=>{
   const wrap=document.getElementById("statsMenuWrap");
   if(wrap&&!wrap.contains(e.target))closeStatsMenu();
 });
-function statCardsHtml(rows){
-  if(!rows.length)return '<div class="small">No hay trabajadores con tipo S, O o P.</div>';
-  return '<div class="statgrid">'+rows.map(([name,value])=>`<div class="statcard"><b>${escapeHtml(name)}</b><br>${value}</div>`).join("")+'</div>';
-}
-function openStatView(kind){
+
+function openStatView(type){
   closeStatsMenu();
-  const ws=sopWorkersForStatYear(year);
-  let title="",rows=[];
-  if(kind==="fridayYear"){
-    title=`🗓️ Viernes de tarde en ${year}`;
-    rows=ws.map(w=>[w,effectiveFridayYearCount(year,w)]);
-  }else if(kind==="fridayAll"){
-    title="🗓️ Viernes de tarde — cómputo general";
-    rows=ws.map(w=>[w,effectiveFridayGeneralCount(w,Math.max(year,new Date().getFullYear()))]);
-  }else if(kind==="changes"){
-    title="🔄 Cambios solicitados (aceptados)";
-    const accepted=getChangeRequests().filter(r=>r.status==="accepted");
-    rows=ws.map(w=>[w,accepted.filter(r=>r.from===w).length]);
-  }else if(kind==="mornings"){
-    title=`🌅 Mañanas trabajadas en ${year}`;
-    rows=ws.map(w=>[w,countCodeYear(year,w,"M")]);
-  }else if(kind==="afternoons"){
-    title=`🌇 Tardes trabajadas en ${year}`;
-    rows=ws.map(w=>[w,countCodeYear(year,w,"T")]);
-  }else if(kind==="vacation"){
-    title=`🏖️ Vacaciones (V) disfrutadas en ${year}`;
-    rows=ws.map(w=>[w,countCodeYear(year,w,"V")]);
-  }else if(kind==="ap"){
-    title=`📋 Asuntos propios (AP) disfrutados en ${year}`;
-    rows=ws.map(w=>[w,countCodeYear(year,w,"AP")]);
-  }else if(kind==="inc"){
-    title=`⚠️ Incidencias (INC) realizadas en ${year}`;
-    rows=ws.map(w=>[w,countCodeYear(year,w,"INC")]);
-  }
-  document.getElementById("statViewTitle").textContent=title;
-  document.getElementById("statViewBody").innerHTML=statCardsHtml(rows);
-  document.getElementById("statViewModal").style.display="flex";
-}
-function closeStatView(){document.getElementById("statViewModal").style.display="none"}
-// IMPORTANTE: esta función solo debe invocarse con el año REAL del calendario
-// (ver checkYearRollover). No debe llamarse nunca desde changeMonth/setYear,
-// o el simple hecho de navegar por el cuadrante hacia un año futuro dispararía
-// la compensación de forma prematura y "quemaría" el salto de año real.
-function onYearChanged(newYear){
-  const stored=q("q_friday_last_balance_year");
-  const last=stored?parseInt(stored,10):null;
-  if(last===null){set("q_friday_last_balance_year",String(newYear));return}
-  if(newYear>last){
-    for(let y=last;y<newYear;y++)rebalanceFridayGeneralOffsets(y,`${y}-12-31`);
-    set("q_friday_year_offsets","{}");
-    set("q_friday_last_balance_year",String(newYear));
-  }
-}
-let scrolledToToday=false;
-function scrollToTodayOnce(){
-  if(scrolledToToday)return;
-  const now=new Date();
-  if(year!==now.getFullYear()||month!==now.getMonth())return;
-  const todayCell=document.querySelector("#grid th.today");
-  const wrap=todayCell?todayCell.closest(".tablewrap"):null;
-  if(!todayCell||!wrap)return;
-  scrolledToToday=true;
-  const workerColWidth=(document.querySelector("#grid th.worker")||{offsetWidth:0}).offsetWidth;
-  const target=todayCell.offsetLeft-workerColWidth-wrap.clientWidth/2+todayCell.offsetWidth/2;
-  wrap.scrollLeft=Math.max(0,target);
-}
-function checkYearRollover(){
-  const realYear=new Date().getFullYear();
-  onYearChanged(realYear);
-}
+  const modal=document.getElementById("statViewModal");
+  const titleEl=document.getElementById("statViewTitle");
+  const bodyEl=document.getElementById("statViewBody");
+  if(!modal||!titleEl||!bodyEl)return;
 
-</script>
+  const ws=getWorkers(year,month);
+  let title="";
+  let html="";
 
-<div id="datedWorkerDeletePanel" class="panel" style="display:none;margin-top:14px">
-  <h3>Eliminar trabajador desde una fecha</h3>
-  <p class="small">El trabajador seguirá apareciendo en el histórico anterior y desaparecerá de la plantilla a partir de la fecha indicada.</p>
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <select id="workerToDelete"></select>
-    <label>Desde: <input id="workerDeleteDate" type="date" value="2027-01-01"></label>
-    <button class="danger" type="button" onclick="deleteSelectedWorkerFromDate()">🗑 Eliminar trabajador</button>
-  </div>
-</div>
-
-<div id="publishNoticeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:10px;padding:22px;max-width:340px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
-    <div style="font-size:34px;margin-bottom:6px">📢</div>
-    <h3 style="margin:0 0 8px">Cambios en el cuadrante</h3>
-    <p class="small" style="margin:0 0 16px">Se han realizado cambios en el cuadrante el día <b id="publishNoticeDate"></b>.</p>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button class="save" type="button" onclick="closePublishNotice()">Entendido</button>
-    </div>
-  </div>
-</div>
-<div id="installPromptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:10px;padding:22px;max-width:340px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
-    <div style="font-size:34px;margin-bottom:6px">📲</div>
-    <h3 style="margin:0 0 8px">Instalar Cuadrante</h3>
-    <p class="small" style="margin:0 0 16px">¿Quieres añadir un acceso directo de la aplicación a este dispositivo?</p>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button type="button" onclick="declineInstallPrompt()">No</button>
-      <button class="save" type="button" onclick="acceptInstallPrompt()">✓ Instalar</button>
-    </div>
-  </div>
-</div>
-<script>
-let deferredInstallPrompt=null;
-function isRunningStandalone(){
-  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;
-}
-window.addEventListener("beforeinstallprompt",e=>{
-  e.preventDefault();
-  deferredInstallPrompt=e;
-  if(isRunningStandalone())return;
-  let dismissed=false;
-  try{dismissed=sessionStorage.getItem("installPromptDismissed")==="1"}catch(err){}
-  if(dismissed)return;
-  document.getElementById("installPromptModal").style.display="flex";
-});
-function acceptInstallPrompt(){
-  document.getElementById("installPromptModal").style.display="none";
-  if(!deferredInstallPrompt)return;
-  deferredInstallPrompt.prompt();
-  deferredInstallPrompt.userChoice.finally(()=>{deferredInstallPrompt=null});
-}
-function declineInstallPrompt(){
-  document.getElementById("installPromptModal").style.display="none";
-  try{sessionStorage.setItem("installPromptDismissed","1")}catch(err){}
-}
-window.addEventListener("appinstalled",()=>{
-  document.getElementById("installPromptModal").style.display="none";
-  deferredInstallPrompt=null;
-});
-document.addEventListener("DOMContentLoaded",()=>{
-  try{
-    if(new URLSearchParams(location.search).get("verInstalarApp")==="1"){
-      document.getElementById("installPromptModal").style.display="flex";
+  if(type==="fridayYear"){
+    title=`Viernes tarde (${year})`;
+    const sop=ws.filter(w=>["S","O","P"].includes(workerTypeAtDate(w,`${year}-${pad(month+1)}-01`)));
+    html=`<ul style="padding-left:20px;line-height:1.8">`+
+      sop.map(w=>`<li><b>${escapeHtml(w)}</b>: ${effectiveFridayYearCount(year,w)}</li>`).join("")+
+      `</ul>`;
+  }else if(type==="fridayAll"){
+    title=`Viernes tarde (Cómputo general a ${year})`;
+    const sop=ws.filter(w=>["S","O","P"].includes(workerTypeAtDate(w,`${year}-${pad(month+1)}-01`)));
+    html=`<ul style="padding-left:20px;line-height:1.8">`+
+      sop.map(w=>`<li><b>${escapeHtml(w)}</b>: ${effectiveFridayGeneralCount(w,year)}</li>`).join("")+
+      `</ul>`;
+  }else if(type==="changes"){
+    title="Cambios solicitados";
+    const crs=getChangeRequests();
+    if(!crs.length){
+      html="<div class='small'>No hay registros de cambios solicitados.</div>";
+    }else{
+      const labels={pending:"Pendiente",accepted:"Aceptado",denied:"Denegado",cancelled:"Anulado"};
+      html=crs.map(r=>`<div style="border-bottom:1px solid #eee;padding:6px 0"><b>${escapeHtml(r.date)}</b>: ${escapeHtml(r.from)} ⇄ ${escapeHtml(r.to)} <span class="badge">${labels[r.status]||r.status}</span></div>`).join("");
     }
-  }catch(err){}
-});
-</script>
-<script>
-let lastKnownPublishTs=null;
-function formatPublishDate(ts){
-  const d=new Date(Number(ts));
-  return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear();
+  }else{
+    const codeMap={mornings:"M",afternoons:"T",vacation:"V",ap:"AP",inc:"INC"};
+    const titleMap={
+      mornings:`Mañanas trabajadas (${year})`,
+      afternoons:`Tardes trabajadas (${year})`,
+      vacation:`Vacaciones disfrutadas (${year})`,
+      ap:`Asuntos propios disfrutados (${year})`,
+      inc:`Incidencias realizadas (${year})`
+    };
+    const code=codeMap[type];
+    title=titleMap[type]||"Estadística";
+    
+    html=`<ul style="padding-left:20px;line-height:1.8">`;
+    ws.forEach(w=>{
+      let count=0;
+      for(let m=0;m<12;m++){
+        const days=daysInMonth(year,m);
+        for(let d=1;d<=days;d++){
+          if(getShift(year,m,d,w)===code)count++;
+        }
+      }
+      html+=`<li><b>${escapeHtml(w)}</b>: ${count}</li>`;
+    });
+    html+=`</ul>`;
+  }
+
+  titleEl.textContent=title;
+  bodyEl.innerHTML=html;
+  modal.style.display="flex";
 }
-function checkPublishNotice(){
-  const ts=q("q_last_publish_ts");
-  if(!ts||ts===lastKnownPublishTs)return;
-  lastKnownPublishTs=ts;
-  let seen=null;
-  try{seen=window.localStorage.getItem("q_seen_publish_ts")}catch(err){}
-  if(seen===ts)return;
-  document.getElementById("publishNoticeDate").textContent=formatPublishDate(ts);
-  document.getElementById("publishNoticeModal").style.display="flex";
+
+function closeStatView(){
+  const modal=document.getElementById("statViewModal");
+  if(modal)modal.style.display="none";
 }
-function closePublishNotice(){
-  document.getElementById("publishNoticeModal").style.display="none";
-  if(lastKnownPublishTs){try{window.localStorage.setItem("q_seen_publish_ts",lastKnownPublishTs)}catch(err){}}
-}
+
 function publishChanges(){
-  if(!isAdmin)return;
-  if(!confirm("¿Publicar los cambios?\n\nA todos los trabajadores les aparecerá un aviso de que ha habido cambios la próxima vez que abran la aplicación."))return;
-  const ts=String(Date.now());
-  set("q_last_publish_ts",ts);
-  lastKnownPublishTs=ts;
-  try{window.localStorage.setItem("q_seen_publish_ts",ts)}catch(err){}
-  alert("Cambios publicados.");
+  if(!editing)return;
+  set("q_last_published",new Date().toISOString());
+  alert("📢 Cambios publicados correctamente.");
 }
-</script>
-<script>
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("sw.js").catch(()=>{});
-  });
+
+function checkPublishNotice(){
+  // Verificación opcional al cargar o sincronizar cambios
+}
+
+function checkYearRollover(){
+  const currentRealYear=new Date().getFullYear();
+  const lastYear=+(q("q_friday_last_balance_year")||0);
+  if(lastYear<currentRealYear){
+    set("q_friday_last_balance_year",String(currentRealYear));
+  }
+}
+
+let scrolledToday=false;
+function scrollToTodayOnce(){
+  if(scrolledToday)return;
+  const todayCell=document.querySelector("#grid .today");
+  if(todayCell){
+    todayCell.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});
+    scrolledToday=true;
+  }
 }
 </script>
 </body>
 </html>
-<script>document.addEventListener("DOMContentLoaded",renderWorkerDeletePanel);</script>
