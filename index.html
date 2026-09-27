@@ -244,7 +244,7 @@ td:not(.worker-code-cell){font-size:13px}
 <button id="workersBtn" onclick="toggleWorkers()" style="display:none">👥 Trabajadores</button>
 <button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">📄 PDF</button><button id="publishBtn" onclick="publishChanges()" style="display:none">📢 Publicar cambios</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
-<div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta cinco meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
+<div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta dos meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
 <div id="pdfPrintArea" style="display:none"></div>
 
 <div id="workerPanel" class="panel"><h3>Trabajadores</h3>
@@ -257,7 +257,7 @@ td:not(.worker-code-cell){font-size:13px}
 
 
 <div id="patternPanel" class="panel"><h3>🔄 Patrones de turnos</h3>
-<div class="small"><b>Igual que en el Excel:</b> cada fila representa un trabajador y arriba aparecen solamente los días laborables. Sábado y domingo no forman parte de la secuencia. Puedes cambiar cualquier turno, el nombre de la fila, añadir o eliminar filas y crear otros patrones.</div>
+<div class="small"><b>Información:</b> Cada fila representa un trabajador y arriba aparecen solamente los días laborables. Sábado y domingo no forman parte de la secuencia. Puedes cambiar cualquier turno, el nombre de la fila, añadir o eliminar filas y crear otros patrones.</div>
 <div class="row"><label>Patrón: <select id="patternSelect" onchange="loadPatternEditor()"></select></label>
 <label>Empezar desde trabajador: <select id="patternWorker"></select></label>
 <label>Fecha de inicio: <input id="patternStart" type="date"></label>
@@ -271,23 +271,23 @@ td:not(.worker-code-cell){font-size:13px}
 <div id="statsRows"></div>
 </div>
 <div id="holidayPanel" class="panel"><h3>Festivos de <span id="holidayYear"></span></h3>
-<div class="small">Los festivos automáticos se calculan cada año. Puedes añadir, modificar o eliminar festivos manuales. Todos aparecen en gris, como sábados y domingos.</div>
+<div class="small">Los festivos automáticos se calculan cada año pudiéndolos eliminar si fuera necesario. Puedes añadir, modificar o eliminar festivos manuales. Todos aparecen en gris, como sábados y domingos.</div>
 <div id="holidayRows"></div>
 <button onclick="addHolidayRow()">＋ Añadir festivo</button>
 <button class="save" onclick="saveHolidays()">✓ Guardar festivos</button>
 <button onclick="closePanels()">Cerrar</button>
 </div>
 
-<div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Solicitar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede solicitar un cambio con otro trabajador de tipo S, O o P. Indica el día y los dos trabajadores.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>solicita cambiar con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Solicitar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
+<div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Solicitar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede solicitar un cambio con otro trabajador de los que aparecen en los desplegables. Indica el día y los dos trabajadores.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>solicita cambiar con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Solicitar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
 
-<div id="permissionRequestPanel" class="panel change-request-panel"><h3>📄 Solicitar permiso</h3><div id="permissionRequestFormWrap"><div class="small">Cualquier trabajador (I, S, O, P o PP) puede solicitar un permiso. Indica el trabajador, el periodo de fechas y el tipo de permiso.</div><div class="row"><label>Trabajador: <select id="permissionRequestWorker"></select></label><label>Desde: <input id="permissionRequestStart" type="date"></label><label>Hasta: <input id="permissionRequestEnd" type="date"></label><label>Tipo de permiso: <select id="permissionRequestType">
+<div id="permissionRequestPanel" class="panel change-request-panel"><h3>📄 Solicitar permiso</h3><div id="permissionRequestFormWrap"><div class="small">Cualquier trabajador del desplegable puede solicitar un permiso. Indica el trabajador, el periodo de fechas y el tipo de permiso.</div><div class="row"><label>Trabajador: <select id="permissionRequestWorker"></select></label><label>Desde: <input id="permissionRequestStart" type="date"></label><label>Hasta: <input id="permissionRequestEnd" type="date"></label><label>Tipo de permiso: <select id="permissionRequestType">
 <option value="AP">AP Asuntos propios</option><option value="V">V Vacaciones</option><option value="LC">LC Libre compensado</option><option value="NAV">NAV Navidad</option><option value="SS">SS Semana Santa</option>
 </select></label><button class="save" onclick="submitPermissionRequest()">✓ Solicitar</button></div></div><div id="permissionRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de permisos</summary><div id="permissionRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
 
 <div class="scroll-hint">👉 Desliza el cuadrante para ver más días</div>
 <div class="tablewrap"><table id="grid"></table></div>
 <div id="balanceAlert" class="panel balance-alert" style="display:none"></div>
-<div class="legend"><span class="badge">M Mañana</span><span class="badge">T Tarde</span><span class="badge">N Noche</span><span class="badge">AP Ausencia</span><span class="badge">V Vacaciones</span><span class="badge">SS Semana Santa</span><span class="badge">NAV Navidad</span><span class="badge">LC Libre compensado</span><span class="badge">B Baja</span><span class="badge">LE Permiso enfermedad</span><span class="badge">CS Comisión</span><span class="badge">INC Incidencias</span></div>
+<div class="legend"><span class="badge">M Mañana</span><span class="badge">T Tarde</span><span class="badge">N Noche</span><span class="badge">AP Asuntos Propios</span><span class="badge">V Vacaciones</span><span class="badge">SS Semana Santa</span><span class="badge">NAV Navidad</span><span class="badge">LC Libre compensado</span><span class="badge">B Baja</span><span class="badge">LE Permiso enfermedad</span><span class="badge">CS Comisión</span><span class="badge">INC Incidencias</span></div>
 </main>
 <script>
 /* ====================================================================
@@ -531,7 +531,7 @@ function loadPatternEditor(){
  const i=+document.getElementById("patternSelect").value||0,p=ps[i];
  const len=Math.max(5,patternLength(p)),weeks=Math.ceil(len/5);
  let html=`<div class="row"><label>Nombre del patrón: <input id="patternName" value="${escapeHtml(p.name)}"></label>
- <span class="small">Los nombres de la izquierda son los trabajadores actuales, en su orden. La secuencia de turnos se puede modificar libremente.</span></div>`;
+ <span class="small">La secuencia de turnos se puede modificar libremente.</span></div>`;
  html+=`<div class="tablewrap"><table class="pattern-table"><thead><tr><th class="pattern-name">Trabajador</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks},(_,w)=>`<th class="weekhead" colspan="5">${w+1}ª semana</th>`).join("")}</tr><tr><th class="pattern-name">Trabajador</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks*5},(_,c)=>`<th class="dayhead">${["L","M","X","J","V"][c%5]}<br>${(c%5)+1}</th>`).join("")}</tr></thead><tbody>`;
  const rows=p.rows.length?p.rows:[{name:"",shifts:Array(25).fill("")}];
  const rosterForNames=getWorkers(year,month);
@@ -543,7 +543,7 @@ function loadPatternEditor(){
   for(let c=0;c<weeks*5;c++){const v=row[c]||"";html+=`<td contenteditable="true" data-pr="${r}" data-pc="${c}">${escapeHtml(v)}</td>`;}
   html+=`</tr>`;
  }
- html+=`</tbody></table></div><div class="small">Turnos admitidos: M, T, N, AP, V, SS, NAV, LC, B, LE, CS y L. En el cuadrante principal también puedes editar sábados, domingos y festivos.</div>`;
+ html+=`</tbody></table></div><div class="small">Turnos admitidos: M, T, N, AP, V, SS, NAV, LC, B, LE y CS. En el cuadrante principal también puedes editar sábados, domingos y festivos.</div>`;
  document.getElementById("patternEditor").innerHTML=html;
  document.querySelectorAll("#patternEditor td[contenteditable=true]").forEach(td=>td.addEventListener("blur",()=>{
    let v=td.textContent.trim().toUpperCase();if(!codes.includes(v))v="";td.textContent=v;
@@ -889,7 +889,7 @@ function printSelectedMonths(){
   const firstDate=new Date(startY,startM,1),lastDate=new Date(endY,endM+1,0);
   const fmtPdfDate=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
   const legend=[
-    ["M","Mañana","m"],["T","Tarde","t"],["N","Noche","n"],["AP","Ausencia","ap"],["V","Vacaciones","v"],["SS","Semana Santa","ss"],["NAV","Navidad","nav"],["LC","Libre compensado","lc"],["B","Baja","b"],["LE","Permiso enfermedad","le"],["CS","Comisión","cs"],["INC","Incidencias","inc"]
+    ["M","Mañana","m"],["T","Tarde","t"],["N","Noche","n"],["AP","Asuntos Propios","ap"],["V","Vacaciones","v"],["SS","Semana Santa","ss"],["NAV","Navidad","nav"],["LC","Libre compensado","lc"],["B","Baja","b"],["LE","Permiso enfermedad","le"],["CS","Comisión","cs"],["INC","Incidencias","inc"]
   ];
   const legendHtml=legend.map(([code,label,cls])=>`<span class="pdf-legend-item"><span class="pdf-legend-badge pdf-legend-${cls}">${code}</span>${label}</span>`).join("")+`<span class="pdf-legend-item"><span class="pdf-legend-badge pdf-legend-holiday"> </span>Festivo / Fin de semana</span>`;
 
@@ -1214,7 +1214,7 @@ function manualCompensateFridayYear(){
   const previousEligible=previousWorkers.filter(w=>["S","O","P"].includes(workerTypeAtDate(w,previousDateStr)));
   const existing=currentEligible.filter(w=>previousEligible.includes(w));
   const newcomers=currentEligible.filter(w=>!previousEligible.includes(w));
-  if(!existing.length){alert("No hay trabajadores anteriores con tipo S, O o P sobre los que aplicar la compensación.");return}
+  if(!existing.length){alert("No hay trabajadores anteriores sobre los que aplicar la compensación.");return}
   const yearOffsets=getFridayYearOffsets();
   const displayed=existing.map(w=>Math.max(0,countFridayT(refYear,w)-(yearOffsets[w]||0)));
   const amount=Math.min(...displayed);
