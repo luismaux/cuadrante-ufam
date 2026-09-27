@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cuadrante de Turnos</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1f2937">
+<meta name="theme-color" content="#123a6b">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
@@ -13,11 +13,11 @@
 <meta name="apple-mobile-web-app-title" content="Cuadrante">
 <style>
 body{font-family:Arial,sans-serif;margin:0;background:#f5f6f8;color:#222}
-header{background:#1f2937;color:#fff;padding:14px 24px;box-sizing:border-box}
+header{background:#123a6b;color:#fff;padding:14px 24px;box-sizing:border-box}
 .header-inner{max-width:1700px;margin:0 auto}
 .header-title-row{display:flex;justify-content:center;margin-bottom:10px}
 .header-actions-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-start}
-h1{font-size:20px;margin:0;text-align:center}#companyTitle[contenteditable="true"]{outline:2px dashed #60a5fa;outline-offset:3px;cursor:text}.print-label{font-weight:bold}.print-btn{background:#e8eefc;font-weight:bold}@media print{
+h1{font-size:30px;font-weight:800;letter-spacing:.3px;margin:0;text-align:center}#companyTitle[contenteditable="true"]{outline:2px dashed #60a5fa;outline-offset:3px;cursor:text}.print-label{font-weight:bold}.print-btn{background:#e8eefc;font-weight:bold}@media print{
 @page{size:A4 landscape;margin:8mm}
 body{background:#fff!important;color:#14213d}
 header,.toolbar,.date-nav,#printPanel,.legend,#consultStats,#balanceAlert,.panel,.small,.scroll-hint,.tablewrap{display:none!important}
@@ -163,8 +163,8 @@ td:not(.worker-code-cell){font-size:13px}
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-<div id="cloudLoading" style="position:fixed;inset:0;background:#f5f6f8;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:9999;font-family:Arial,sans-serif;text-align:center;padding:20px">
-  <div style="font-size:28px">🔄</div>
+<div id="cloudLoading" style="position:fixed;inset:0;background:#f5f6f8;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9999;font-family:Arial,sans-serif;text-align:center;padding:20px">
+  <img src="icon-192.png" alt="Cuadrante" style="width:96px;height:96px;border-radius:20px;box-shadow:0 4px 14px rgba(0,0,0,.15)">
   <div style="font-size:15px;color:#333">Conectando con la base de datos...</div>
 </div>
 <div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
@@ -201,7 +201,7 @@ td:not(.worker-code-cell){font-size:13px}
   <div class="header-title-row"><h1 id="companyTitle" title="En modo edición puedes cambiar el nombre">Cuadrante de Turnos</h1></div>
   <div class="header-actions-row">
     <span id="editState">Consulta</span>
-    <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición<span id="editBtnDot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #1f2937"></span></button>
+    <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición<span id="editBtnDot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #123a6b"></span></button>
     <div id="statsMenuWrap" style="position:relative">
       <button id="statsMenuBtn" onclick="toggleStatsMenu()">📊 Estadísticas ▾</button>
       <div id="statsMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:280px;overflow:hidden">
@@ -1069,12 +1069,18 @@ function changeMonth(d){
   if(month>11){month=0;year++}
   if(month<0){month=11;year--}
   render();
+  resetGridScroll();
 }
 function setYear(v){
   year=+v;
   render();
+  resetGridScroll();
 }
-function setMonth(v){month=+v;render()}
+function setMonth(v){month=+v;render();resetGridScroll()}
+function resetGridScroll(){
+  const wrap=document.querySelector("#grid")?.closest(".tablewrap");
+  if(wrap)wrap.scrollLeft=0;
+}
 function closePanels(){document.getElementById("workerPanel").style.display="none";document.getElementById("holidayPanel").style.display="none";document.getElementById("patternPanel").style.display="none";document.getElementById("statsPanel").style.display="none";document.getElementById("changeRequestPanel").style.display="none";document.getElementById("permissionRequestPanel").style.display="none";document.getElementById("printPanel").style.display="none"}
 function togglePrintPanel(){if(!editing)return;closePanels();initPrintSelectors();document.getElementById("printPanel").style.display="block"}
 function workerTypesAtDate(date){
