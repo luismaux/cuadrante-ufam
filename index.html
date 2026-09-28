@@ -381,7 +381,7 @@ auth.onAuthStateChanged(user=>{
   }
   if(appInitialized)render();
 });
-const initialWorkers=["ISABEL","CARLOS","LUISMA","CONCHI","CAYETANO","FELIX","RIVERO","BEATRIZ","ANTONIO","JULIA"];
+const initialWorkers=[];
 const codes=["","M","T","N","AP","V","SS","NAV","LC","B","LE","CS","INC"];
 const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 let year=new Date().getFullYear(),month=new Date().getMonth(),editing=false;
@@ -1146,10 +1146,13 @@ function refreshWorkerRowNumbers(){
     const n=row.querySelector("b");if(n)n.textContent=(i+1)+".";
   });
 }
+let workerEditorBase={names:[],types:{}};
 function renderWorkerEditor(){
   const ws=getWorkers(year,month);
-  const d=`${year}-${pad(month+1)}-01`;
+  // Si todavía no hay ningún trabajador guardado, se propone empezar el 01/01/2026.
+  const d=rosterDateIndex.length?`${year}-${pad(month+1)}-01`:"2026-01-01";
   const types=workerTypesAtDate(d);
+  workerEditorBase={names:ws.slice(),types:Object.fromEntries(ws.map(w=>[w,String(types[w]||"").toUpperCase()]))};
   document.getElementById("workerRows").innerHTML=
     `<div class="row"><label><b>Aplicar cambios desde:</b> <input id="workerStart" type="date" value="${d}" min="2020-01-01"></label></div>`+
     ws.map((w,i)=>`<div class="worker-edit-row" data-worker-row="1" data-original="${escapeHtml(w)}">
@@ -1188,6 +1191,32 @@ function transferWorkerShifts(oldName,newName,fromDate){
     setShift(y,m,d,newName,v);
   });
 }
+function propagateWorkerChangeForward(start,diff){
+  // Los cambios anteriores dejaron "fotos" de la plantilla en fechas posteriores (p. ej. 01/06, 01/07...).
+  // Aquí se les aplica la misma diferencia para que el cambio siga vigente desde 'start' en adelante.
+  const {renames,removed,added,typeChanges,newTypeOf}=diff;
+  rosterDateIndex.filter(d=>d>start).forEach(d=>{
+    let list;try{list=JSON.parse(q(rosterDateKey(d))||"[]")}catch(e){return}
+    if(!Array.isArray(list))return;
+    list=list.map(n=>renames[n]||n).filter(n=>!removed.includes(n));
+    added.forEach(n=>{if(!list.includes(n))list.push(n)});
+    set(rosterDateKey(d),JSON.stringify(list));
+  });
+  typesDateIndex.filter(d=>d>start).forEach(d=>{
+    const key="q_worker_types_date_"+d;
+    let t;try{t=JSON.parse(q(key)||"{}")}catch(e){return}
+    Object.keys(renames).forEach(o=>{if(o in t){t[renames[o]]=t[o];delete t[o]}});
+    removed.forEach(n=>{delete t[n]});
+    typeChanges.forEach(c=>{if((t[c.name]||"")===c.from)t[c.name]=c.to});
+    added.forEach(n=>{if(!(n in t))t[n]=newTypeOf[n]||""});
+    set(key,JSON.stringify(t));
+  });
+  // Las bajas programadas ("Eliminar desde...") también siguen al trabajador si cambia de nombre.
+  let changes;try{changes=JSON.parse(localStorage.getItem("quadWorkerChanges")||"[]")}catch(e){changes=[]}
+  let touched=false;
+  changes.forEach(c=>{if(renames[c.name]&&c.date>=start){c.name=renames[c.name];touched=true}});
+  if(touched)localStorage.setItem("quadWorkerChanges",JSON.stringify(changes));
+}
 function applyWorkers(){
   const rows=workerEditorRows(),start=document.getElementById("workerStart").value;
   if(!start){alert("Indica la fecha desde la que se aplicará el cambio.");return}
@@ -1198,13 +1227,25 @@ function applyWorkers(){
     return;
   }
   const names=rows.map(r=>r.name), typeMap=rows.map(r=>r.code);
+  // Diferencia entre lo que se cargó en el editor y lo que se guarda ahora.
+  const base=workerEditorBase;
+  const originals=new Set(rows.filter(r=>r.original).map(r=>r.original));
+  const renames={};rows.forEach(r=>{if(r.original&&r.original!==r.name)renames[r.original]=r.name});
+  const removed=base.names.filter(n=>!originals.has(n)&&!names.includes(n));
+  const added=rows.filter(r=>!r.original).map(r=>r.name);
+  const typeChanges=[];rows.forEach(r=>{if(r.original){const from=base.types[r.original]||"";if(from!==r.code)typeChanges.push({name:r.name,from,to:r.code})}});
+  const newTypeOf=Object.fromEntries(rows.map(r=>[r.name,r.code]));
   beginBatch();
   set(rosterDateKey(start),JSON.stringify(names));
   saveWorkerTypesAtDate(start,names,typeMap);
   rows.forEach(r=>{if(r.original&&r.original!==r.name)transferWorkerShifts(r.original,r.name,start)});
+  propagateWorkerChangeForward(start,{renames,removed,added,typeChanges,newTypeOf});
   endBatch();
+  // El editor sigue abierto: lo guardado pasa a ser el nuevo punto de partida.
+  document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{if(rows[i])row.dataset.original=rows[i].name});
+  workerEditorBase={names:names.slice(),types:Object.fromEntries(rows.map(r=>[r.name,r.code]))};
   render();
-  alert(`Cambios aplicados desde ${start}. Los cuadrantes anteriores conservan los trabajadores y categorías anteriores.`);
+  alert(`Cambios aplicados desde ${start}. Se mantienen en todos los meses siguientes; los cuadrantes anteriores conservan los trabajadores y categorías anteriores.`);
 }
 function manualCompensateFridayYear(){
   if(!editing)return;
