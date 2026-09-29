@@ -531,15 +531,13 @@ function loadPatternEditor(){
  const i=+document.getElementById("patternSelect").value||0,p=ps[i];
  const len=Math.max(5,patternLength(p)),weeks=Math.ceil(len/5);
  let html=`<div class="row"><label>Nombre del patrón: <input id="patternName" value="${escapeHtml(p.name)}"></label>
- <span class="small">La secuencia de turnos se puede modificar libremente.</span></div>`;
- html+=`<div class="tablewrap"><table class="pattern-table"><thead><tr><th class="pattern-name">Trabajador</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks},(_,w)=>`<th class="weekhead" colspan="5">${w+1}ª semana</th>`).join("")}</tr><tr><th class="pattern-name">Trabajador</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks*5},(_,c)=>`<th class="dayhead">${["L","M","X","J","V"][c%5]}<br>${(c%5)+1}</th>`).join("")}</tr></thead><tbody>`;
+ <span class="small">La secuencia de turnos se puede modificar libremente. Cada fila es un puesto por posición, no un trabajador concreto.</span></div>`;
+ html+=`<div class="tablewrap"><table class="pattern-table"><thead><tr><th class="pattern-name">Puesto</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks},(_,w)=>`<th class="weekhead" colspan="5">${w+1}ª semana</th>`).join("")}</tr><tr><th class="pattern-name">Puesto</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks*5},(_,c)=>`<th class="dayhead">${["L","M","X","J","V"][c%5]}<br>${(c%5)+1}</th>`).join("")}</tr></thead><tbody>`;
  const rows=p.rows.length?p.rows:[{name:"",shifts:Array(25).fill("")}];
- const rosterForNames=getWorkers(year,month);
  for(let r=0;r<rows.length;r++){
   const row=normalizeRow(rows[r].shifts||rows[r]);
-  const storedName=(rows[r]&&rows[r].name)||"";
-  const name=rosterForNames[r]||storedName||`Trabajador ${r+1}`;
-  html+=`<tr data-row="${r}"><td class="pattern-name" title="Trabajador en el orden actual">${escapeHtml(name)}</td><td class="pattern-action"><button type="button" class="danger delete-worker-btn" onclick="eliminarFilaPatron(this)">🗑 Eliminar</button></td>`;
+  const name=`Puesto ${r+1}`;
+  html+=`<tr data-row="${r}"><td class="pattern-name" title="Posición ${r+1} del patrón: al aplicarlo se reparte por orden, no por nombre">${escapeHtml(name)}</td><td class="pattern-action"><button type="button" class="danger delete-worker-btn" onclick="eliminarFilaPatron(this)">🗑 Eliminar</button></td>`;
   for(let c=0;c<weeks*5;c++){const v=row[c]||"";html+=`<td contenteditable="true" data-pr="${r}" data-pc="${c}">${escapeHtml(v)}</td>`;}
   html+=`</tr>`;
  }
@@ -549,11 +547,23 @@ function loadPatternEditor(){
    let v=td.textContent.trim().toUpperCase();if(!codes.includes(v))v="";td.textContent=v;
  }));
 }
+function refreshPatternWorkerOptions(){
+ const sw=document.getElementById("patternWorker"),startEl=document.getElementById("patternStart");
+ if(!sw||!startEl)return;
+ const prev=sw.value;
+ const ws=getWorkersAtDate(startEl.value||fmt(new Date()));
+ sw.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
+ if(ws.includes(prev))sw.value=prev;
+}
+function initPatternStartListener(){
+ const el=document.getElementById("patternStart");
+ if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",refreshPatternWorkerOptions)}
+}
 function togglePatterns(){
  if(!editing)return;closePanels();fillPatternSelect();
- const ws=getWorkers(year,month),sw=document.getElementById("patternWorker");
- sw.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
  document.getElementById("patternStart").value=fmt(mondayOf(`${year}-${pad(month+1)}-01`));
+ refreshPatternWorkerOptions();
+ initPatternStartListener();
  document.getElementById("skipHolidays").checked=false;
  loadPatternEditor();document.getElementById("patternPanel").style.display="block";
 }
@@ -561,9 +571,8 @@ function readPatternFromEditor(){
  const ps=getPatterns();
  if(!ps.length)return null;
  const i=+document.getElementById("patternSelect").value||0;
- const rosterForNames=getWorkers(year,month);
  const rows=[...document.querySelectorAll("#patternEditor tbody tr")].map((tr,r)=>{
-   const name=rosterForNames[r]||tr.querySelector('[data-role="name"]')?.textContent.trim()||`Fila ${r+1}`;
+   const name=`Puesto ${r+1}`;
    const shifts=[...tr.querySelectorAll('td[data-pr]')].map(td=>{let v=td.textContent.trim().toUpperCase();return codes.includes(v)?v:""});
    return {name,shifts};
  });
@@ -640,12 +649,13 @@ function isAcceptedChange(y,m,d,w){return q(`q_change_red_${y}_${m}_${d}_${w}`)=
 function resolveChangeRequest(id,status){
   const rs=getChangeRequests(),r=rs.find(x=>x.id===id);
   if(!r||r.status!=="pending")return;
+  beginBatch();
   if(status==="accepted"){
     const dt=new Date(r.date+"T00:00:00");
-    if(Number.isNaN(dt.getTime())){alert("La fecha del cambio no es válida.");return}
+    if(Number.isNaN(dt.getTime())){endBatch();alert("La fecha del cambio no es válida.");return}
     const y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate();
     const workers=getWorkersAtDate(r.date);
-    if(!workers.includes(r.from)||!workers.includes(r.to)){alert("Uno de los trabajadores ya no está activo en esa fecha.");return}
+    if(!workers.includes(r.from)||!workers.includes(r.to)){endBatch();alert("Uno de los trabajadores ya no está activo en esa fecha.");return}
     const a=getShift(y,m,d,r.from),b=getShift(y,m,d,r.to);
     setShift(y,m,d,r.from,b);
     setShift(y,m,d,r.to,a);
@@ -655,6 +665,7 @@ function resolveChangeRequest(id,status){
   }
   r.status=status;r.resolvedAt=new Date().toISOString();
   saveChangeRequests(rs);
+  endBatch();
   render();
   renderChangeRequestList();
   const formWrap=document.getElementById("changeRequestFormWrap");
@@ -665,6 +676,7 @@ function cancelChangeRequest(id){
   const rs=getChangeRequests(),r=rs.find(x=>x.id===id);
   if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
   if(!confirm("¿Anular esta solicitud de cambio? "+(r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"")))return;
+  beginBatch();
   if(r.status==="accepted"){
     const dt=new Date(r.date+"T00:00:00");
     if(!Number.isNaN(dt.getTime())){
@@ -677,6 +689,7 @@ function cancelChangeRequest(id){
   }
   r.status="cancelled";r.resolvedAt=new Date().toISOString();
   saveChangeRequests(rs);
+  endBatch();
   render();
   renderChangeRequestList();
   renderChangeRequestHistory();
@@ -963,7 +976,7 @@ function render(){
      let v=getShift(year,month,d,w),date=new Date(year,month,d),ds=fmt(date),offWeekend=date.getDay()===0||date.getDay()===6,off=offWeekend||hol.has(ds),active=workerSets[d-1].includes(w),imb=imbalanceDays.has(d);
      let sp=v&&["AP","V","SS","NAV","LC","N","B","LE","CS","INC"].includes(v)?`status-${v}`:"";const acceptedChange=isAcceptedChange(year,month,d,w);
      if(editing&&active){
-       const opts=codes.map(c=>`<option value="${escapeHtml(c)}"${c===v?" selected":""}>${escapeHtml(c||"—")}</option>`).join("");
+       const opts=(codes.includes(v)||!v?codes:[...codes,v]).map(c=>`<option value="${escapeHtml(c)}"${c===v?" selected":""}>${escapeHtml(c||"—")}</option>`).join("");
        s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${imb?" imbalance-col":""}" data-w="${escapeHtml(w)}" data-d="${d}"><select class="grid-shift-select ${sp}${acceptedChange?" change-red":""}${imb?" imbalance-col":""}" aria-label="Turno de ${escapeHtml(w)} día ${d}">${opts}</select></td>`;
      }else{
        s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${!active?" inactive":""}${imb?" imbalance-col":""}">${active?escapeHtml(v):""}</td>`;
@@ -1194,7 +1207,7 @@ function transferWorkerShifts(oldName,newName,fromDate){
 function propagateWorkerChangeForward(start,diff){
   // Los cambios anteriores dejaron "fotos" de la plantilla en fechas posteriores (p. ej. 01/06, 01/07...).
   // Aquí se les aplica la misma diferencia para que el cambio siga vigente desde 'start' en adelante.
-  const {renames,removed,added,typeChanges,newTypeOf}=diff;
+  const {renames,removed,added,typeChanges,newTypeOf,finalTypeOf}=diff;
   rosterDateIndex.filter(d=>d>start).forEach(d=>{
     let list;try{list=JSON.parse(q(rosterDateKey(d))||"[]")}catch(e){return}
     if(!Array.isArray(list))return;
@@ -1207,8 +1220,12 @@ function propagateWorkerChangeForward(start,diff){
     let t;try{t=JSON.parse(q(key)||"{}")}catch(e){return}
     Object.keys(renames).forEach(o=>{if(o in t){t[renames[o]]=t[o];delete t[o]}});
     removed.forEach(n=>{delete t[n]});
-    typeChanges.forEach(c=>{if((t[c.name]||"")===c.from)t[c.name]=c.to});
+    // Categoría cambiada: se aplica donde seguía igual que antes del cambio o donde estaba en blanco.
+    typeChanges.forEach(c=>{const cur=t[c.name]||"";if(cur===c.from||cur==="")t[c.name]=c.to});
     added.forEach(n=>{if(!(n in t))t[n]=newTypeOf[n]||""});
+    // Categorías que se quedaron en blanco en meses posteriores se rellenan con la vigente.
+    let laterRoster=[];try{laterRoster=JSON.parse(q(rosterDateKey(d))||"[]")}catch(e){}
+    Object.keys(finalTypeOf).forEach(n=>{if(finalTypeOf[n]&&!t[n]&&((n in t)||laterRoster.includes(n)))t[n]=finalTypeOf[n]});
     set(key,JSON.stringify(t));
   });
   // Las bajas programadas ("Eliminar desde...") también siguen al trabajador si cambia de nombre.
@@ -1226,24 +1243,38 @@ function applyWorkers(){
     alert("La categoría de cada trabajador solo puede ser I, S, O, P o PP.");
     return;
   }
-  const names=rows.map(r=>r.name), typeMap=rows.map(r=>r.code);
+  const names=rows.map(r=>r.name);
   // Diferencia entre lo que se cargó en el editor y lo que se guarda ahora.
   const base=workerEditorBase;
+  // Solo cuenta lo que el usuario ha tocado: una categoría sin tocar conserva la que ya estaba vigente en la fecha de inicio,
+  // así no se pisa con lo que se ve en otro mes (p. ej. un mes donde estaba en blanco).
+  const inForce=workerTypesAtDate(start);
+  const typeMap=rows.map(r=>{
+    const touched=r.original?(r.code!==(base.types[r.original]||"")):true;
+    if(touched)return r.code;
+    const cur=String(inForce[r.original]||"").toUpperCase();
+    return ["I","S","O","P","PP"].includes(cur)?cur:r.code;
+  });
   const originals=new Set(rows.filter(r=>r.original).map(r=>r.original));
   const renames={};rows.forEach(r=>{if(r.original&&r.original!==r.name)renames[r.original]=r.name});
   const removed=base.names.filter(n=>!originals.has(n)&&!names.includes(n));
   const added=rows.filter(r=>!r.original).map(r=>r.name);
   const typeChanges=[];rows.forEach(r=>{if(r.original){const from=base.types[r.original]||"";if(from!==r.code)typeChanges.push({name:r.name,from,to:r.code})}});
-  const newTypeOf=Object.fromEntries(rows.map(r=>[r.name,r.code]));
+  const finalTypeOf=Object.fromEntries(rows.map((r,i)=>[r.name,typeMap[i]]));
+  const newTypeOf=finalTypeOf;
   beginBatch();
   set(rosterDateKey(start),JSON.stringify(names));
   saveWorkerTypesAtDate(start,names,typeMap);
   rows.forEach(r=>{if(r.original&&r.original!==r.name)transferWorkerShifts(r.original,r.name,start)});
-  propagateWorkerChangeForward(start,{renames,removed,added,typeChanges,newTypeOf});
+  propagateWorkerChangeForward(start,{renames,removed,added,typeChanges,newTypeOf,finalTypeOf});
   endBatch();
   // El editor sigue abierto: lo guardado pasa a ser el nuevo punto de partida.
-  document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{if(rows[i])row.dataset.original=rows[i].name});
-  workerEditorBase={names:names.slice(),types:Object.fromEntries(rows.map(r=>[r.name,r.code]))};
+  document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{
+    if(!rows[i])return;
+    row.dataset.original=rows[i].name;
+    const sel=row.querySelector(".worker-code");if(sel)sel.value=typeMap[i]||"";
+  });
+  workerEditorBase={names:names.slice(),types:finalTypeOf};
   render();
   alert(`Cambios aplicados desde ${start}. Se mantienen en todos los meses siguientes; los cuadrantes anteriores conservan los trabajadores y categorías anteriores.`);
 }
