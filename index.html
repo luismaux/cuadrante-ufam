@@ -95,7 +95,7 @@ table{border-collapse:collapse;min-width:1100px;width:100%}th,td{border:1px soli
 th{background:#eef0f3;position:sticky;top:0;z-index:2}.today{outline:2px solid #111;outline-offset:-2px}th.worker,td.worker{position:sticky;left:0;background:#fff;z-index:3;text-align:left;font-weight:bold;min-width:125px}th.worker{background:#eef0f3;z-index:4}
 td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;color:#555}.inactive{background:#f7f7f7!important;color:#aaa}
 .legend{margin:12px 0;font-size:13px;display:flex;gap:8px;flex-wrap:wrap}.badge{padding:4px 8px;border-radius:5px;border:1px solid #ccc}
-.status-AP{background:#fff3cd}.status-V{background:#d1e7dd}.status-SS{background:#cfe2ff}.status-NAV{background:#e2d9f3}.status-LC{background:#cff4fc}.status-N{background:#e9d5ff}.status-B{background:#f8d7da}.status-LE{background:#fde2e2}.status-CS{background:#d9f2e6}.status-INC{background:#fce4ec}
+.status-AP{background:#fff3cd!important}.status-V{background:#d1e7dd!important}.status-SS{background:#cfe2ff!important}.status-NAV{background:#e2d9f3!important}.status-LC{background:#cff4fc!important}.status-N{background:#e9d5ff!important}.status-B{background:#f8d7da!important}.status-LE{background:#fde2e2!important}.status-CS{background:#d9f2e6!important}.status-INC{background:#fce4ec!important}
 .worker-row-secondary{background:#e9ecef}.worker-row-secondary td.worker{background:#dde1e6}
 #editState{font-size:13px;padding:5px 8px;border-radius:5px;background:#fff;color:#333}.panel{display:none;background:#fff;border:1px solid #ddd;border-radius:8px;padding:14px;margin:12px 0}.panel h3{margin-top:0}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}.row input{min-width:160px}.danger{background:#f8d7da}.save{background:#d1e7dd;font-weight:bold}.small{font-size:12px;color:#666}
@@ -110,7 +110,7 @@ td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;col
 .move-worker-btn:hover{background:#dde3ea}
 .worker-code{min-width:70px}.grid-shift-select{width:100%;min-width:42px;box-sizing:border-box;padding:5px 2px;border:0;border-radius:0;background:transparent;text-align:center;font-weight:inherit;font-size:12px;cursor:pointer}
 .grid-shift-select:focus{outline:2px solid #2563eb;outline-offset:-2px}
-.grid-shift-select.status-AP{background:#fff3cd}.grid-shift-select.status-V{background:#d1e7dd}.grid-shift-select.status-SS{background:#cfe2ff}.grid-shift-select.status-NAV{background:#e2d9f3}.grid-shift-select.status-LC{background:#cff4fc}.grid-shift-select.status-N{background:#e9d5ff}.grid-shift-select.status-B{background:#f8d7da}.grid-shift-select.status-LE{background:#fde2e2}.grid-shift-select.status-CS{background:#d9f2e6}.grid-shift-select.status-INC{background:#fce4ec}.grid-shift-select.change-red{background:#f44336!important;color:#111!important;font-weight:bold}.change-red{background:#f44336!important;color:#111!important}
+.grid-shift-select.status-AP{background:#fff3cd!important}.grid-shift-select.status-V{background:#d1e7dd!important}.grid-shift-select.status-SS{background:#cfe2ff!important}.grid-shift-select.status-NAV{background:#e2d9f3!important}.grid-shift-select.status-LC{background:#cff4fc!important}.grid-shift-select.status-N{background:#e9d5ff!important}.grid-shift-select.status-B{background:#f8d7da!important}.grid-shift-select.status-LE{background:#fde2e2!important}.grid-shift-select.status-CS{background:#d9f2e6!important}.grid-shift-select.status-INC{background:#fce4ec!important}.grid-shift-select.change-red{background:#f44336!important;color:#111!important;font-weight:bold}.change-red{background:#f44336!important;color:#111!important}
 
 .worker-code{width:34px;min-width:34px;max-width:34px;text-align:center;font-weight:bold;text-transform:uppercase}
 .worker-code-cell{width:34px;min-width:34px;text-align:center;font-weight:bold}
@@ -242,7 +242,7 @@ td:not(.worker-code-cell){font-size:13px}
 </div>
 <div class="toolbar">
 <button id="workersBtn" onclick="toggleWorkers()" style="display:none">👥 Trabajadores</button>
-<button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">📄 PDF</button><button id="publishBtn" onclick="publishChanges()" style="display:none">📢 Publicar cambios</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+<button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">📄 PDF</button><button id="publishBtn" onclick="publishChanges()" style="display:none">📢 Publicar cambios</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
 <div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta dos meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
 <div id="pdfPrintArea" style="display:none"></div>
@@ -367,6 +367,7 @@ dbRef.on("value",snap=>{
   }
   render();
   checkPublishNotice();
+  checkNoticeAlert();
 },err=>{
   const el=document.getElementById("cloudLoading");
   if(el)el.innerHTML='<div style="font-size:28px">⚠️</div><div style="font-size:15px;color:#900;max-width:320px">No se pudo conectar con la base de datos.<br>Revisa la configuración de Firebase (firebaseConfig) y las reglas de acceso.</div>';
@@ -953,7 +954,7 @@ function render(){
    ms.dataset.filled="1";
  }
  ms.value=month;
- document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("workersBtn").style.display=editing?"inline-block":"none";document.getElementById("holidaysBtn").style.display=editing?"inline-block":"none";document.getElementById("patternsBtn").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("printBtn").style.display=editing?"inline-block":"none";document.getElementById("publishBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Solicitar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("workersBtn").style.display=editing?"inline-block":"none";document.getElementById("holidaysBtn").style.display=editing?"inline-block":"none";document.getElementById("patternsBtn").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("printBtn").style.display=editing?"inline-block":"none";document.getElementById("publishBtn").style.display=editing?"inline-block":"none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Solicitar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
  const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
  const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display=(!editing&&isAdmin&&(pendingChanges||pendingPermissions))?"block":"none";
  const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
@@ -1545,6 +1546,29 @@ function checkYearRollover(){
     </div>
   </div>
 </div>
+<div id="noticeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:360px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <div style="font-size:34px;margin-bottom:6px">📣</div>
+    <h3 style="margin:0 0 8px">Aviso</h3>
+    <p class="small" style="margin:0 0 4px;white-space:pre-wrap;text-align:left" id="noticeModalText"></p>
+    <p class="small" style="margin:8px 0 16px;color:#777">Publicado el <span id="noticeModalDate"></span></p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="save" type="button" onclick="closeNoticeAlert()">Entendido</button>
+    </div>
+  </div>
+</div>
+<div id="noticePanel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9997;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:420px;width:90%;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <h3 style="margin:0 0 10px">📣 Publicar un aviso</h3>
+    <p class="small" style="margin:0 0 10px">Este texto les aparecerá a los trabajadores en una ventana al abrir la aplicación.</p>
+    <textarea id="noticeText" rows="5" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:8px"></textarea>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap">
+      <button type="button" class="danger" onclick="removeNotice()">🗑 Quitar aviso</button>
+      <button type="button" onclick="document.getElementById('noticePanel').style.display='none'">Cancelar</button>
+      <button class="save" type="button" onclick="publishNotice()">📣 Publicar aviso</button>
+    </div>
+  </div>
+</div>
 <div id="installPromptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:10px;padding:22px;max-width:340px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
     <div style="font-size:34px;margin-bottom:6px">📲</div>
@@ -1633,6 +1657,61 @@ function maybeRequestNotificationPermission(){
 function closePublishNotice(){
   document.getElementById("publishNoticeModal").style.display="none";
   if(lastKnownPublishTs){try{window.localStorage.setItem("q_seen_publish_ts",lastKnownPublishTs)}catch(err){}}
+}
+let lastKnownNoticeTs=null;
+function toggleNoticePanel(){
+  if(!isAdmin)return;
+  let current;try{current=JSON.parse(q("q_notice")||"null")}catch(err){current=null}
+  document.getElementById("noticeText").value=(current&&current.text)||"";
+  document.getElementById("noticePanel").style.display="flex";
+}
+function publishNotice(){
+  if(!isAdmin)return;
+  const text=document.getElementById("noticeText").value.trim();
+  if(!text){alert("Escribe el texto del aviso antes de publicarlo.");return}
+  if(!confirm("¿Publicar este aviso?\n\nA todos los trabajadores les aparecerá en una ventana cada vez que abran la aplicación, hasta que lo quites."))return;
+  const ts=String(Date.now());
+  set("q_notice",JSON.stringify({text,ts}));
+  lastKnownNoticeTs=ts;
+  document.getElementById("noticePanel").style.display="none";
+  alert("Aviso publicado.");
+}
+function removeNotice(){
+  if(!isAdmin)return;
+  let current;try{current=JSON.parse(q("q_notice")||"null")}catch(err){current=null}
+  if(!current){alert("No hay ningún aviso publicado ahora mismo.");return}
+  if(!confirm("¿Quitar el aviso? Dejará de aparecerles a los trabajadores."))return;
+  localStorage.removeItem("q_notice");
+  lastKnownNoticeTs=null;
+  document.getElementById("noticeText").value="";
+  document.getElementById("noticePanel").style.display="none";
+  alert("Aviso retirado.");
+}
+function checkNoticeAlert(){
+  if(isAdmin)return;
+  let notice;try{notice=JSON.parse(q("q_notice")||"null")}catch(err){notice=null}
+  if(!notice||!notice.ts||notice.ts===lastKnownNoticeTs)return;
+  const isFirstCheck=lastKnownNoticeTs===null;
+  lastKnownNoticeTs=notice.ts;
+  document.getElementById("noticeModalText").textContent=notice.text;
+  document.getElementById("noticeModalDate").textContent=formatPublishDate(notice.ts);
+  document.getElementById("noticeModal").style.display="flex";
+  if(!isFirstCheck)sendSystemNoticeNotification(notice);
+}
+function sendSystemNoticeNotification(notice){
+  if(!("Notification" in window)||Notification.permission!=="granted")return;
+  const body=notice.text;
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.getRegistration().then(reg=>{
+      if(reg)reg.showNotification("Aviso del cuadrante",{body,icon:"icon-192.png"});
+      else new Notification("Aviso del cuadrante",{body,icon:"icon-192.png"});
+    }).catch(()=>{});
+  }else{
+    try{new Notification("Aviso del cuadrante",{body,icon:"icon-192.png"})}catch(err){}
+  }
+}
+function closeNoticeAlert(){
+  document.getElementById("noticeModal").style.display="none";
 }
 function publishChanges(){
   if(!isAdmin)return;
