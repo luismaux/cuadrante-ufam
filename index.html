@@ -110,7 +110,7 @@ td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;col
 .move-worker-btn:hover{background:#dde3ea}
 .worker-code{min-width:70px}.grid-shift-select{width:100%;min-width:42px;box-sizing:border-box;padding:5px 2px;border:0;border-radius:0;background:transparent;text-align:center;font-weight:inherit;font-size:12px;cursor:pointer}
 .grid-shift-select:focus{outline:2px solid #2563eb;outline-offset:-2px}
-.grid-shift-select.status-AP{background:#fff3cd!important}.grid-shift-select.status-V{background:#d1e7dd!important}.grid-shift-select.status-SS{background:#cfe2ff!important}.grid-shift-select.status-NAV{background:#e2d9f3!important}.grid-shift-select.status-LC{background:#cff4fc!important}.grid-shift-select.status-N{background:#e9d5ff!important}.grid-shift-select.status-B{background:#f8d7da!important}.grid-shift-select.status-LE{background:#fde2e2!important}.grid-shift-select.status-CS{background:#d9f2e6!important}.grid-shift-select.status-INC{background:#fce4ec!important}.grid-shift-select.change-red{background:#f44336!important;color:#111!important;font-weight:bold}.change-red{background:#f44336!important;color:#111!important}
+.grid-shift-select.status-AP{background:#fff3cd!important}.grid-shift-select.status-V{background:#d1e7dd!important}.grid-shift-select.status-SS{background:#cfe2ff!important}.grid-shift-select.status-NAV{background:#e2d9f3!important}.grid-shift-select.status-LC{background:#cff4fc!important}.grid-shift-select.status-N{background:#e9d5ff!important}.grid-shift-select.status-B{background:#f8d7da!important}.grid-shift-select.status-LE{background:#fde2e2!important}.grid-shift-select.status-CS{background:#d9f2e6!important}.grid-shift-select.status-INC{background:#fce4ec!important}.compensated{font-weight:bold}.grid-shift-select.compensated{font-weight:bold}.compensated,.compensated select{font-weight:bold}.grid-shift-select.change-red{background:#f44336!important;color:#111!important;font-weight:bold}.change-red{background:#f44336!important;color:#111!important}
 
 .worker-code{width:34px;min-width:34px;max-width:34px;text-align:center;font-weight:bold;text-transform:uppercase}
 .worker-code-cell{width:34px;min-width:34px;text-align:center;font-weight:bold}
@@ -210,9 +210,6 @@ td:not(.worker-code-cell){font-size:13px}
         <button type="button" onclick="openStatView('changes')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔄 Cambios solicitados</button>
         <button id="statMenuMornings" type="button" onclick="openStatView('mornings')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌅 Mañanas trabajadas</button>
         <button id="statMenuAfternoons" type="button" onclick="openStatView('afternoons')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌇 Tardes trabajadas</button>
-        <button id="statMenuVacation" type="button" onclick="openStatView('vacation')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🏖️ Vacaciones disfrutadas</button>
-        <button id="statMenuAP" type="button" onclick="openStatView('ap')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">📋 Asuntos propios disfrutados</button>
-        <button id="statMenuINC" type="button" onclick="openStatView('inc')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">⚠️ Incidencias realizadas</button>
         <button id="statMenuResetFriday" type="button" onclick="closeStatsMenu();resetFridayOffsets()" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee;color:#b00020">🔄 Resetear compensación de viernes</button>
       </div>
     </div>
@@ -241,8 +238,19 @@ td:not(.worker-code-cell){font-size:13px}
 <button onclick="changeMonth(-1)">‹</button><select id="monthSelect" onchange="setMonth(this.value)"></select><button onclick="changeMonth(1)">›</button>
 </div>
 <div class="toolbar">
-<button id="workersBtn" onclick="toggleWorkers()" style="display:none">👥 Trabajadores</button>
-<button id="holidaysBtn" onclick="toggleHolidays()" style="display:none">📅 Festivos</button><button id="patternsBtn" onclick="togglePatterns()" style="display:none">🔄 Pasar turnos</button><button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="printBtn" onclick="togglePrintPanel()" style="display:none">📄 PDF</button><button id="publishBtn" onclick="publishChanges()" style="display:none">📢 Publicar cambios</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+<div id="gestionWrap" style="position:relative;display:none">
+  <button id="gestionBtn" onclick="toggleGestionMenu()">⚙️ Gestión ▾</button>
+  <div id="gestionMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:180px;overflow:hidden">
+    <button type="button" onclick="closeGestionMenu();toggleWorkers()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px">👥 Trabajadores</button>
+    <button type="button" onclick="closeGestionMenu();toggleHolidays()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">📅 Festivos</button>
+    <button type="button" onclick="closeGestionMenu();togglePatterns()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔄 Pasar turnos</button>
+    <button type="button" onclick="closeGestionMenu();togglePrintPanel()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">📄 PDF</button>
+  </div>
+</div>
+<div id="compensationWrap" style="position:relative;display:none">
+  <button id="compensationBtn" onclick="toggleCompensationPanel()">⚖️ Compensación</button>
+</div>
+<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="publishBtn" onclick="publishChanges()" style="display:none">📢 Publicar cambios</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Solicitar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
 <div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta dos meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
 <div id="pdfPrintArea" style="display:none"></div>
@@ -255,6 +263,17 @@ td:not(.worker-code-cell){font-size:13px}
 <button onclick="manualCompensateFridayYear()" title="Resetea al trabajador nuevo a 0 y resta al resto la cantidad de viernes del trabajador anterior que menos tenga; también actualiza el cómputo general">⚖️ Compensar viernes (año actual)</button>
 <button onclick="closePanels()">Cerrar</button></div>
 
+
+<div id="compensationPanel" class="panel"><h3>⚖️ Compensación de turnos</h3>
+<div class="small">Días de <span id="compensationMonthLabel"></span> con distinto número de mañanas y tardes entre los trabajadores S, O y P. Elige el día y a quién le cambias el turno para igualarlo; esa casilla quedará en <b>negrita</b> para saber que se compensó así.</div>
+<div class="row">
+<label>Día descompensado: <select id="compensationDay" onchange="renderCompensationWorkers()"></select></label>
+<label>Trabajador: <select id="compensationWorker"></select></label>
+</div>
+<div class="row">
+<button type="button" onclick="applyCompensation()">✓ Aceptar</button>
+<button type="button" onclick="closePanels()">Cerrar</button>
+</div></div>
 
 <div id="patternPanel" class="panel"><h3>🔄 Patrones de turnos</h3>
 <div class="small"><b>Información:</b> Cada fila representa un trabajador y arriba aparecen solamente los días laborables. Sábado y domingo no forman parte de la secuencia. Puedes cambiar cualquier turno, el nombre de la fila, añadir o eliminar filas y crear otros patrones.</div>
@@ -837,6 +856,65 @@ function computeImbalances(y,m){
   }
   return out;
 }
+function compensatedKey(y,m,d,w){return `q_comp_${y}_${m}_${d}_${w}`}
+function markCompensated(y,m,d,w){set(compensatedKey(y,m,d,w),"1")}
+function unmarkCompensated(y,m,d,w){set(compensatedKey(y,m,d,w),"0")}
+function isCompensated(y,m,d,w){return q(compensatedKey(y,m,d,w))==="1"}
+function imbalanceDirection(y,m,d,ds){
+  const{m:mCount,t:tCount}=computeDayCounts(y,m,d,ds);
+  const total=mCount+tCount,expectedM=Math.ceil(total/2),expectedT=Math.floor(total/2);
+  if(mCount>expectedM)return "M";
+  if(tCount>expectedT)return "T";
+  return null;
+}
+function toggleCompensationPanel(){
+  if(!editing)return;
+  closePanels();
+  document.getElementById("compensationMonthLabel").textContent=`${months[month]} ${year}`;
+  renderCompensationDays();
+  document.getElementById("compensationPanel").style.display="block";
+}
+function renderCompensationDays(){
+  const imbalances=computeImbalances(year,month);
+  const dsel=document.getElementById("compensationDay");
+  if(!imbalances.length){
+    dsel.innerHTML=`<option value="">No hay días descompensados este mes</option>`;
+    document.getElementById("compensationWorker").innerHTML="";
+    return;
+  }
+  dsel.innerHTML=imbalances.map(x=>`<option value="${x.d}">${x.d} ${x.weekday} (M:${x.m} T:${x.t})</option>`).join("");
+  renderCompensationWorkers();
+}
+function renderCompensationWorkers(){
+  const d=+document.getElementById("compensationDay").value||0;
+  const wsel=document.getElementById("compensationWorker");
+  if(!d){wsel.innerHTML="";return}
+  const ds=fmt(new Date(year,month,d));
+  const dir=imbalanceDirection(year,month,d,ds);
+  if(!dir){wsel.innerHTML=`<option value="">Ese día ya está equilibrado</option>`;return}
+  const workers=getWorkersAtDate(ds).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,ds))&&getShift(year,month,d,w)===dir);
+  if(!workers.length){
+    wsel.innerHTML=`<option value="">No hay nadie en el turno que sobra (${dir==="M"?"Mañana":"Tarde"}) ese día</option>`;
+    return;
+  }
+  wsel.innerHTML=workers.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)} (ahora ${dir==="M"?"Mañana":"Tarde"})</option>`).join("");
+}
+function applyCompensation(){
+  if(!editing)return;
+  const d=+document.getElementById("compensationDay").value||0;
+  const w=document.getElementById("compensationWorker").value;
+  if(!d||!w){alert("Elige un día y un trabajador.");return}
+  const ds=fmt(new Date(year,month,d));
+  const dir=imbalanceDirection(year,month,d,ds);
+  if(!dir){alert("Ese día ya no está descompensado.");renderCompensationDays();return}
+  const newShift=dir==="M"?"T":"M";
+  if(!confirm(`¿Cambiar el turno de ${w} el día ${d} de ${dir==="M"?"Mañana":"Tarde"} a ${newShift==="M"?"Mañana":"Tarde"} para compensar el cuadrante?`))return;
+  setShift(year,month,d,w,newShift);
+  markCompensated(year,month,d,w);
+  closePanels();
+  render();
+  alert("Turno compensado.");
+}
 function confirmDismissImbalance(d){
   if(!editing)return;
   if(confirm("¿Desmarcar descuadre por necesidades del servicio?")){
@@ -954,7 +1032,7 @@ function render(){
    ms.dataset.filled="1";
  }
  ms.value=month;
- document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("workersBtn").style.display=editing?"inline-block":"none";document.getElementById("holidaysBtn").style.display=editing?"inline-block":"none";document.getElementById("patternsBtn").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("printBtn").style.display=editing?"inline-block":"none";document.getElementById("publishBtn").style.display=editing?"inline-block":"none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Solicitar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("publishBtn").style.display=editing?"inline-block":"none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Solicitar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
  const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
  const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display=(!editing&&isAdmin&&(pendingChanges||pendingPermissions))?"block":"none";
  const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
@@ -975,12 +1053,12 @@ function render(){
    s+=`<tr class="${["I","PP"].includes(wtype)?"worker-row-secondary":""}"><td class="worker-code-cell">${escapeHtml(wtype)}</td><td class="worker">${escapeHtml(w)}</td>`;
    for(let d=1;d<=n;d++){
      let v=getShift(year,month,d,w),date=new Date(year,month,d),ds=fmt(date),offWeekend=date.getDay()===0||date.getDay()===6,off=offWeekend||hol.has(ds),active=workerSets[d-1].includes(w),imb=imbalanceDays.has(d);
-     let sp=v&&["AP","V","SS","NAV","LC","N","B","LE","CS","INC"].includes(v)?`status-${v}`:"";const acceptedChange=isAcceptedChange(year,month,d,w);
+     let sp=v&&["AP","V","SS","NAV","LC","N","B","LE","CS","INC"].includes(v)?`status-${v}`:"";const acceptedChange=isAcceptedChange(year,month,d,w);const compensated=isCompensated(year,month,d,w);
      if(editing&&active){
        const opts=(codes.includes(v)||!v?codes:[...codes,v]).map(c=>`<option value="${escapeHtml(c)}"${c===v?" selected":""}>${escapeHtml(c||"—")}</option>`).join("");
-       s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${imb?" imbalance-col":""}" data-w="${escapeHtml(w)}" data-d="${d}"><select class="grid-shift-select ${sp}${acceptedChange?" change-red":""}${imb?" imbalance-col":""}" aria-label="Turno de ${escapeHtml(w)} día ${d}">${opts}</select></td>`;
+       s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${imb?" imbalance-col":""}${compensated?" compensated":""}" data-w="${escapeHtml(w)}" data-d="${d}"><select class="grid-shift-select ${sp}${acceptedChange?" change-red":""}${imb?" imbalance-col":""}${compensated?" compensated":""}" aria-label="Turno de ${escapeHtml(w)} día ${d}">${opts}</select></td>`;
      }else{
-       s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${!active?" inactive":""}${imb?" imbalance-col":""}">${active?escapeHtml(v):""}</td>`;
+       s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${!active?" inactive":""}${imb?" imbalance-col":""}${compensated?" compensated":""}">${active?escapeHtml(v):""}</td>`;
      }
    }
    s+="</tr>";
@@ -996,6 +1074,7 @@ function render(){
      sel.addEventListener("change",()=>{
        const td=sel.closest("td"),v=sel.value,w=td.dataset.w,d=+td.dataset.d;
        setShift(year,month,d,w,v);
+       unmarkCompensated(year,month,d,w);
        render();
        focusNextShiftCell(w,d);
      });
@@ -1045,9 +1124,16 @@ function toggleSecurityMenu(){
   m.style.display=m.style.display==="block"?"none":"block";
 }
 function closeSecurityMenu(){document.getElementById("securityMenu").style.display="none"}
+function toggleGestionMenu(){
+  const m=document.getElementById("gestionMenu");
+  m.style.display=m.style.display==="block"?"none":"block";
+}
+function closeGestionMenu(){document.getElementById("gestionMenu").style.display="none"}
 document.addEventListener("click",e=>{
   const wrap=document.getElementById("securityMenuWrap");
   if(wrap&&!wrap.contains(e.target))closeSecurityMenu();
+  const gwrap=document.getElementById("gestionWrap");
+  if(gwrap&&!gwrap.contains(e.target))closeGestionMenu();
 });
 function openChangePassword(){
   document.getElementById("oldPassword").value="";
@@ -1095,7 +1181,7 @@ function resetGridScroll(){
   const wrap=document.querySelector("#grid")?.closest(".tablewrap");
   if(wrap)wrap.scrollLeft=0;
 }
-function closePanels(){document.getElementById("workerPanel").style.display="none";document.getElementById("holidayPanel").style.display="none";document.getElementById("patternPanel").style.display="none";document.getElementById("statsPanel").style.display="none";document.getElementById("changeRequestPanel").style.display="none";document.getElementById("permissionRequestPanel").style.display="none";document.getElementById("printPanel").style.display="none"}
+function closePanels(){document.getElementById("workerPanel").style.display="none";document.getElementById("holidayPanel").style.display="none";document.getElementById("patternPanel").style.display="none";document.getElementById("statsPanel").style.display="none";document.getElementById("changeRequestPanel").style.display="none";document.getElementById("permissionRequestPanel").style.display="none";document.getElementById("printPanel").style.display="none";document.getElementById("compensationPanel").style.display="none"}
 function togglePrintPanel(){if(!editing)return;closePanels();initPrintSelectors();document.getElementById("printPanel").style.display="block"}
 function workerTypesAtDate(date){
   // Los tipos también son efectivos por fecha para que el histórico conserve su configuración.
@@ -1442,9 +1528,6 @@ function toggleStatsMenu(){
   const willOpen=m.style.display!=="block";
   document.getElementById("statMenuMornings").style.display=editing?"block":"none";
   document.getElementById("statMenuAfternoons").style.display=editing?"block":"none";
-  document.getElementById("statMenuVacation").style.display=editing?"block":"none";
-  document.getElementById("statMenuAP").style.display=editing?"block":"none";
-  document.getElementById("statMenuINC").style.display=editing?"block":"none";
   document.getElementById("statMenuResetFriday").style.display=editing?"block":"none";
   m.style.display=willOpen?"block":"none";
 }
@@ -1477,15 +1560,6 @@ function openStatView(kind){
   }else if(kind==="afternoons"){
     title=`🌇 Tardes trabajadas en ${year}`;
     rows=ws.map(w=>[w,countCodeYear(year,w,"T")]);
-  }else if(kind==="vacation"){
-    title=`🏖️ Vacaciones (V) disfrutadas en ${year}`;
-    rows=ws.map(w=>[w,countCodeYear(year,w,"V")]);
-  }else if(kind==="ap"){
-    title=`📋 Asuntos propios (AP) disfrutados en ${year}`;
-    rows=ws.map(w=>[w,countCodeYear(year,w,"AP")]);
-  }else if(kind==="inc"){
-    title=`⚠️ Incidencias (INC) realizadas en ${year}`;
-    rows=ws.map(w=>[w,countCodeYear(year,w,"INC")]);
   }
   document.getElementById("statViewTitle").textContent=title;
   document.getElementById("statViewBody").innerHTML=statCardsHtml(rows);
@@ -1550,7 +1624,7 @@ function checkYearRollover(){
   <div style="background:#fff;border-radius:10px;padding:22px;max-width:360px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
     <div style="font-size:34px;margin-bottom:6px">📣</div>
     <h3 style="margin:0 0 8px">Aviso</h3>
-    <p class="small" style="margin:0 0 4px;white-space:pre-wrap;text-align:left" id="noticeModalText"></p>
+    <p class="small" style="margin:0 0 4px;white-space:pre-wrap;text-align:center" id="noticeModalText"></p>
     <p class="small" style="margin:8px 0 16px;color:#777">Publicado el <span id="noticeModalDate"></span></p>
     <div style="display:flex;gap:10px;justify-content:center">
       <button class="save" type="button" onclick="closeNoticeAlert()">Entendido</button>
