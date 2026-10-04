@@ -265,7 +265,7 @@ td:not(.worker-code-cell){font-size:13px}
 
 
 <div id="compensationPanel" class="panel"><h3>⚖️ Compensación de turnos</h3>
-<div class="small">Días de <span id="compensationMonthLabel"></span> con distinto número de mañanas y tardes entre los trabajadores S, O y P. Elige el día y a quién le cambias el turno para igualarlo; esa casilla quedará en <b>negrita</b> para saber que se compensó así.</div>
+<div class="small">Días de <span id="compensationMonthLabel"></span> con distinto número de mañanas y tardes entre los trabajadores. Elige el día y a quién le cambias el turno para igualarlo; esa casilla quedará en <b>negrita</b> para saber que se compensó así.</div>
 <div class="row">
 <label>Día descompensado: <select id="compensationDay" onchange="renderCompensationWorkers()"></select></label>
 <label>Trabajador: <select id="compensationWorker"></select></label>
@@ -926,7 +926,7 @@ function renderBalanceAlert(imbalances){
   const box=document.getElementById("balanceAlert");if(!box)return;
   if(!imbalances||!imbalances.length){box.style.display="none";box.innerHTML="";return}
   box.style.display="block";
-  box.innerHTML=`<b>⚠️ Cuadrante descompensado en ${months[month]} ${year}</b><div class="small">Días descuadrados (distinto número de mañanas y tardes entre S, O y P)${editing?" — pincha un día para desmarcarlo":""}:</div>`+
+  box.innerHTML=`<b>⚠️ Cuadrante descompensado en ${months[month]} ${year}</b><div class="small">Días descuadrados (distinto número de mañanas y tardes)${editing?" — pincha un día para desmarcarlo":""}:</div>`+
     imbalances.map(x=>`<span class="badge balance-badge"${editing?` style="cursor:pointer" onclick="confirmDismissImbalance(${x.d})"`:""}>${x.d} ${x.weekday}</span>`).join(" ");
 }
 function countFridayT(y,w){let total=0;for(let m=0;m<12;m++)for(let d=1;d<=daysInMonth(y,m);d++){let dt=new Date(y,m,d);if(dt.getDay()===5&&getShift(y,m,d,w)==="T")total++}return total}
