@@ -110,7 +110,7 @@ td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;col
 .move-worker-btn:hover{background:#dde3ea}
 .worker-code{min-width:70px}.grid-shift-select{width:100%;min-width:42px;box-sizing:border-box;padding:5px 2px;border:0;border-radius:0;background:transparent;text-align:center;font-weight:inherit;font-size:12px;cursor:pointer}
 .grid-shift-select:focus{outline:2px solid #2563eb;outline-offset:-2px}
-.grid-shift-select.status-AP{background:#fff3cd!important}.grid-shift-select.status-V{background:#d1e7dd!important}.grid-shift-select.status-SS{background:#cfe2ff!important}.grid-shift-select.status-NAV{background:#e2d9f3!important}.grid-shift-select.status-LC{background:#cff4fc!important}.grid-shift-select.status-N{background:#e9d5ff!important}.grid-shift-select.status-B{background:#f8d7da!important}.grid-shift-select.status-LE{background:#fde2e2!important}.grid-shift-select.status-CS{background:#d9f2e6!important}.grid-shift-select.status-INC{background:#fce4ec!important}.compensated{font-weight:bold}.grid-shift-select.compensated{font-weight:bold}.compensated,.compensated select{font-weight:bold}.grid-shift-select.change-red{background:#f44336!important;color:#111!important;font-weight:bold}.change-red{background:#f44336!important;color:#111!important}
+.grid-shift-select.status-AP{background:#fff3cd!important}.grid-shift-select.status-V{background:#d1e7dd!important}.grid-shift-select.status-SS{background:#cfe2ff!important}.grid-shift-select.status-NAV{background:#e2d9f3!important}.grid-shift-select.status-LC{background:#cff4fc!important}.grid-shift-select.status-N{background:#e9d5ff!important}.grid-shift-select.status-B{background:#f8d7da!important}.grid-shift-select.status-LE{background:#fde2e2!important}.grid-shift-select.status-CS{background:#d9f2e6!important}.grid-shift-select.status-INC{background:#fce4ec!important}.grid-shift-select.change-red{background:#f44336!important;color:#111!important;font-weight:bold}.change-red{background:#f44336!important;color:#111!important}
 
 .worker-code{width:34px;min-width:34px;max-width:34px;text-align:center;font-weight:bold;text-transform:uppercase}
 .worker-code-cell{width:34px;min-width:34px;text-align:center;font-weight:bold}
@@ -157,6 +157,7 @@ td:not(.worker-code-cell){font-size:13px}
   table{min-width:820px}
   th.worker,td.worker{min-width:86px}
 }
+td.compensated:not(.imbalance-col),.grid-shift-select.compensated:not(.imbalance-col){background:#fdba74!important;color:#7c2d12!important;font-weight:bold}td.compensated:not(.imbalance-col){box-shadow:inset 0 0 0 2px #ea580c}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -265,7 +266,7 @@ td:not(.worker-code-cell){font-size:13px}
 
 
 <div id="compensationPanel" class="panel"><h3>⚖️ Compensación de turnos</h3>
-<div class="small">Días de <span id="compensationMonthLabel"></span> con distinto número de mañanas y tardes entre los trabajadores. Elige el día y a quién le cambias el turno para igualarlo; esa casilla quedará en <b>negrita</b> para saber que se compensó así.</div>
+<div class="small">Días de <span id="compensationMonthLabel"></span> con distinto número de mañanas y tardes entre los trabajadores. Elige el día y a quién le cambias el turno para igualarlo; esa casilla quedará con fondo <b style="background:#fdba74;color:#7c2d12;padding:0 4px;border-radius:3px">naranja</b> para saber que se compensó así.</div>
 <div class="row">
 <label>Día descompensado: <select id="compensationDay" onchange="renderCompensationWorkers()"></select></label>
 <label>Trabajador: <select id="compensationWorker"></select></label>
@@ -306,7 +307,7 @@ td:not(.worker-code-cell){font-size:13px}
 <div class="scroll-hint">👉 Desliza el cuadrante para ver más días</div>
 <div class="tablewrap"><table id="grid"></table></div>
 <div id="balanceAlert" class="panel balance-alert" style="display:none"></div>
-<div class="legend"><span class="badge">M Mañana</span><span class="badge">T Tarde</span><span class="badge">N Noche</span><span class="badge">AP Asuntos Propios</span><span class="badge">V Vacaciones</span><span class="badge">SS Semana Santa</span><span class="badge">NAV Navidad</span><span class="badge">LC Libre compensado</span><span class="badge">B Baja</span><span class="badge">LE Permiso enfermedad</span><span class="badge">CS Comisión</span><span class="badge">INC Incidencias</span></div>
+<div class="legend"><span class="badge">M Mañana</span><span class="badge">T Tarde</span><span class="badge">N Noche</span><span class="badge">AP Asuntos Propios</span><span class="badge">V Vacaciones</span><span class="badge">SS Semana Santa</span><span class="badge">NAV Navidad</span><span class="badge">LC Libre compensado</span><span class="badge">B Baja</span><span class="badge">LE Permiso enfermedad</span><span class="badge">CS Comisión</span><span class="badge">INC Incidencias</span><span class="badge" style="background:#fdba74;color:#7c2d12;font-weight:bold">Turno compensado</span></div>
 </main>
 <script>
 /* ====================================================================
