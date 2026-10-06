@@ -251,7 +251,7 @@ td.compensated:not(.imbalance-col),.grid-shift-select.compensated:not(.imbalance
 <div id="compensationWrap" style="position:relative;display:none">
   <button id="compensationBtn" onclick="toggleCompensationPanel()">⚖️ Compensación</button>
 </div>
-<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="publishBtn" onclick="publishChanges()" style="display:none">📢 Publicar cambios</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
 <div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta dos meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
 <div id="pdfPrintArea" style="display:none"></div>
@@ -387,7 +387,6 @@ dbRef.on("value",snap=>{
     maybeRequestNotificationPermission();
   }
   render();
-  checkPublishNotice();
   checkNoticeAlert();
 },err=>{
   const el=document.getElementById("cloudLoading");
@@ -601,7 +600,7 @@ function applyPatternByWorkers(){
 function mondayOf(v){let x=new Date(v+"T00:00:00"),day=x.getDay();x.setDate(x.getDate()-(day===0?6:day-1));return x}
 function getChangeRequests(){try{return JSON.parse(q("q_change_requests")||"[]")}catch(e){return[]}}
 function saveChangeRequests(x){set("q_change_requests",JSON.stringify(x))}
-function changeEligibleWorkers(date){const dt=new Date(date+"T00:00:00");if(Number.isNaN(dt.getTime()))return[];return getWorkersAtDate(date).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,date)))}
+function changeEligibleWorkers(date){const dt=new Date(date+"T00:00:00");if(Number.isNaN(dt.getTime()))return[];return getWorkersAtDate(date).filter(w=>["S","O","P","PP"].includes(workerTypeAtDate(w,date)))}
 function renderChangeRequestSelectors(){const dateEl=document.getElementById("changeRequestDate");if(!dateEl)return;if(!dateEl.value)dateEl.value=fmt(new Date());const ws=changeEligibleWorkers(dateEl.value),from=document.getElementById("changeRequestFrom"),to=document.getElementById("changeRequestTo"),of=from.value,ot=to.value;from.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");to.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");if(ws.includes(of))from.value=of;if(ws.includes(ot))to.value=ot;from.disabled=to.disabled=ws.length<2;if(ws.length>1&&from.value===to.value)to.value=ws.find(w=>w!==from.value)||ws[1]}
 function renderChangeRequestList(){const box=document.getElementById("changeRequestList");if(!box)return;const rs=getChangeRequests().filter(r=>r.status==="pending").sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));if(!rs.length){box.innerHTML='<div class="small">No hay cambios solicitados pendientes.</div>';return}box.innerHTML=rs.map(r=>`<div class="request-card pending"><b>${escapeHtml(r.date)}</b> — <b>${escapeHtml(r.from)}</b> solicita cambiar con <b>${escapeHtml(r.to)}</b> <span class="badge">Pendiente</span>${editing?`<button class="save" onclick="resolveChangeRequest('${r.id}','accepted')">✓ Aceptar</button><button class="danger" onclick="resolveChangeRequest('${r.id}','denied')">✕ Denegar</button>`:""}</div>`).join("")}
 function initChangeRequestDateListener(){const el=document.getElementById("changeRequestDate");if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",renderChangeRequestSelectors)}}
@@ -611,7 +610,7 @@ function submitChangeRequest(){
   if(!date||!from||!to){alert("Completa la fecha y los dos trabajadores.");return}
   if(from===to){alert("Los dos trabajadores deben ser diferentes.");return}
   const eligible=changeEligibleWorkers(date);
-  if(!eligible.includes(from)||!eligible.includes(to)){alert("Los dos trabajadores deben ser de tipo S, O o P en esa fecha.");return}
+  if(!eligible.includes(from)||!eligible.includes(to)){alert("Los dos trabajadores deben ser de tipo S, O, P o PP en esa fecha.");return}
   const dt=new Date(date+"T00:00:00");
   if(Number.isNaN(dt.getTime())){alert("La fecha del cambio no es válida.");return}
   const y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate();
@@ -699,11 +698,21 @@ function getPermissionRequests(){try{return JSON.parse(q("q_permission_requests"
 function savePermissionRequests(x){set("q_permission_requests",JSON.stringify(x))}
 function permissionEligibleWorkers(date){const dt=new Date(date+"T00:00:00");if(Number.isNaN(dt.getTime()))return[];return getWorkersAtDate(date).filter(w=>["I","S","O","P","PP"].includes(workerTypeAtDate(w,date)))}
 function forEachDateInRange(startStr,endStr,cb){const d=new Date(startStr+"T00:00:00"),end=new Date(endStr+"T00:00:00");if(Number.isNaN(d.getTime())||Number.isNaN(end.getTime())||d>end)return;while(d<=end){cb(d.getFullYear(),d.getMonth(),d.getDate(),fmt(d));d.setDate(d.getDate()+1)}}
+function permissionDateLimits(){
+  const t=new Date();t.setHours(0,0,0,0);
+  const min=fmt(t);
+  const y=t.getFullYear(),m=t.getMonth()+2,day=t.getDate();
+  const last=new Date(y,m+1,0).getDate();
+  const max=fmt(new Date(y,m,Math.min(day,last)));
+  return {min,max};
+}
 function renderPermissionRequestSelectors(){
   const startEl=document.getElementById("permissionRequestStart");if(!startEl)return;
-  if(!startEl.value)startEl.value=fmt(new Date());
   const endEl=document.getElementById("permissionRequestEnd");
-  if(!endEl.value)endEl.value=startEl.value;
+  const lim=permissionDateLimits();
+  startEl.min=endEl.min=lim.min;startEl.max=endEl.max=lim.max;
+  if(!startEl.value||startEl.value<lim.min||startEl.value>lim.max)startEl.value=lim.min;
+  if(!endEl.value||endEl.value<startEl.value||endEl.value>lim.max)endEl.value=startEl.value;
   const ws=permissionEligibleWorkers(startEl.value),sel=document.getElementById("permissionRequestWorker"),ov=sel.value;
   sel.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
   if(ws.includes(ov))sel.value=ov;
@@ -737,6 +746,11 @@ function submitPermissionRequest(){
         type=document.getElementById("permissionRequestType").value;
   if(!worker||!start||!end||!type){alert("Completa el trabajador, las fechas y el tipo de permiso.");return}
   if(end<start){alert("La fecha de fin no puede ser anterior a la de inicio.");return}
+  const lim=permissionDateLimits();
+  if(start<lim.min||end>lim.max){
+    const nice=x=>x.split("-").reverse().join("/");
+    alert("Solo se pueden solicitar permisos desde hoy ("+nice(lim.min)+") hasta dos meses después ("+nice(lim.max)+"). Para fechas fuera de ese periodo, habla con un administrador.");return;
+  }
   const eligible=permissionEligibleWorkers(start);
   if(!eligible.includes(worker)){alert("El trabajador debe ser de tipo I, S, O, P o PP en esa fecha.");return}
   const rs=getPermissionRequests();
@@ -1003,7 +1017,7 @@ function render(){
    ms.dataset.filled="1";
  }
  ms.value=month;
- document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("publishBtn").style.display=editing?"inline-block":"none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
  const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
  const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display=(!editing&&isAdmin&&(pendingChanges||pendingPermissions))?"block":"none";
  const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
@@ -1608,35 +1622,9 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   }catch(err){}
 });
-let lastKnownPublishTs=null;
-function formatPublishDate(ts){
+function formatNoticeDate(ts){
   const d=new Date(Number(ts));
   return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear();
-}
-function checkPublishNotice(){
-  if(isAdmin)return;
-  const ts=q("q_last_publish_ts");
-  if(!ts||ts===lastKnownPublishTs)return;
-  const isFirstCheck=lastKnownPublishTs===null;
-  lastKnownPublishTs=ts;
-  let seen=null;
-  try{seen=window.localStorage.getItem("q_seen_publish_ts")}catch(err){}
-  if(seen===ts)return;
-  document.getElementById("publishNoticeDate").textContent=formatPublishDate(ts);
-  document.getElementById("publishNoticeModal").style.display="flex";
-  if(!isFirstCheck)sendSystemPublishNotification(ts);
-}
-function sendSystemPublishNotification(ts){
-  if(!("Notification" in window)||Notification.permission!=="granted")return;
-  const body=`Se han realizado cambios en el cuadrante el día ${formatPublishDate(ts)}.`;
-  if("serviceWorker" in navigator){
-    navigator.serviceWorker.getRegistration().then(reg=>{
-      if(reg)reg.showNotification("Cambios en el cuadrante",{body,icon:"icon-192.png"});
-      else new Notification("Cambios en el cuadrante",{body,icon:"icon-192.png"});
-    }).catch(()=>{});
-  }else{
-    try{new Notification("Cambios en el cuadrante",{body,icon:"icon-192.png"})}catch(err){}
-  }
 }
 function maybeRequestNotificationPermission(){
   if(isAdmin)return;
@@ -1644,10 +1632,6 @@ function maybeRequestNotificationPermission(){
   if(!isRunningStandalone())return;
   if(Notification.permission!=="default")return;
   Notification.requestPermission().catch(()=>{});
-}
-function closePublishNotice(){
-  document.getElementById("publishNoticeModal").style.display="none";
-  if(lastKnownPublishTs){try{window.localStorage.setItem("q_seen_publish_ts",lastKnownPublishTs)}catch(err){}}
 }
 let lastKnownNoticeTs=null;
 function toggleNoticePanel(){
@@ -1685,7 +1669,7 @@ function checkNoticeAlert(){
   const isFirstCheck=lastKnownNoticeTs===null;
   lastKnownNoticeTs=notice.ts;
   document.getElementById("noticeModalText").textContent=notice.text;
-  document.getElementById("noticeModalDate").textContent=formatPublishDate(notice.ts);
+  document.getElementById("noticeModalDate").textContent=formatNoticeDate(notice.ts);
   document.getElementById("noticeModal").style.display="flex";
   if(!isFirstCheck)sendSystemNoticeNotification(notice);
 }
@@ -1704,28 +1688,8 @@ function sendSystemNoticeNotification(notice){
 function closeNoticeAlert(){
   document.getElementById("noticeModal").style.display="none";
 }
-function publishChanges(){
-  if(!isAdmin)return;
-  if(!confirm("¿Publicar los cambios?\n\nA todos los trabajadores les aparecerá un aviso de que ha habido cambios la próxima vez que abran la aplicación."))return;
-  const ts=String(Date.now());
-  set("q_last_publish_ts",ts);
-  lastKnownPublishTs=ts;
-  try{window.localStorage.setItem("q_seen_publish_ts",ts)}catch(err){}
-  alert("Cambios publicados.");
-}
-
 </script>
 
-<div id="publishNoticeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:10px;padding:22px;max-width:340px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
-    <div style="font-size:34px;margin-bottom:6px">📢</div>
-    <h3 style="margin:0 0 8px">Cambios en el cuadrante</h3>
-    <p class="small" style="margin:0 0 16px">Se han realizado cambios en el cuadrante el día <b id="publishNoticeDate"></b>.</p>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button class="save" type="button" onclick="closePublishNotice()">Entendido</button>
-    </div>
-  </div>
-</div>
 <div id="noticeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:10px;padding:22px;max-width:360px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
     <div style="font-size:34px;margin-bottom:6px">📣</div>
