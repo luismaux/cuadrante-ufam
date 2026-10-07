@@ -300,7 +300,7 @@ td.compensated:not(.imbalance-col),.grid-shift-select.compensated:not(.imbalance
 
 <div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Grabar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede grabar un cambio de turno con otro de su mismo grupo: los PP solo entre ellos, y los S, O y P solo entre ellos. Indica el día y los dos trabajadores; el cambio se graba en el cuadrante al momento.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>cambia con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Grabar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
 
-<div id="permissionRequestPanel" class="panel change-request-panel"><h3>📄 Solicitar permiso</h3><div id="permissionRequestFormWrap"><div class="small">Cualquier trabajador del desplegable puede solicitar un permiso. Indica el trabajador, el periodo de fechas y el tipo de permiso.</div><div class="row"><label>Trabajador: <select id="permissionRequestWorker"></select></label><label>Desde: <input id="permissionRequestStart" type="date"></label><label>Hasta: <input id="permissionRequestEnd" type="date"></label><label>Tipo de permiso: <select id="permissionRequestType">
+<div id="permissionRequestPanel" class="panel change-request-panel"><h3>📄 Solicitar permiso</h3><div id="permissionRequestFormWrap"><div class="small">Cualquier trabajador del desplegable puede solicitar un permiso. Indica el trabajador, el periodo de fechas y el tipo de permiso.</div><div id="permissionRangeHint" class="small" style="margin:4px 0"></div><div class="row"><label>Trabajador: <select id="permissionRequestWorker"></select></label><label>Desde: <input id="permissionRequestStart" type="date"></label><label>Hasta: <input id="permissionRequestEnd" type="date"></label><label>Tipo de permiso: <select id="permissionRequestType">
 <option value="AP">AP Asuntos propios</option><option value="V">V Vacaciones</option><option value="LC">LC Libre compensado</option><option value="NAV">NAV Navidad</option><option value="SS">SS Semana Santa</option>
 </select></label><button class="save" onclick="submitPermissionRequest()">✓ Solicitar</button></div></div><div id="permissionRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de permisos</summary><div id="permissionRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
 
@@ -728,15 +728,31 @@ function renderPermissionRequestSelectors(){
   startEl.min=endEl.min=lim.min;startEl.max=endEl.max=lim.max;
   if(!startEl.value||startEl.value<lim.min||startEl.value>lim.max)startEl.value=lim.min;
   if(!endEl.value||endEl.value<startEl.value||endEl.value>lim.max)endEl.value=startEl.value;
+  setPermissionRangeHint("");
   const ws=permissionEligibleWorkers(startEl.value),sel=document.getElementById("permissionRequestWorker"),ov=sel.value;
   sel.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
   if(ws.includes(ov))sel.value=ov;
   sel.disabled=ws.length<1;
 }
+function niceDate(x){return String(x).split("-").reverse().join("/")}
+function setPermissionRangeHint(warn){
+  const el=document.getElementById("permissionRangeHint");if(!el)return;
+  const lim=permissionDateLimits();
+  if(warn){el.style.color="#b00020";el.style.fontWeight="bold";el.textContent=warn;return}
+  el.style.color="";el.style.fontWeight="";
+  el.textContent="Solo puedes solicitar permisos desde hoy ("+niceDate(lim.min)+") hasta dos meses después ("+niceDate(lim.max)+").";
+}
+function clampPermissionDate(el){
+  // Los móviles dejan elegir días fuera de min/max: se corrige aquí y se avisa.
+  const lim=permissionDateLimits();
+  if(el.value&&el.value>lim.max){el.value=lim.max;return "Esa fecha queda fuera del periodo permitido. Se ha ajustado al "+niceDate(lim.max)+", el último día que se puede solicitar."}
+  if(el.value&&el.value<lim.min){el.value=lim.min;return "No se pueden solicitar permisos de días pasados. Se ha ajustado a hoy ("+niceDate(lim.min)+")."}
+  return "";
+}
 function initPermissionRequestDateListener(){
   const s=document.getElementById("permissionRequestStart"),e=document.getElementById("permissionRequestEnd");
-  if(s&&!s.dataset.bound){s.dataset.bound="1";s.addEventListener("change",()=>{if(e&&e.value<s.value)e.value=s.value;renderPermissionRequestSelectors()})}
-  if(e&&!e.dataset.bound){e.dataset.bound="1";e.addEventListener("change",()=>{if(s&&e.value<s.value)e.value=s.value})}
+  if(s&&!s.dataset.bound){s.dataset.bound="1";s.addEventListener("change",()=>{const msg=clampPermissionDate(s);if(e&&e.value<s.value)e.value=s.value;renderPermissionRequestSelectors();if(msg)setPermissionRangeHint(msg)})}
+  if(e&&!e.dataset.bound){e.dataset.bound="1";e.addEventListener("change",()=>{const msg=clampPermissionDate(e);if(s&&e.value<s.value)e.value=s.value;setPermissionRangeHint(msg)})}
 }
 function renderPermissionRequestList(){
   const box=document.getElementById("permissionRequestList");if(!box)return;
