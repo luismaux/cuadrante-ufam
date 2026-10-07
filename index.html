@@ -298,7 +298,7 @@ td.compensated:not(.imbalance-col),.grid-shift-select.compensated:not(.imbalance
 <button onclick="closePanels()">Cerrar</button>
 </div>
 
-<div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Grabar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede grabar un cambio de turno con otro trabajador de los que aparecen en los desplegables. Indica el día y los dos trabajadores; el cambio se graba en el cuadrante al momento.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>cambia con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Grabar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
+<div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Grabar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede grabar un cambio de turno con otro de su mismo grupo: los PP solo entre ellos, y los S, O y P solo entre ellos. Indica el día y los dos trabajadores; el cambio se graba en el cuadrante al momento.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>cambia con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Grabar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
 
 <div id="permissionRequestPanel" class="panel change-request-panel"><h3>📄 Solicitar permiso</h3><div id="permissionRequestFormWrap"><div class="small">Cualquier trabajador del desplegable puede solicitar un permiso. Indica el trabajador, el periodo de fechas y el tipo de permiso.</div><div class="row"><label>Trabajador: <select id="permissionRequestWorker"></select></label><label>Desde: <input id="permissionRequestStart" type="date"></label><label>Hasta: <input id="permissionRequestEnd" type="date"></label><label>Tipo de permiso: <select id="permissionRequestType">
 <option value="AP">AP Asuntos propios</option><option value="V">V Vacaciones</option><option value="LC">LC Libre compensado</option><option value="NAV">NAV Navidad</option><option value="SS">SS Semana Santa</option>
@@ -601,16 +601,31 @@ function mondayOf(v){let x=new Date(v+"T00:00:00"),day=x.getDay();x.setDate(x.ge
 function getChangeRequests(){try{return JSON.parse(q("q_change_requests")||"[]")}catch(e){return[]}}
 function saveChangeRequests(x){set("q_change_requests",JSON.stringify(x))}
 function changeEligibleWorkers(date){const dt=new Date(date+"T00:00:00");if(Number.isNaN(dt.getTime()))return[];return getWorkersAtDate(date).filter(w=>["S","O","P","PP"].includes(workerTypeAtDate(w,date)))}
-function renderChangeRequestSelectors(){const dateEl=document.getElementById("changeRequestDate");if(!dateEl)return;if(!dateEl.value)dateEl.value=fmt(new Date());const ws=changeEligibleWorkers(dateEl.value),from=document.getElementById("changeRequestFrom"),to=document.getElementById("changeRequestTo"),of=from.value,ot=to.value;from.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");to.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");if(ws.includes(of))from.value=of;if(ws.includes(ot))to.value=ot;from.disabled=to.disabled=ws.length<2;if(ws.length>1&&from.value===to.value)to.value=ws.find(w=>w!==from.value)||ws[1]}
+function changeGroup(w,date){return workerTypeAtDate(w,date)==="PP"?"PP":"SOP"}
+function renderChangeRequestSelectors(){
+  const dateEl=document.getElementById("changeRequestDate");if(!dateEl)return;
+  if(!dateEl.value)dateEl.value=fmt(new Date());
+  const date=dateEl.value,ws=changeEligibleWorkers(date),from=document.getElementById("changeRequestFrom"),to=document.getElementById("changeRequestTo"),of=from.value,ot=to.value;
+  const opt=w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`;
+  from.innerHTML=ws.map(opt).join("");
+  if(ws.includes(of))from.value=of;
+  // Solo se puede cambiar con alguien del mismo grupo: PP con PP, y S, O y P entre ellos.
+  const partners=ws.filter(w=>w!==from.value&&changeGroup(w,date)===changeGroup(from.value,date));
+  to.innerHTML=partners.map(opt).join("");
+  if(partners.includes(ot))to.value=ot;
+  from.disabled=ws.length<2;to.disabled=partners.length<1;
+}
 function renderChangeRequestList(){const box=document.getElementById("changeRequestList");if(!box)return;const rs=getChangeRequests().filter(r=>r.status==="pending").sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));if(!rs.length){box.innerHTML='<div class="small">No hay cambios solicitados pendientes.</div>';return}box.innerHTML=rs.map(r=>`<div class="request-card pending"><b>${escapeHtml(r.date)}</b> — <b>${escapeHtml(r.from)}</b> solicita cambiar con <b>${escapeHtml(r.to)}</b> <span class="badge">Pendiente</span>${editing?`<button class="save" onclick="resolveChangeRequest('${r.id}','accepted')">✓ Aceptar</button><button class="danger" onclick="resolveChangeRequest('${r.id}','denied')">✕ Denegar</button>`:""}</div>`).join("")}
-function initChangeRequestDateListener(){const el=document.getElementById("changeRequestDate");if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",renderChangeRequestSelectors)}}
+function initChangeRequestDateListener(){const el=document.getElementById("changeRequestDate");if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",renderChangeRequestSelectors)}const fr=document.getElementById("changeRequestFrom");if(fr&&!fr.dataset.bound){fr.dataset.bound="1";fr.addEventListener("change",renderChangeRequestSelectors)}}
 function toggleChangeRequests(){closePanels();renderChangeRequestSelectors();initChangeRequestDateListener();renderChangeRequestList();renderChangeRequestHistory();const formWrap=document.getElementById("changeRequestFormWrap");if(formWrap)formWrap.style.display=editing?"none":"block";document.getElementById("changeRequestPanel").style.display="block"}
 function submitChangeRequest(){
   const date=document.getElementById("changeRequestDate").value,from=document.getElementById("changeRequestFrom").value,to=document.getElementById("changeRequestTo").value;
+  if(date&&from&&!to){alert("No hay otro trabajador de su mismo grupo con quien cambiar ese día.");return}
   if(!date||!from||!to){alert("Completa la fecha y los dos trabajadores.");return}
   if(from===to){alert("Los dos trabajadores deben ser diferentes.");return}
   const eligible=changeEligibleWorkers(date);
   if(!eligible.includes(from)||!eligible.includes(to)){alert("Los dos trabajadores deben ser de tipo S, O, P o PP en esa fecha.");return}
+  if(changeGroup(from,date)!==changeGroup(to,date)){alert("Los trabajadores PP solo pueden cambiar con otros PP, y los S, O y P solo entre ellos.");return}
   const dt=new Date(date+"T00:00:00");
   if(Number.isNaN(dt.getTime())){alert("La fecha del cambio no es válida.");return}
   const y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate();
@@ -1692,7 +1707,7 @@ function closeNoticeAlert(){
 
 <div id="noticeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:10px;padding:22px;max-width:360px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
-    <div style="font-size:34px;margin-bottom:6px">📣</div>
+    <img src="icon-192.png" alt="" style="width:64px;height:64px;border-radius:14px;margin-bottom:8px">
     <h3 style="margin:0 0 8px">Aviso</h3>
     <p class="small" style="margin:0 0 4px;white-space:pre-wrap;text-align:center" id="noticeModalText"></p>
     <p class="small" style="margin:8px 0 16px;color:#777">Publicado el <span id="noticeModalDate"></span></p>
