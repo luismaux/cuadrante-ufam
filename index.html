@@ -1601,7 +1601,8 @@ function scrollToTodayOnce(){
   if(!todayCell||!wrap)return;
   scrolledToToday=true;
   const workerColWidth=(document.querySelector("#grid th.worker")||{offsetWidth:0}).offsetWidth;
-  const target=todayCell.offsetLeft-workerColWidth-wrap.clientWidth/2+todayCell.offsetWidth/2;
+  // El día actual queda como primera columna, pegado a los nombres de los trabajadores.
+  const target=todayCell.offsetLeft-workerColWidth;
   wrap.scrollLeft=Math.max(0,target);
 }
 function checkYearRollover(){
