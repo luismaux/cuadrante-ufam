@@ -1,4 +1,4 @@
-const CACHE_NAME = "cuadrante-cache-v10";
+const CACHE_NAME = "cuadrante-cache-v11";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
