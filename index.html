@@ -398,14 +398,15 @@ function updateCloudBanner(){
   if(document.getElementById("cloudLoading"))return;
   if(!el){
     el=document.createElement("div");el.id="cloudBanner";
-    el.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:92%;background:#1f2937;color:#fff;padding:8px 14px;border-radius:20px;font:13px Arial,sans-serif;z-index:9000;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3)";
+    el.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:92%;display:flex;align-items:center;gap:10px;background:#fff;color:#1f2937;padding:8px 14px 8px 10px;border-radius:14px;border:1px solid #d0d5dd;font:13px Arial,sans-serif;z-index:9000;box-shadow:0 2px 10px rgba(0,0,0,.18)";
+    el.innerHTML='<img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:7px;flex:none"><span id="cloudBannerText"></span>';
     document.body.appendChild(el);
   }
   let t;
-  if(cloudError)t="⚠️ No se pudo conectar con la base de datos. Se muestra la última copia guardada; edición y solicitudes bloqueadas.";
-  else if(!cloudLive)t="⏳ Conectando con la base de datos… "+(cachedTs?"Mostrando la copia del "+new Date(cachedTs).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+". ":"")+"Edición y solicitudes bloqueadas hasta conectar.";
-  else t="📡 Sin conexión con la base de datos. No se podrán grabar cambios hasta que vuelva.";
-  el.textContent=t;
+  if(cloudError)t="No se pudo conectar con la base de datos. Se muestra la última copia guardada; edición y solicitudes bloqueadas.";
+  else if(!cloudLive)t="Conectando con la base de datos… algún dato puede haber sido modificado";
+  else t="Sin conexión con la base de datos. No se podrán grabar cambios hasta que vuelva.";
+  const tx=document.getElementById("cloudBannerText");if(tx)tx.textContent=t;
 }
 function applyCloudGate(){
   const ready=cloudReady();
