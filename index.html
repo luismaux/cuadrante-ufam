@@ -1664,9 +1664,13 @@ function scrollToTodayOnce(){
   const wrap=todayCell?todayCell.closest(".tablewrap"):null;
   if(!todayCell||!wrap)return;
   scrolledToToday=true;
-  const workerColWidth=(document.querySelector("#grid th.worker")||{offsetWidth:0}).offsetWidth;
+  const workerTh=document.querySelector("#grid th.worker");
   // El día actual queda como primera columna, pegado a los nombres de los trabajadores.
-  const target=todayCell.offsetLeft-workerColWidth;
+  // Se mide con las posiciones reales en pantalla (offsetLeft se contaba desde el borde de la
+  // página y no desde la tabla, y dejaba la celda a medias bajo la columna de nombres).
+  const wr=wrap.getBoundingClientRect(),tr=todayCell.getBoundingClientRect();
+  const workerW=workerTh?workerTh.getBoundingClientRect().width:0;
+  const target=wrap.scrollLeft+(tr.left-(wr.left+wrap.clientLeft+workerW));
   wrap.scrollLeft=Math.max(0,target);
 }
 function checkYearRollover(){
