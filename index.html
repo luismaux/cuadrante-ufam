@@ -359,12 +359,14 @@ function rebuildDateIndexes(){
 const localStorage={
   getItem(k){return Object.prototype.hasOwnProperty.call(cloudStore,k)?cloudStore[k]:null},
   setItem(k,v){
+    if(!cloudLive){console.warn("Escritura ignorada: aún no hay conexión con la base de datos");return}
     v=String(v);cloudStore[k]=v;
     if(k.startsWith("q_roster_date_")||k.startsWith("q_worker_types_date_"))rebuildDateIndexes();
     if(batchDepth>0){batchPending[encFbKey(k)]=v}
     else{dbRef.child(encFbKey(k)).set(v)}
   },
   removeItem(k){
+    if(!cloudLive){console.warn("Borrado ignorado: aún no hay conexión con la base de datos");return}
     delete cloudStore[k];
     if(k.startsWith("q_roster_date_")||k.startsWith("q_worker_types_date_"))rebuildDateIndexes();
     if(batchDepth>0){batchPending[encFbKey(k)]=null}
@@ -373,6 +375,46 @@ const localStorage={
   get length(){return Object.keys(cloudStore).length},
   key(i){return Object.keys(cloudStore)[i]}
 };
+/* ====== Arranque rápido: copia local de la última versión + estado de la conexión ====== */
+const CACHE_KEY="cuadrante_snapshot_v1";
+let cloudLive=false,cloudOnline=false,cloudError=false,cachedTs=null,pendingEdit=false,cacheTimer=null;
+function saveSnapshotCache(val){
+  clearTimeout(cacheTimer);
+  cacheTimer=setTimeout(()=>{try{const raw=JSON.stringify({ts:Date.now(),data:val});if(raw.length<4500000)window.localStorage.setItem(CACHE_KEY,raw)}catch(e){}},2000);
+}
+function loadSnapshotCache(){
+  try{
+    const raw=window.localStorage.getItem(CACHE_KEY);if(!raw)return false;
+    const o=JSON.parse(raw);if(!o||!o.data||typeof o.data!=="object")return false;
+    const next={};Object.keys(o.data).forEach(ek=>{next[decFbKey(ek)]=o.data[ek]});
+    cloudStore=next;cachedTs=o.ts||null;rebuildDateIndexes();return true;
+  }catch(e){return false}
+}
+function cloudReady(){return cloudLive&&cloudOnline}
+function cloudGateMessage(){return "Todavía no hay conexión con la base de datos. Espera unos segundos a que termine de conectar y vuelve a intentarlo."}
+function updateCloudBanner(){
+  let el=document.getElementById("cloudBanner");
+  if(cloudReady()){if(el)el.remove();return}
+  if(document.getElementById("cloudLoading"))return;
+  if(!el){
+    el=document.createElement("div");el.id="cloudBanner";
+    el.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:92%;background:#1f2937;color:#fff;padding:8px 14px;border-radius:20px;font:13px Arial,sans-serif;z-index:9000;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3)";
+    document.body.appendChild(el);
+  }
+  let t;
+  if(cloudError)t="⚠️ No se pudo conectar con la base de datos. Se muestra la última copia guardada; edición y solicitudes bloqueadas.";
+  else if(!cloudLive)t="⏳ Conectando con la base de datos… "+(cachedTs?"Mostrando la copia del "+new Date(cachedTs).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+". ":"")+"Edición y solicitudes bloqueadas hasta conectar.";
+  else t="📡 Sin conexión con la base de datos. No se podrán grabar cambios hasta que vuelva.";
+  el.textContent=t;
+}
+function applyCloudGate(){
+  const ready=cloudReady();
+  ["editBtn","changeRequestBtn","permissionRequestBtn"].forEach(id=>{
+    const b=document.getElementById(id);if(!b)return;
+    b.disabled=!ready;b.style.opacity=ready?"":"0.5";
+  });
+  updateCloudBanner();
+}
 let appInitialized=false;
 dbRef.on("value",snap=>{
   const val=snap.val()||{};
@@ -380,25 +422,41 @@ dbRef.on("value",snap=>{
   Object.keys(val).forEach(ek=>{next[decFbKey(ek)]=val[ek]});
   cloudStore=next;
   rebuildDateIndexes();
+  const first=!cloudLive;
+  cloudLive=true;cloudError=false;
+  saveSnapshotCache(val);
   if(!appInitialized){
     appInitialized=true;
     document.getElementById("cloudLoading")?.remove();
+  }
+  if(first){
+    if(pendingEdit&&isAdmin){editing=true;pendingEdit=false}
     checkYearRollover();
     maybeRequestNotificationPermission();
   }
+  applyCloudGate();
   render();
   checkNoticeAlert();
 },err=>{
+  cloudError=true;applyCloudGate();
   const el=document.getElementById("cloudLoading");
   if(el)el.innerHTML='<div style="font-size:28px">⚠️</div><div style="font-size:15px;color:#900;max-width:320px">No se pudo conectar con la base de datos.<br>Revisa la configuración de Firebase (firebaseConfig) y las reglas de acceso.</div>';
   console.error(err);
 });
+firebase.database().ref(".info/connected").on("value",s=>{cloudOnline=s.val()===true;applyCloudGate()});
+setTimeout(()=>{
+  if(cloudLive||appInitialized)return;
+  if(!loadSnapshotCache())return;
+  appInitialized=true;
+  document.getElementById("cloudLoading")?.remove();
+  render();
+},0);
 auth.onAuthStateChanged(user=>{
   isAdmin=!!user;
   if(!isAdmin){
-    editing=false;sessionStorage.removeItem("quadEdit");
+    editing=false;pendingEdit=false;sessionStorage.removeItem("quadEdit");
   }else if(sessionStorage.getItem("quadEdit")==="1"){
-    editing=true;
+    if(cloudLive)editing=true;else pendingEdit=true;
   }
   if(appInitialized)render();
 });
@@ -619,6 +677,7 @@ function renderChangeRequestList(){const box=document.getElementById("changeRequ
 function initChangeRequestDateListener(){const el=document.getElementById("changeRequestDate");if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",renderChangeRequestSelectors)}const fr=document.getElementById("changeRequestFrom");if(fr&&!fr.dataset.bound){fr.dataset.bound="1";fr.addEventListener("change",renderChangeRequestSelectors)}}
 function toggleChangeRequests(){closePanels();renderChangeRequestSelectors();initChangeRequestDateListener();renderChangeRequestList();renderChangeRequestHistory();const formWrap=document.getElementById("changeRequestFormWrap");if(formWrap)formWrap.style.display=editing?"none":"block";document.getElementById("changeRequestPanel").style.display="block"}
 function submitChangeRequest(){
+  if(!cloudReady()){alert(cloudGateMessage());return}
   const date=document.getElementById("changeRequestDate").value,from=document.getElementById("changeRequestFrom").value,to=document.getElementById("changeRequestTo").value;
   if(date&&from&&!to){alert("No hay otro trabajador de su mismo grupo con quien cambiar ese día.");return}
   if(!date||!from||!to){alert("Completa la fecha y los dos trabajadores.");return}
@@ -771,6 +830,7 @@ function togglePermissionRequests(){
   document.getElementById("permissionRequestPanel").style.display="block";
 }
 function submitPermissionRequest(){
+  if(!cloudReady()){alert(cloudGateMessage());return}
   const worker=document.getElementById("permissionRequestWorker").value,
         start=document.getElementById("permissionRequestStart").value,
         end=document.getElementById("permissionRequestEnd").value,
@@ -1030,6 +1090,7 @@ function printSelectedMonths(){
   setTimeout(()=>{try{window.print()}catch(e){cleanup();alert("No se ha podido abrir la impresión del PDF. Usa un navegador con impresión habilitada.")}},250);
 }
 function render(){
+ applyCloudGate();
  checkYearRollover();
  initCompanyTitle();initPrintSelectors();
  document.getElementById("holidayYear").textContent=year;
@@ -1103,6 +1164,7 @@ function focusNextShiftCell(w,d){
   if(idx>=0&&idx+1<cells.length)cells[idx+1].focus();
 }
 function edit(){
+  if(!cloudReady()){alert(cloudGateMessage());return}
   if(isAdmin){editing=true;sessionStorage.setItem("quadEdit","1");render();return}
   document.getElementById("loginEmail").value="";
   document.getElementById("loginPassword").value="";
@@ -1606,6 +1668,7 @@ function scrollToTodayOnce(){
   wrap.scrollLeft=Math.max(0,target);
 }
 function checkYearRollover(){
+  if(!cloudLive)return;
   // Solo el administrador escribe la compensación de fin de año: así no se duplica
   // si varios trabajadores abren la app a la vez y no se intentan escrituras sin permiso.
   if(!isAdmin)return;
