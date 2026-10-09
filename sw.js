@@ -1,4 +1,4 @@
-const CACHE_NAME = "cuadrante-cache-v14";
+const CACHE_NAME = "cuadrante-cache-v15";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 const NETWORK_TIMEOUT = 3000; // ms que se espera a la red antes de usar la copia guardada
 
