@@ -159,6 +159,8 @@ td:not(.worker-code-cell){font-size:13px}
 }
 td.compensated:not(.imbalance-col),.grid-shift-select.compensated:not(.imbalance-col){background:#fdba74!important;color:#7c2d12!important;font-weight:bold}td.compensated:not(.imbalance-col){box-shadow:inset 0 0 0 2px #ea580c}
 th.today{background:#dc2626!important;color:#fff!important;outline:none;font-weight:bold}
+#panelBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9400}
+.panel.panel-modal{box-sizing:border-box;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,94vw);max-height:88vh;max-height:88dvh;overflow:auto;margin:0;padding:16px;border-radius:14px;z-index:9500;box-shadow:0 10px 40px rgba(0,0,0,.35)}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -677,7 +679,7 @@ function renderChangeRequestSelectors(){
 }
 function renderChangeRequestList(){const box=document.getElementById("changeRequestList");if(!box)return;const rs=getChangeRequests().filter(r=>r.status==="pending").sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));if(!rs.length){box.innerHTML='<div class="small">No hay cambios solicitados pendientes.</div>';return}box.innerHTML=rs.map(r=>`<div class="request-card pending"><b>${escapeHtml(r.date)}</b> — <b>${escapeHtml(r.from)}</b> solicita cambiar con <b>${escapeHtml(r.to)}</b> <span class="badge">Pendiente</span>${editing?`<button class="save" onclick="resolveChangeRequest('${r.id}','accepted')">✓ Aceptar</button><button class="danger" onclick="resolveChangeRequest('${r.id}','denied')">✕ Denegar</button>`:""}</div>`).join("")}
 function initChangeRequestDateListener(){const el=document.getElementById("changeRequestDate");if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",renderChangeRequestSelectors)}const fr=document.getElementById("changeRequestFrom");if(fr&&!fr.dataset.bound){fr.dataset.bound="1";fr.addEventListener("change",renderChangeRequestSelectors)}}
-function toggleChangeRequests(){closePanels();renderChangeRequestSelectors();initChangeRequestDateListener();renderChangeRequestList();renderChangeRequestHistory();const formWrap=document.getElementById("changeRequestFormWrap");if(formWrap)formWrap.style.display=editing?"none":"block";document.getElementById("changeRequestPanel").style.display="block"}
+function toggleChangeRequests(){closePanels();renderChangeRequestSelectors();initChangeRequestDateListener();renderChangeRequestList();renderChangeRequestHistory();const formWrap=document.getElementById("changeRequestFormWrap");if(formWrap)formWrap.style.display=editing?"none":"block";const crList=document.getElementById("changeRequestList");if(crList)crList.style.display=(!editing&&!getChangeRequests().some(r=>r.status==="pending"))?"none":"";openPanelAsModal("changeRequestPanel")}
 function submitChangeRequest(){
   if(!cloudReady()){alert(cloudGateMessage());return}
   const date=document.getElementById("changeRequestDate").value,from=document.getElementById("changeRequestFrom").value,to=document.getElementById("changeRequestTo").value;
@@ -829,7 +831,7 @@ function togglePermissionRequests(){
   renderPermissionRequestHistory();
   const formWrap=document.getElementById("permissionRequestFormWrap");
   if(formWrap)formWrap.style.display=editing?"none":"block";
-  document.getElementById("permissionRequestPanel").style.display="block";
+  openPanelAsModal("permissionRequestPanel");
 }
 function submitPermissionRequest(){
   if(!cloudReady()){alert(cloudGateMessage());return}
@@ -1261,7 +1263,21 @@ function resetGridScroll(){
   const wrap=document.querySelector("#grid")?.closest(".tablewrap");
   if(wrap)wrap.scrollLeft=0;
 }
-function closePanels(){document.getElementById("workerPanel").style.display="none";document.getElementById("holidayPanel").style.display="none";document.getElementById("patternPanel").style.display="none";document.getElementById("statsPanel").style.display="none";document.getElementById("changeRequestPanel").style.display="none";document.getElementById("permissionRequestPanel").style.display="none";document.getElementById("printPanel").style.display="none";document.getElementById("compensationPanel").style.display="none"}
+function resetPanelModal(){
+  ["changeRequestPanel","permissionRequestPanel"].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove("panel-modal")});
+  const bd=document.getElementById("panelBackdrop");if(bd)bd.remove();
+  document.body.style.overflow="";
+}
+function openPanelAsModal(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.style.display="block";
+  if(editing)return; // en modo edición el panel se queda dentro de la página, como antes
+  const bd=document.createElement("div");bd.id="panelBackdrop";bd.onclick=closePanels;document.body.appendChild(bd);
+  el.classList.add("panel-modal");
+  document.body.style.overflow="hidden";
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("panelBackdrop"))closePanels()});
+function closePanels(){resetPanelModal();document.getElementById("workerPanel").style.display="none";document.getElementById("holidayPanel").style.display="none";document.getElementById("patternPanel").style.display="none";document.getElementById("statsPanel").style.display="none";document.getElementById("changeRequestPanel").style.display="none";document.getElementById("permissionRequestPanel").style.display="none";document.getElementById("printPanel").style.display="none";document.getElementById("compensationPanel").style.display="none"}
 function togglePrintPanel(){if(!editing)return;closePanels();initPrintSelectors();document.getElementById("printPanel").style.display="block"}
 function workerTypesAtDate(date){
   // Los tipos también son efectivos por fecha para que el histórico conserve su configuración.
@@ -1624,7 +1640,7 @@ function openStatView(kind){
     rows=ws.map(w=>[w,effectiveFridayYearCount(year,w)]).sort((a,b)=>a[1]-b[1]);
   }else if(kind==="fridayAll"){
     title="🗓️ Viernes de tarde — cómputo general";
-    rows=ws.map(w=>[w,effectiveFridayGeneralCount(w,Math.max(year,new Date().getFullYear()))]);
+    rows=ws.map(w=>[w,effectiveFridayGeneralCount(w,Math.max(year,new Date().getFullYear()))]).sort((a,b)=>a[1]-b[1]);
   }else if(kind==="changes"){
     title="🔄 Cambios grabados";
     const accepted=getChangeRequests().filter(r=>r.status==="accepted");
