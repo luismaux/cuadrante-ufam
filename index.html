@@ -166,6 +166,20 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 .pdf-page table tr td.change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}
 }
 .panel.panel-modal.panel-modal-wide{width:min(900px,96vw)}
+@media (max-width:700px){
+#workerRows .worker-edit-row{flex-wrap:nowrap;gap:5px;margin:6px 0}
+#workerRows .worker-edit-row>b{flex:0 0 auto;min-width:16px;font-size:13px}
+#workerRows .worker-edit-row select.worker-code{flex:0 0 46px;width:46px;min-width:46px;max-width:46px;padding:6px 2px;font-size:13px}
+#workerRows .worker-edit-row input.worker-name{flex:1 1 auto;width:100%;min-width:0;padding:6px 7px;font-size:14px}
+#workerRows .move-worker-btn{flex:0 0 auto;padding:5px 7px}
+#workerRows .delete-worker-btn{flex:0 0 auto;padding:5px 8px!important}
+#holidayRows .row{flex-wrap:nowrap;gap:5px;margin:6px 0}
+#holidayRows .row input[type=date]{flex:0 0 auto;width:auto;padding:6px 5px;font-size:13px}
+#holidayRows .row input[type=date]::-webkit-calendar-picker-indicator{display:none}
+#holidayRows .row input:not([type=date]){flex:1 1 auto;width:100%;min-width:0;padding:6px 7px;font-size:14px}
+#holidayRows .row button{flex:0 0 auto;padding:5px 9px}
+.btn-txt,.hol-tag{display:none}
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -1330,7 +1344,7 @@ function addWorkerRow(){
     <input class="worker-name" placeholder="Nombre del trabajador">
     <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,-1)" title="Subir">▲</button>
     <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,1)" title="Bajar">▼</button>
-    <button class="danger delete-worker-btn" type="button" onclick="removeWorkerRow(this)">🗑 Eliminar</button>`;
+    <button class="danger delete-worker-btn" type="button" onclick="removeWorkerRow(this)" title="Eliminar trabajador" aria-label="Eliminar trabajador">🗑<span class="btn-txt"> Eliminar</span></button>`;
   box.appendChild(div);
   refreshWorkerRowNumbers();
 }
@@ -1371,7 +1385,7 @@ function renderWorkerEditor(){
       <input class="worker-name" value="${escapeHtml(w)}">
       <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,-1)" title="Subir">▲</button>
       <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,1)" title="Bajar">▼</button>
-      <button class="danger delete-worker-btn" type="button" onclick="removeWorkerRow(this)">🗑 Eliminar</button>
+      <button class="danger delete-worker-btn" type="button" onclick="removeWorkerRow(this)" title="Eliminar trabajador" aria-label="Eliminar trabajador">🗑<span class="btn-txt"> Eliminar</span></button>
     </div>`).join("");
   document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{
     const name=row.querySelector(".worker-name").value.trim().toUpperCase();
@@ -1521,9 +1535,9 @@ function renderHolidayRows(){
  items.forEach(it=>{
   if(it.kind==="auto"){
     const date=it.date,isExcluded=excluded.has(date);
-    rows+=`<div class="row"${isExcluded?' style="opacity:.5"':''}><input type="date" value="${date}" disabled><input value="${escapeHtml(holidayName(date))}" disabled><span class="small">Automático</span>${isExcluded?`<span class="badge">Eliminado</span><button onclick="restoreAutoHoliday('${date}')">↺ Restaurar</button>`:`<button class="danger" onclick="removeAutoHoliday('${date}')">Eliminar</button>`}</div>`;
+    rows+=`<div class="row"${isExcluded?' style="opacity:.5"':''}><input type="date" value="${date}" disabled><input value="${escapeHtml(holidayName(date))}" disabled><span class="small hol-tag">Automático</span>${isExcluded?`<span class="badge hol-tag">Eliminado</span><button onclick="restoreAutoHoliday('${date}')" title="Restaurar festivo" aria-label="Restaurar festivo">↺<span class="btn-txt"> Restaurar</span></button>`:`<button class="danger" onclick="removeAutoHoliday('${date}')" title="Eliminar festivo" aria-label="Eliminar festivo">🗑<span class="btn-txt"> Eliminar</span></button>`}</div>`;
   }else{
-    rows+=`<div class="row"><input id="hd_${it.k}" type="date" value="${it.x.date}"><input id="hn_${it.k}" value="${escapeHtml(it.x.name||"Festivo local")}"><button class="danger" onclick="deleteHoliday(${it.k})">Eliminar</button></div>`;
+    rows+=`<div class="row"><input id="hd_${it.k}" type="date" value="${it.x.date}"><input id="hn_${it.k}" value="${escapeHtml(it.x.name||"Festivo local")}"><button class="danger" onclick="deleteHoliday(${it.k})" title="Eliminar festivo" aria-label="Eliminar festivo">🗑<span class="btn-txt"> Eliminar</span></button></div>`;
   }
  });
  document.getElementById("holidayRows").innerHTML=rows||"<p>No hay festivos.</p>";
