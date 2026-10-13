@@ -180,6 +180,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 #holidayRows .row button{flex:0 0 auto;padding:5px 9px}
 .btn-txt,.hol-tag{display:none}
 }
+@media print{#panelBackdrop,#cloudBanner{display:none!important}body{overflow:visible!important}}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -1085,6 +1086,7 @@ function printSelectedMonths(){
   if(monthIndexValue(endY,endM)<monthIndexValue(startY,startM)){alert("El mes final no puede ser anterior al mes inicial.");return}
   const originalY=year,originalM=month,area=document.getElementById("pdfPrintArea");
   if(!area)return;
+  closePanels(); // la ventana de PDF (y su fondo oscuro) no debe quedar delante al imprimir
   const pdfTitle=getCompanyName()||"Cuadrante de turnos";
   const firstDate=new Date(startY,startM,1),lastDate=new Date(endY,endM+1,0);
   const fmtPdfDate=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
