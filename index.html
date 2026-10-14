@@ -1,52 +1,1999 @@
-{
-  "name": "Cuadrante de Turnos",
-  "short_name": "Cuadrante",
-  "description": "Cuadrante de turnos de trabajadores",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "any",
-  "background_color": "#f5f6f8",
-  "theme_color": "#123a6b",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Mi turno",
-      "short_name": "Mi turno",
-      "description": "Ver mi turno de hoy y los próximos días",
-      "url": "./index.html?view=miturno",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
-    }
-  ]
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cuadrante de Turnos</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#123a6b">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cuadrante">
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f5f6f8;color:#222}
+header{background:#123a6b;color:#fff;padding:14px 24px;box-sizing:border-box}
+.header-inner{max-width:1700px;margin:0 auto}
+.header-title-row{display:flex;justify-content:center;margin-bottom:10px}
+.header-actions-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-start}
+h1{font-size:30px;font-weight:800;letter-spacing:.3px;margin:0;text-align:center}#companyTitle[contenteditable="true"]{outline:2px dashed #60a5fa;outline-offset:3px;cursor:text}.print-label{font-weight:bold}.print-btn{background:#e8eefc;font-weight:bold}@media print{
+@page{size:A4 landscape;margin:8mm}
+body{background:#fff!important;color:#14213d}
+header,.toolbar,.date-nav,#printPanel,.legend,#consultStats,#balanceAlert,.panel,.small,.scroll-hint,.tablewrap{display:none!important}
+main{display:block!important;max-width:none!important;margin:0!important;padding:0!important}
+#pdfPrintArea{display:block!important;width:100%!important}
+.pdf-page{display:block!important;page-break-after:always;break-after:page;padding:0;margin:0;box-sizing:border-box}
+.pdf-page:last-child{page-break-after:auto;break-after:auto}
+.pdf-header{display:flex!important;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 0 5mm;padding:0 1mm}
+.pdf-title{font-size:21px;font-weight:700;line-height:1.1;color:#15365f}
+.pdf-range{font-size:9px;margin-top:2px;color:#4e6b8d}
+.pdf-brand{font-size:12px;font-weight:700;color:#15365f;text-align:right;padding-top:2px}
+.pdf-month{background:#e5f0fa;border:1px solid #c5dced;border-radius:5px 5px 0 0;padding:4px 7px;color:#15365f;font-size:13px;font-weight:700;margin:0}
+.pdf-table-wrap{width:100%!important;overflow:visible!important;border:1px solid #c5dced;border-top:0;border-radius:0 0 5px 5px}
+.pdf-page table{width:100%!important;min-width:0!important;table-layout:fixed;border-collapse:collapse;font-size:7px;background:#fff}
+.pdf-page th,.pdf-page td{font-size:7px!important;padding:1.4px 1px!important;height:auto!important;line-height:1.05;border:1px solid #d3dce5;box-sizing:border-box}
+.pdf-page th:first-child,.pdf-page td:first-child{width:20mm!important;text-align:left}
+.pdf-page th.worker,.pdf-page td.worker{position:static!important;min-width:0!important;width:20mm!important;text-align:left;font-weight:700}
+.pdf-page th{background:#f0f5f9!important;color:#15365f;font-weight:700}
+.pdf-page th.holiday{background:#d9dee4!important;color:#4e5660}
+.pdf-page td.holiday{background:#e6e9ed!important;color:#555}
+.pdf-page tr.worker-row-secondary td{background:#e5e8ec!important}
+.pdf-page tr.worker-row-secondary td.worker{background:#d7dce2!important}
+.pdf-page select{display:none!important}.pdf-page .pdf-shift-value{display:inline!important}
+.pdf-page .status-AP{background:#fff3cd!important}.pdf-page .status-V{background:#d1e7dd!important}.pdf-page .status-SS{background:#cfe2ff!important}.pdf-page .status-NAV{background:#e2d9f3!important}.pdf-page .status-LC{background:#cff4fc!important}.pdf-page .status-N{background:#e9d5ff!important}.pdf-page .status-B{background:#f8d7da!important}.pdf-page .status-LE{background:#fde2e2!important}.pdf-page .status-CS{background:#d9f2e6!important}.pdf-page .status-INC{background:#fce4ec!important}
+.pdf-page .change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}.pdf-page .imbalance-col{box-shadow:none!important;background:#fff3cd!important}
+.pdf-legend{display:flex!important;align-items:center;gap:5px;flex-wrap:wrap;margin-top:4mm;padding:2mm 2mm;border:1px solid #d7e0e8;border-radius:5px;background:#fff;font-size:7px;color:#17324d}
+.pdf-legend-item{display:inline-flex!important;align-items:center;gap:2px;white-space:nowrap}.pdf-legend-badge{display:inline-block!important;min-width:15px;padding:1px 3px;border-radius:3px;text-align:center;font-weight:700;border:1px solid #ccd5de}
+.pdf-page.multi-month{padding:0 1mm!important}
+.pdf-page.multi-month .pdf-header{margin:0 0 3mm!important;padding:0!important}
+.pdf-page.multi-month .pdf-title{font-size:19px!important}
+.pdf-page.multi-month .pdf-range{font-size:8px!important}
+.pdf-page.multi-month .pdf-brand{font-size:11px!important}
+.pdf-month-block{margin:0 0 4mm!important;break-inside:avoid!important;page-break-inside:avoid!important}
+.pdf-month-block:last-of-type{margin-bottom:0!important;break-inside:avoid!important;page-break-inside:avoid!important}
+.pdf-month-block .pdf-month{padding:3px 6px!important;font-size:11px!important;border-radius:4px 4px 0 0!important}
+.pdf-month-block .pdf-table-wrap{border-radius:0 0 4px 4px!important}
+.pdf-month-block table{font-size:6.8px!important}
+.pdf-month-block th,.pdf-month-block td{font-size:6.8px!important;padding:1.5px .8px!important;line-height:1.08!important;min-height:7.5mm!important}
+.pdf-month-block th:first-child,.pdf-month-block td:first-child,.pdf-month-block th.worker,.pdf-month-block td.worker{width:20mm!important}
+.pdf-page.multi-month .pdf-legend{margin-top:2mm!important;padding:1.5mm!important;font-size:6.5px!important;gap:4px!important}
+.pdf-page.multi-month .pdf-legend-badge{min-width:14px!important;padding:.5px 2px!important}
+.pdf-page.five-month{padding:0 1mm!important}
+.pdf-page.five-month .pdf-header{margin:0 0 2mm!important;padding:0!important}
+.pdf-page.five-month .pdf-title{font-size:17px!important}
+.pdf-page.five-month .pdf-range{font-size:7px!important}
+.pdf-page.five-month .pdf-brand{font-size:10px!important}
+.pdf-page.five-month .pdf-month-block{margin:0 0 1.2mm!important}
+.pdf-page.five-month .pdf-month-block .pdf-month{padding:1px 5px!important;font-size:8.5px!important;border-radius:3px 3px 0 0!important}
+.pdf-page.five-month .pdf-month-block table{font-size:4.8px!important}
+.pdf-page.five-month .pdf-month-block th,.pdf-page.five-month .pdf-month-block td{font-size:4.8px!important;padding:.45px .35px!important;line-height:.9!important}
+.pdf-page.five-month .pdf-month-block th:first-child,.pdf-page.five-month .pdf-month-block td:first-child,.pdf-page.five-month .pdf-month-block th.worker,.pdf-page.five-month .pdf-month-block td.worker{width:20mm!important}
+.pdf-page.five-month .pdf-legend{margin-top:1mm!important;padding:1mm!important;font-size:5.5px!important;gap:3px!important}
+.pdf-page.five-month .pdf-legend-badge{min-width:12px!important;padding:.3px 1.5px!important}
+.pdf-page.four-month{padding:0 1mm!important}
+.pdf-page.four-month .pdf-header{margin:0 0 3mm!important;padding:0!important}
+.pdf-page.four-month .pdf-title{font-size:18px!important}
+.pdf-page.four-month .pdf-range{font-size:8px!important}
+.pdf-page.four-month .pdf-brand{font-size:10.5px!important}
+.pdf-page.four-month .pdf-month-block{margin:0 0 3.5mm!important}
+.pdf-page.four-month .pdf-month-block .pdf-month{padding:3px 6px!important;font-size:10.5px!important}
+.pdf-page.four-month .pdf-month-block table{font-size:6.6px!important}
+.pdf-page.four-month .pdf-month-block th,.pdf-page.four-month .pdf-month-block td{font-size:6.6px!important;padding:1.3px .7px!important;line-height:1.05!important;height:7mm!important}
+.pdf-page.four-month .pdf-month-block th:first-child,.pdf-page.four-month .pdf-month-block td:first-child,.pdf-page.four-month .pdf-month-block th.worker,.pdf-page.four-month .pdf-month-block td.worker{width:20mm!important}
+.pdf-page.four-month .pdf-legend{margin-top:1.5mm!important;padding:1.5mm!important;font-size:6.5px!important;gap:4px!important}
+.pdf-page.four-month .pdf-legend-badge{min-width:14px!important;padding:.5px 2px!important}
+
+
+.pdf-legend-holiday{background:#e6e9ed!important;color:#555}.pdf-legend-ap{background:#fff3cd!important}.pdf-legend-v{background:#d1e7dd!important}.pdf-legend-ss{background:#cfe2ff!important}.pdf-legend-nav{background:#e2d9f3!important}.pdf-legend-lc{background:#cff4fc!important}.pdf-legend-n{background:#e9d5ff!important}.pdf-legend-b{background:#f8d7da!important}.pdf-legend-le{background:#fde2e2!important}.pdf-legend-cs{background:#d9f2e6!important}.pdf-legend-m{background:#eef2f7!important}.pdf-legend-t{background:#eef2f7!important}.pdf-legend-l{background:#eef2f7!important}.pdf-legend-inc{background:#fce4ec!important}
 }
+button,select,input{font:inherit;padding:7px 10px;border:1px solid #bbb;border-radius:6px}button{cursor:pointer;background:#fff}
+main{padding:16px;max-width:1600px;margin:auto}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.month{font-weight:bold;min-width:180px;text-align:center}
+.date-nav{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.tablewrap{overflow:auto;-webkit-overflow-scrolling:touch;background:#fff;border-radius:8px;box-shadow:0 2px 10px #0001}
+table{border-collapse:collapse;min-width:1100px;width:100%}th,td{border:1px solid #ddd;text-align:center;padding:4px;font-size:12px}
+th{background:#eef0f3;position:sticky;top:0;z-index:2}.today{outline:2px solid #111;outline-offset:-2px}th.worker,td.worker{position:sticky;left:0;background:#fff;z-index:3;text-align:left;font-weight:bold;min-width:125px}th.worker{background:#eef0f3;z-index:4}
+td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;color:#555}.inactive{background:#f7f7f7!important;color:#aaa}
+.legend{margin:12px 0;font-size:13px;display:flex;gap:8px;flex-wrap:wrap}.badge{padding:4px 8px;border-radius:5px;border:1px solid #ccc}
+.status-AP{background:#fff3cd!important}.status-V{background:#d1e7dd!important}.status-SS{background:#cfe2ff!important}.status-NAV{background:#e2d9f3!important}.status-LC{background:#cff4fc!important}.status-N{background:#e9d5ff!important}.status-B{background:#f8d7da!important}.status-LE{background:#fde2e2!important}.status-CS{background:#d9f2e6!important}.status-INC{background:#fce4ec!important}
+.worker-row-secondary{background:#e9ecef}.worker-row-secondary td.worker{background:#dde1e6}
+#editState{font-size:13px;padding:5px 8px;border-radius:5px;background:#fff;color:#333}.panel{display:none;background:#fff;border:1px solid #ddd;border-radius:8px;padding:14px;margin:12px 0}.panel h3{margin-top:0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}.row input{min-width:160px}.danger{background:#f8d7da}.save{background:#d1e7dd;font-weight:bold}.small{font-size:12px;color:#666}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}.statcard{border:1px solid #ddd;border-radius:6px;padding:10px;background:#fafafa}.patternpreview{font-family:monospace;white-space:pre-wrap;margin-top:8px;padding:8px;background:#f7f7f7;border-radius:5px}
+.pattern-table{min-width:1050px}.pattern-table th,.pattern-table td{min-width:48px;height:32px}.pattern-table th.dayhead{font-size:11px}.pattern-table th.weekhead{background:#dde3ea;font-size:11px}.pattern-table td.pattern-name{min-width:145px;text-align:left;font-weight:bold;position:sticky;left:0;background:#fff;z-index:3}.pattern-table th.pattern-name{position:sticky;left:0;z-index:4}.pattern-table td[contenteditable=true]{cursor:text;background:#fff}.pattern-table td[contenteditable=true]:focus{outline:2px solid #2563eb;outline-offset:-2px}.pattern-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.del-pattern-row{float:right;border:0;background:transparent;cursor:pointer;font-size:14px;line-height:1;padding:2px 5px}.del-pattern-row:hover{font-weight:bold}.pattern-name{position:relative;padding-right:34px}.pattern-name .del-pattern-row{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:inline-flex!important;align-items:center;justify-content:center;width:24px;height:24px;border:1px solid #bbb;border-radius:5px;background:#fff;color:#b00020;cursor:pointer;z-index:20;pointer-events:auto;font-weight:700}
+.pattern-table .pattern-name{display:none}
+.pattern-action-head{min-width:95px;position:sticky;left:0;z-index:4;background:#eef0f3}
+.pattern-action{min-width:95px;position:sticky;left:0;background:#fff;z-index:3;text-align:center}
+.delete-worker-btn{display:inline-block!important;visibility:visible!important;opacity:1!important;padding:6px 8px!important;border:1px solid #b00020!important;border-radius:5px!important;background:#f8d7da!important;color:#8b0015!important;cursor:pointer!important;font-weight:700!important;white-space:nowrap!important}
+.delete-worker-btn:hover{background:#f1bfc5!important}
+.move-worker-btn{padding:6px 9px;border:1px solid #bbb;border-radius:5px;background:#eef0f3;cursor:pointer;font-weight:700}
+.move-worker-btn:hover{background:#dde3ea}
+.worker-code{min-width:70px}.grid-shift-select{width:100%;min-width:42px;box-sizing:border-box;padding:5px 2px;border:0;border-radius:0;background:transparent;text-align:center;font-weight:inherit;font-size:12px;cursor:pointer}
+.grid-shift-select:focus{outline:2px solid #2563eb;outline-offset:-2px}
+.grid-shift-select.status-AP{background:#fff3cd!important}.grid-shift-select.status-V{background:#d1e7dd!important}.grid-shift-select.status-SS{background:#cfe2ff!important}.grid-shift-select.status-NAV{background:#e2d9f3!important}.grid-shift-select.status-LC{background:#cff4fc!important}.grid-shift-select.status-N{background:#e9d5ff!important}.grid-shift-select.status-B{background:#f8d7da!important}.grid-shift-select.status-LE{background:#fde2e2!important}.grid-shift-select.status-CS{background:#d9f2e6!important}.grid-shift-select.status-INC{background:#fce4ec!important}.grid-shift-select.change-red{background:#f44336!important;color:#111!important;font-weight:bold}.change-red{background:#f44336!important;color:#111!important}
+
+.worker-code{width:34px;min-width:34px;max-width:34px;text-align:center;font-weight:bold;text-transform:uppercase}
+.worker-code-cell{width:34px;min-width:34px;text-align:center;font-weight:bold}
+#grid.hide-type-col .worker-code-cell{display:none}
+td:not(.worker-code-cell){font-size:13px}
+.worker-edit-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}
+.worker-edit-row input.worker-name{min-width:160px;flex:1}
+.worker-edit-row input.worker-code{flex:0 0 34px}
+.add-worker-btn{background:#d1e7dd;font-weight:bold}
+.change-request-btn{background:#e8eefc;font-weight:bold}.change-request-btn.pending{background:#28a745;color:#fff;border-color:#1e7e34}
+.change-request-panel .request-card{border:1px solid #ddd;border-radius:7px;padding:10px;margin:8px 0;background:#fafafa}.change-request-panel .request-card.pending{border-left:5px solid #62b77b}.change-request-panel .request-card.accepted{border-left:5px solid #d33;background:#fde2e2}.change-request-panel .request-card.denied{border-left:5px solid #999;opacity:.7}.change-request-panel .request-card.cancelled{border-left:5px solid #999;opacity:.55;text-decoration:line-through}.change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}
+.balance-alert{display:block;background:#fff3cd;border-color:#ffe69c;color:#7a5b00}.balance-alert b{color:#7a5b00}.balance-badge{background:#fff;border-color:#e0b400;color:#7a5b00;font-weight:bold}
+.imbalance-col{box-shadow:inset 0 0 0 9999px rgba(255,193,7,.35)}
+.scroll-hint{display:none;font-size:11px;color:#888;text-align:center;padding:4px 0}
+@media (max-width:700px){
+  main{padding:8px}
+  header{padding:10px 12px;gap:6px}
+  h1{font-size:16px}
+  #editState{font-size:11px;padding:4px 6px}
+  button,select,input{padding:8px 9px;font-size:13px;border-radius:5px}
+  .toolbar{gap:6px;margin-bottom:8px}
+  .date-nav{gap:6px;margin-bottom:8px}
+  .toolbar button{flex:0 0 auto}
+  .month{min-width:120px;font-size:14px}
+  #printPanel{gap:6px}
+  .row{gap:6px}
+  .row input,.row select{min-width:0;flex:1 1 120px}
+  table{min-width:900px}
+  th,td{padding:3px;font-size:11px}
+  td:not(.worker-code-cell){font-size:12px}
+  td{min-width:30px;height:34px}
+  th.worker,td.worker{min-width:98px}
+  .grid-shift-select{font-size:11px;padding:6px 1px}
+  .legend{font-size:11px;gap:5px}
+  .badge{padding:3px 6px}
+  .statgrid{grid-template-columns:1fr}
+  .panel{padding:10px}
+  .worker-edit-row,.pattern-actions{gap:6px}
+  .scroll-hint{display:block}
+}
+@media (max-width:420px){
+  h1{font-size:14px}
+  .toolbar button{padding:8px}
+  table{min-width:820px}
+  th.worker,td.worker{min-width:86px}
+}
+td.compensated:not(.imbalance-col),.grid-shift-select.compensated:not(.imbalance-col){background:#fdba74!important;color:#7c2d12!important;font-weight:bold}td.compensated:not(.imbalance-col){box-shadow:inset 0 0 0 2px #ea580c}
+th.today{background:#dc2626!important;color:#fff!important;outline:none;font-weight:bold}
+#panelBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9400}
+.panel.panel-modal{box-sizing:border-box;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,94vw);max-height:88vh;max-height:88dvh;overflow:auto;margin:0;padding:16px;border-radius:14px;z-index:9500;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+@media print{
+.pdf-page table tr td.status-AP{background:#fff3cd!important}.pdf-page table tr td.status-V{background:#d1e7dd!important}.pdf-page table tr td.status-SS{background:#cfe2ff!important}.pdf-page table tr td.status-NAV{background:#e2d9f3!important}.pdf-page table tr td.status-LC{background:#cff4fc!important}.pdf-page table tr td.status-N{background:#e9d5ff!important}.pdf-page table tr td.status-B{background:#f8d7da!important}.pdf-page table tr td.status-LE{background:#fde2e2!important}.pdf-page table tr td.status-CS{background:#d9f2e6!important}.pdf-page table tr td.status-INC{background:#fce4ec!important}
+.pdf-page table tr td.change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}
+}
+.panel.panel-modal.panel-modal-wide{width:min(900px,96vw)}
+@media (max-width:700px){
+#workerRows .worker-edit-row{flex-wrap:nowrap;gap:5px;margin:6px 0}
+#workerRows .worker-edit-row>b{flex:0 0 auto;min-width:16px;font-size:13px}
+#workerRows .worker-edit-row select.worker-code{flex:0 0 46px;width:46px;min-width:46px;max-width:46px;padding:6px 2px;font-size:13px}
+#workerRows .worker-edit-row input.worker-name{flex:1 1 auto;width:100%;min-width:0;padding:6px 7px;font-size:14px}
+#workerRows .move-worker-btn{flex:0 0 auto;padding:5px 7px}
+#workerRows .delete-worker-btn{flex:0 0 auto;padding:5px 8px!important}
+#holidayRows .row{flex-wrap:nowrap;gap:5px;margin:6px 0}
+#holidayRows .row input[type=date]{flex:0 0 auto;width:auto;padding:6px 5px;font-size:13px}
+#holidayRows .row input[type=date]::-webkit-calendar-picker-indicator{display:none}
+#holidayRows .row input:not([type=date]){flex:1 1 auto;width:100%;min-width:0;padding:6px 7px;font-size:14px}
+#holidayRows .row button{flex:0 0 auto;padding:5px 9px}
+.btn-txt,.hol-tag{display:none}
+}
+@media print{#panelBackdrop,#cloudBanner{display:none!important}body{overflow:visible!important}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+<div id="cloudLoading" style="position:fixed;inset:0;background:#f5f6f8;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9999;font-family:Arial,sans-serif;text-align:center;padding:20px">
+  <img src="icon-192.png" alt="Cuadrante" style="width:96px;height:96px;border-radius:20px;box-shadow:0 4px 14px rgba(0,0,0,.15)">
+  <div style="font-size:15px;color:#333">Conectando con la base de datos...</div>
+</div>
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:320px;width:90%;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <h3 style="margin-top:0">🔐 Acceso de administrador</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="loginEmail" type="email" placeholder="Correo del administrador" autocomplete="off" name="admin-user-field">
+      <input id="loginPassword" type="password" placeholder="Contraseña" autocomplete="new-password" name="admin-pass-field">
+      <div id="loginError" style="display:none;color:#b00020;font-size:13px"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+        <button type="button" onclick="closeLoginModal()">Cancelar</button>
+        <button type="button" class="save" onclick="submitLogin()">Entrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="changePassModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:320px;width:90%;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <h3 style="margin-top:0">🔑 Cambiar contraseña</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="oldPassword" type="password" placeholder="Contraseña actual" autocomplete="off" name="old-pass-field">
+      <input id="newPassword1" type="password" placeholder="Nueva contraseña (mín. 6 caracteres)" autocomplete="new-password" name="new-pass-field-1">
+      <input id="newPassword2" type="password" placeholder="Repite la nueva contraseña" autocomplete="new-password" name="new-pass-field-2">
+      <div id="changePassError" style="display:none;color:#b00020;font-size:13px"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+        <button type="button" onclick="closeChangePasswordModal()">Cancelar</button>
+        <button type="button" class="save" onclick="submitChangePassword()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<header>
+  <div class="header-inner">
+  <div class="header-title-row"><h1 id="companyTitle" title="En modo edición puedes cambiar el nombre">Cuadrante de Turnos</h1></div>
+  <div class="header-actions-row">
+<button id="myShiftBtn" type="button" onclick="openMyShift()">👤 Mi turno</button>
+    <span id="editState">Consulta</span>
+    <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición<span id="editBtnDot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #123a6b"></span></button>
+    <div id="statsMenuWrap" style="position:relative">
+      <button id="statsMenuBtn" onclick="toggleStatsMenu()">📊 Estadísticas ▾</button>
+      <div id="statsMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:280px;overflow:hidden">
+        <button type="button" onclick="openStatView('fridayYear')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px">🗓️ Viernes tarde — año actual</button>
+        <button type="button" onclick="openStatView('fridayAll')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🗓️ Viernes tarde — cómputo general</button>
+        <button type="button" onclick="openStatView('changes')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔄 Cambios grabados</button>
+        <button id="statMenuMornings" type="button" onclick="openStatView('mornings')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌅 Mañanas trabajadas</button>
+        <button id="statMenuAfternoons" type="button" onclick="openStatView('afternoons')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌇 Tardes trabajadas</button>
+        <button id="statMenuResetFriday" type="button" onclick="closeStatsMenu();resetFridayOffsets()" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee;color:#b00020">🔄 Resetear compensación de viernes</button>
+      </div>
+    </div>
+    <div id="securityMenuWrap" style="position:relative;display:none">
+      <button id="securityBtn" onclick="toggleSecurityMenu()">🔐 Seguridad ▾</button>
+      <div id="securityMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:180px;overflow:hidden">
+        <button type="button" onclick="closeSecurityMenu();openChangePassword()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px">🔑 Cambiar contraseña</button>
+        <button type="button" onclick="closeSecurityMenu();logout()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔓 Cerrar sesión</button>
+      </div>
+    </div>
+    <button id="saveBtn" class="save" onclick="saveAndView()" style="display:none">✓ Guardar cambios y volver a consulta</button>
+    <button onclick="exitApp()">🚪 Salir</button>
+  </div>
+  </div>
+</header>
+<div id="statViewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:20px;max-width:420px;width:92%;max-height:80vh;overflow:auto;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <h3 id="statViewTitle" style="margin-top:0"></h3>
+    <div id="statViewBody"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button onclick="closeStatView()">Cerrar</button></div>
+  </div>
+</div>
+<main>
+<div class="date-nav">
+<label>Año: <select id="yearSelect" onchange="setYear(this.value)"></select></label>
+<button onclick="changeMonth(-1)">‹</button><select id="monthSelect" onchange="setMonth(this.value)"></select><button onclick="changeMonth(1)">›</button>
+</div>
+<div class="toolbar">
+<div id="gestionWrap" style="position:relative;display:none">
+  <button id="gestionBtn" onclick="toggleGestionMenu()">⚙️ Gestión ▾</button>
+  <div id="gestionMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:180px;overflow:hidden">
+    <button type="button" onclick="closeGestionMenu();toggleWorkers()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px">👥 Trabajadores</button>
+    <button type="button" onclick="closeGestionMenu();toggleHolidays()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">📅 Festivos</button>
+    <button type="button" onclick="closeGestionMenu();togglePatterns()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔄 Pasar turnos</button>
+    <button type="button" onclick="closeGestionMenu();togglePrintPanel()" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">📄 PDF</button>
+  </div>
+</div>
+<div id="compensationWrap" style="position:relative;display:none">
+  <button id="compensationBtn" onclick="toggleCompensationPanel()">⚖️ Compensación</button>
+</div>
+<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+
+<div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta dos meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
+<div id="pdfPrintArea" style="display:none"></div>
+
+<div id="workerPanel" class="panel"><h3>Trabajadores</h3>
+<div class="small">Puedes añadir, eliminar, cambiar el nombre y asignar una categoría (I, S, O, P o PP). Los cambios se aplican desde la fecha indicada; el histórico anterior conserva la plantilla anterior.</div>
+<div id="workerRows"></div>
+<button class="add-worker-btn" onclick="addWorkerRow()">＋ Añadir trabajador</button>
+<button onclick="applyWorkers()">✓ Aplicar cambios</button>
+<button onclick="manualCompensateFridayYear()" title="Resetea al trabajador nuevo a 0 y resta al resto la cantidad de viernes del trabajador anterior que menos tenga; también actualiza el cómputo general">⚖️ Compensar viernes (año actual)</button>
+<button onclick="closePanels()">Cerrar</button></div>
+
+
+<div id="compensationPanel" class="panel"><h3>⚖️ Compensación de turnos</h3>
+<div class="small">Días de <span id="compensationMonthLabel"></span> con distinto número de mañanas y tardes entre los trabajadores. Elige el día y a quién le cambias el turno para igualarlo; esa casilla quedará con fondo <b style="background:#fdba74;color:#7c2d12;padding:0 4px;border-radius:3px">naranja</b> para saber que se compensó así.</div>
+<div class="row">
+<label>Día descompensado: <select id="compensationDay" onchange="renderCompensationWorkers()"></select></label>
+<label>Trabajador: <select id="compensationWorker"></select></label>
+</div>
+<div class="row">
+<button type="button" onclick="applyCompensation()">✓ Aceptar</button>
+<button type="button" onclick="closePanels()">Cerrar</button>
+</div></div>
+
+<div id="patternPanel" class="panel"><h3>🔄 Patrones de turnos</h3>
+<div class="small"><b>Información:</b> Cada fila representa un trabajador y arriba aparecen solamente los días laborables. Sábado y domingo no forman parte de la secuencia. Puedes cambiar cualquier turno, el nombre de la fila, añadir o eliminar filas y crear otros patrones.</div>
+<div class="row"><label>Patrón: <select id="patternSelect" onchange="loadPatternEditor()"></select></label>
+<label>Empezar desde trabajador: <select id="patternWorker"></select></label>
+<label>Fecha de inicio: <input id="patternStart" type="date"></label>
+<label><input id="skipHolidays" type="checkbox"> No aplicar en festivos</label>
+<button class="save" onclick="applyPatternByWorkers()">▶ Aplicar patrón</button></div>
+<div id="patternEditor"></div>
+<div class="pattern-actions"><button onclick="addPatternRow()">＋ Añadir trabajador al patrón</button><button onclick="newPattern()">＋ Nuevo patrón</button><button class="danger" onclick="deletePattern()">Eliminar patrón</button><button onclick="savePattern()">💾 Guardar patrón</button><button onclick="closePanels()">Cerrar</button></div>
+</div>
+<div id="statsPanel" class="panel"><h3>📊 Viernes de tarde</h3>
+<div class="small">Solo muestra trabajadores de tipo S, O o P y cuenta los viernes en los que cada trabajador tiene turno <b>T</b>.</div>
+<div id="statsRows"></div>
+</div>
+<div id="holidayPanel" class="panel"><h3>Festivos de <span id="holidayYear"></span></h3>
+<div class="small">Los festivos automáticos se calculan cada año pudiéndolos eliminar si fuera necesario. Puedes añadir, modificar o eliminar festivos manuales. Todos aparecen en gris, como sábados y domingos.</div>
+<div id="holidayRows"></div>
+<button onclick="addHolidayRow()">＋ Añadir festivo</button>
+<button class="save" onclick="saveHolidays()">✓ Guardar festivos</button>
+<button onclick="closePanels()">Cerrar</button>
+</div>
+
+<div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Grabar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede grabar un cambio de turno con otro de su mismo grupo: los de Protección entre ellos, y los de Investigación solo entre ellos. Indica el día y los dos trabajadores; el cambio se graba en el cuadrante al momento.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>cambia con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Grabar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
+
+<div id="permissionRequestPanel" class="panel change-request-panel"><h3>📄 Solicitar permiso</h3><div id="permissionRequestFormWrap"><div class="small">Cualquier trabajador del desplegable puede solicitar un permiso. Indica el trabajador, el periodo de fechas y el tipo de permiso.</div><div id="permissionRangeHint" class="small" style="margin:4px 0"></div><div class="row"><label>Trabajador: <select id="permissionRequestWorker"></select></label><label>Desde: <input id="permissionRequestStart" type="date"></label><label>Hasta: <input id="permissionRequestEnd" type="date"></label><label>Tipo de permiso: <select id="permissionRequestType">
+<option value="AP">AP Asuntos propios</option><option value="V">V Vacaciones</option><option value="LC">LC Libre compensado</option><option value="NAV">NAV Navidad</option><option value="SS">SS Semana Santa</option>
+</select></label><button class="save" onclick="submitPermissionRequest()">✓ Solicitar</button></div></div><div id="permissionRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de permisos</summary><div id="permissionRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
+
+<div class="scroll-hint">👉 Desliza el cuadrante para ver más días</div>
+<div class="tablewrap"><table id="grid"></table></div>
+<div id="balanceAlert" class="panel balance-alert" style="display:none"></div>
+<div class="legend"><span class="badge">M Mañana</span><span class="badge">T Tarde</span><span class="badge">N Noche</span><span class="badge">AP Asuntos Propios</span><span class="badge">V Vacaciones</span><span class="badge">SS Semana Santa</span><span class="badge">NAV Navidad</span><span class="badge">LC Libre compensado</span><span class="badge">B Baja</span><span class="badge">LE Permiso enfermedad</span><span class="badge">CS Comisión</span><span class="badge">INC Incidencias</span><span class="badge" style="background:#fdba74;color:#7c2d12;font-weight:bold">Turno compensado</span></div>
+</main>
+<script>
+/* ====================================================================
+   CONFIGURACIÓN DE FIREBASE — sustituye estos valores por los de TU
+   proyecto (Firebase Console > Configuración del proyecto > Tus apps).
+   ==================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyBLjoNpHWUFBNXh5pt8bICDGngi_gFIFMs",
+  authDomain: "cuadrante-ufam.firebaseapp.com",
+  databaseURL: "https://cuadrante-ufam-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "cuadrante-ufam",
+  storageBucket: "cuadrante-ufam.firebasestorage.app",
+  messagingSenderId: "822942800304",
+  appId: "1:822942800304:web:048c8d9b03a7ee24e75e75"
+};
+firebase.initializeApp(firebaseConfig);
+const dbRef = firebase.database().ref("cuadrante_data");
+const auth = firebase.auth();
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
+let isAdmin=false;
+
+/* ====================================================================
+   CAPA DE SINCRONIZACIÓN: sustituye el localStorage del navegador por
+   una copia en memoria sincronizada en tiempo real con Firebase, para
+   que todo el resto del código (que usa localStorage) funcione igual
+   pero compartiendo los datos entre todos los que abran el enlace.
+   ==================================================================== */
+let cloudStore={};
+const encFbKey=k=>encodeURIComponent(k).replace(/\./g,"%2E"), decFbKey=k=>decodeURIComponent(k);
+let batchDepth=0,batchPending={};
+function beginBatch(){batchDepth++}
+function endBatch(){
+  batchDepth=Math.max(0,batchDepth-1);
+  if(batchDepth===0&&Object.keys(batchPending).length){
+    const toSend=batchPending;batchPending={};
+    return dbRef.update(toSend);
+  }
+  return null;
+}
+let rosterDateIndex=[],typesDateIndex=[];
+function rebuildDateIndexes(){
+  rosterDateIndex=[];typesDateIndex=[];
+  for(const k in cloudStore){
+    if(k.startsWith("q_roster_date_"))rosterDateIndex.push(k.slice("q_roster_date_".length));
+    else if(k.startsWith("q_worker_types_date_"))typesDateIndex.push(k.slice("q_worker_types_date_".length));
+  }
+  rosterDateIndex.sort();typesDateIndex.sort();
+}
+const localStorage={
+  getItem(k){return Object.prototype.hasOwnProperty.call(cloudStore,k)?cloudStore[k]:null},
+  setItem(k,v){
+    if(!cloudLive){console.warn("Escritura ignorada: aún no hay conexión con la base de datos");return}
+    v=String(v);cloudStore[k]=v;
+    if(k.startsWith("q_roster_date_")||k.startsWith("q_worker_types_date_"))rebuildDateIndexes();
+    if(batchDepth>0){batchPending[encFbKey(k)]=v}
+    else{dbRef.child(encFbKey(k)).set(v)}
+  },
+  removeItem(k){
+    if(!cloudLive){console.warn("Borrado ignorado: aún no hay conexión con la base de datos");return}
+    delete cloudStore[k];
+    if(k.startsWith("q_roster_date_")||k.startsWith("q_worker_types_date_"))rebuildDateIndexes();
+    if(batchDepth>0){batchPending[encFbKey(k)]=null}
+    else{dbRef.child(encFbKey(k)).remove()}
+  },
+  get length(){return Object.keys(cloudStore).length},
+  key(i){return Object.keys(cloudStore)[i]}
+};
+/* ====== Arranque rápido: copia local de la última versión + estado de la conexión ====== */
+const CACHE_KEY="cuadrante_snapshot_v1";
+let cloudLive=false,cloudOnline=false,cloudError=false,cachedTs=null,pendingEdit=false,cacheTimer=null;
+function saveSnapshotCache(val){
+  clearTimeout(cacheTimer);
+  cacheTimer=setTimeout(()=>{try{const raw=JSON.stringify({ts:Date.now(),data:val});if(raw.length<4500000)window.localStorage.setItem(CACHE_KEY,raw)}catch(e){}},2000);
+}
+function loadSnapshotCache(){
+  try{
+    const raw=window.localStorage.getItem(CACHE_KEY);if(!raw)return false;
+    const o=JSON.parse(raw);if(!o||!o.data||typeof o.data!=="object")return false;
+    const next={};Object.keys(o.data).forEach(ek=>{next[decFbKey(ek)]=o.data[ek]});
+    cloudStore=next;cachedTs=o.ts||null;rebuildDateIndexes();return true;
+  }catch(e){return false}
+}
+function cloudReady(){return cloudLive&&cloudOnline}
+function cloudGateMessage(){return "Todavía no hay conexión con la base de datos. Espera unos segundos a que termine de conectar y vuelve a intentarlo."}
+function updateCloudBanner(){
+  let el=document.getElementById("cloudBanner");
+  if(cloudReady()){if(el)el.remove();return}
+  if(document.getElementById("cloudLoading"))return;
+  if(!el){
+    el=document.createElement("div");el.id="cloudBanner";
+    el.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:92%;display:flex;align-items:center;gap:10px;background:#fff;color:#1f2937;padding:8px 14px 8px 10px;border-radius:14px;border:1px solid #d0d5dd;font:13px Arial,sans-serif;z-index:9000;box-shadow:0 2px 10px rgba(0,0,0,.18)";
+    el.innerHTML='<img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:7px;flex:none"><span id="cloudBannerText"></span>';
+    document.body.appendChild(el);
+  }
+  let t;
+  if(cloudError)t="No se pudo conectar con la base de datos. Se muestra la última copia guardada; edición y solicitudes bloqueadas.";
+  else if(!cloudLive)t="Conectando con la base de datos… algún dato puede haber sido modificado";
+  else t="Sin conexión con la base de datos. No se podrán grabar cambios hasta que vuelva.";
+  const tx=document.getElementById("cloudBannerText");if(tx)tx.textContent=t;
+}
+function applyCloudGate(){
+  const ready=cloudReady();
+  ["editBtn","changeRequestBtn","permissionRequestBtn"].forEach(id=>{
+    const b=document.getElementById(id);if(!b)return;
+    b.disabled=!ready;b.style.opacity=ready?"":"0.5";
+  });
+  updateCloudBanner();
+}
+let appInitialized=false;
+dbRef.on("value",snap=>{
+  const val=snap.val()||{};
+  const next={};
+  Object.keys(val).forEach(ek=>{next[decFbKey(ek)]=val[ek]});
+  cloudStore=next;
+  rebuildDateIndexes();
+  const first=!cloudLive;
+  cloudLive=true;cloudError=false;
+  saveSnapshotCache(val);
+  if(!appInitialized){
+    appInitialized=true;
+    document.getElementById("cloudLoading")?.remove();
+  }
+  if(first){
+    if(pendingEdit&&isAdmin){editing=true;pendingEdit=false}
+    checkYearRollover();
+    maybeRequestNotificationPermission();
+  }
+  applyCloudGate();
+  render();
+  checkNoticeAlert();
+},err=>{
+  cloudError=true;applyCloudGate();
+  const el=document.getElementById("cloudLoading");
+  if(el)el.innerHTML='<div style="font-size:28px">⚠️</div><div style="font-size:15px;color:#900;max-width:320px">No se pudo conectar con la base de datos.<br>Revisa la configuración de Firebase (firebaseConfig) y las reglas de acceso.</div>';
+  console.error(err);
+});
+firebase.database().ref(".info/connected").on("value",s=>{cloudOnline=s.val()===true;applyCloudGate()});
+setTimeout(()=>{
+  if(cloudLive||appInitialized)return;
+  if(!loadSnapshotCache())return;
+  appInitialized=true;
+  document.getElementById("cloudLoading")?.remove();
+  render();
+},0);
+auth.onAuthStateChanged(user=>{
+  isAdmin=!!user;
+  if(!isAdmin){
+    editing=false;pendingEdit=false;sessionStorage.removeItem("quadEdit");
+  }else if(sessionStorage.getItem("quadEdit")==="1"){
+    if(cloudLive)editing=true;else pendingEdit=true;
+  }
+  if(appInitialized)render();
+});
+const initialWorkers=[];
+const codes=["","M","T","N","AP","V","SS","NAV","LC","B","LE","CS","INC"];
+const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+let year=new Date().getFullYear(),month=new Date().getMonth(),editing=false;
+const q=k=>localStorage.getItem(k), set=(k,v)=>localStorage.setItem(k,v);
+const shiftKey=(y,m,d,w)=>`q_shift_${y}_${m}_${d}_${w}`, rosterKey=(y,m)=>`q_roster_${y}_${m}`, rosterDateKey=(date)=>`q_roster_date_${date}`, manualHolidayKey=y=>`q_holidays_${y}`;
+const getShift=(y,m,d,w)=>q(shiftKey(y,m,d,w))||"", setShift=(y,m,d,w,v)=>set(shiftKey(y,m,d,w),v);
+
+function pad(n){return String(n).padStart(2,"0")} function fmt(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+
+function easter(Y){let a=Y%19,b=Math.floor(Y/100),c=Y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);return new Date(Y,2,h+l-7*m+22)}
+const excludedAutoHolidayKey=y=>`q_holidays_excluded_${y}`;
+function excludedAutoHolidays(y){try{return JSON.parse(q(excludedAutoHolidayKey(y))||"[]")}catch(e){return[]}}
+function rawAutoHolidayDates(y){
+ const h=[`${y}-01-01`,`${y}-01-06`,`${y}-05-01`,`${y}-08-15`,`${y}-10-12`,`${y}-11-01`,`${y}-12-06`,`${y}-12-08`,`${y}-12-25`,`${y}-04-23`];
+ const e=easter(y),a=new Date(e),b=new Date(e);a.setDate(a.getDate()-3);b.setDate(b.getDate()-2);h.push(fmt(a),fmt(b));
+ return h;
+}
+function autoHolidays(y){
+ // Salamanca 2027: se cargan como manuales y pueden editarse/eliminarse.
+ const excluded=new Set(excludedAutoHolidays(y));
+ return new Set(rawAutoHolidayDates(y).filter(d=>!excluded.has(d)));
+}
+function manualHolidays(y){try{return JSON.parse(q(manualHolidayKey(y))||"[]")}catch(e){return[]}}
+function allHolidays(y){let a=[...autoHolidays(y),...manualHolidays(y).map(x=>x.date)];return new Set(a)}
+function getWorkersAtDate(date){
+  let bestDate="";
+  for(const rd of rosterDateIndex){if(rd<=date&&rd>bestDate)bestDate=rd}
+  if(bestDate){try{const r=q("q_roster_date_"+bestDate);if(r)return JSON.parse(r)}catch(e){}}
+  const z=new Date(date+"T00:00:00"),y=z.getFullYear(),m=z.getMonth();let best=null;
+  for(let yy=2020;yy<=y;yy++)for(let mm=0;mm<12;mm++){if(yy>y||(yy===y&&mm>m))break;let r=q(rosterKey(yy,mm));if(r)try{best=JSON.parse(r)}catch(e){}}
+  return best||[...initialWorkers];
+}
+function _originalGetWorkers(y,m){return getWorkersAtDate(`${y}-${pad(m+1)}-01`)}
+function getWorkers(year,month){return _originalGetWorkers(year,month).slice()}
+
+const defaultPatternsV6=[];
+
+function getPatterns(){
+ try{
+  const x=JSON.parse(q("q_patterns_v6")||"null");
+  if(Array.isArray(x)&&x.length){
+   const existingNames=new Set(x.map(p=>p.name));
+   const missing=defaultPatternsV6.filter(p=>!existingNames.has(p.name));
+   if(missing.length){
+    const merged=x.concat(JSON.parse(JSON.stringify(missing)));
+    set("q_patterns_v6",JSON.stringify(merged));
+    return merged;
+   }
+   return x;
+  }
+ }catch(e){}
+ const x=JSON.parse(JSON.stringify(defaultPatternsV6)); set("q_patterns_v6",JSON.stringify(x)); return x;
+}
+function eliminarFilaPatron(btn){
+  const tr=btn.closest("tr");
+  if(!tr)return;
+  const tbody=tr.parentElement;
+  const total=tbody.querySelectorAll("tr").length;
+  if(total<=1){
+    alert("El patrón debe tener al menos un trabajador.");
+    return;
+  }
+  const nombre=(tr.querySelector(".pattern-name")?.textContent||"").replace("✕","").trim();
+  if(confirm("¿Eliminar esta fila del patrón"+(nombre?": "+nombre:"")+"?")){
+    tr.remove();
+  }
+}
+
+function savePatterns(x){set("q_patterns_v6",JSON.stringify(x))}
+function fillPatternSelect(){
+ const ps=getPatterns(),sel=document.getElementById("patternSelect");
+ sel.innerHTML=ps.map((p,i)=>`<option value="${i}">${escapeHtml(p.name)}</option>`).join("");
+}
+function normalizeRow(r){
+ let a=Array.isArray(r)?r.slice():[];
+ return a.map(v=>codes.includes(v)?v:"");
+}
+function rowHasShifts(r){return normalizeRow(r).some(Boolean)}
+function patternLength(p){return Math.max(1,...p.rows.map(r=>normalizeRow(r).length),25)}
+function weekCount(p){return Math.max(1,Math.ceil(patternLength(p)/5))}
+function loadPatternEditor(){
+ const ps=getPatterns();
+ if(!ps.length){
+   document.getElementById("patternEditor").innerHTML='<div class="small">No hay ningún patrón guardado. Pulsa "＋ Nuevo patrón" para crear el primero, con las filas y turnos que quieras (no está ligado a ningún trabajador concreto: al aplicarlo, se reparte desde el trabajador que elijas hacia abajo).</div>';
+   return;
+ }
+ const i=+document.getElementById("patternSelect").value||0,p=ps[i];
+ const len=Math.max(5,patternLength(p)),weeks=Math.ceil(len/5);
+ let html=`<div class="row"><label>Nombre del patrón: <input id="patternName" value="${escapeHtml(p.name)}"></label>
+ <span class="small">La secuencia de turnos se puede modificar libremente. Cada fila es un puesto por posición, no un trabajador concreto.</span></div>`;
+ html+=`<div class="tablewrap"><table class="pattern-table"><thead><tr><th class="pattern-name">Puesto</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks},(_,w)=>`<th class="weekhead" colspan="5">${w+1}ª semana</th>`).join("")}</tr><tr><th class="pattern-name">Puesto</th><th class="pattern-action-head">Acción</th>${Array.from({length:weeks*5},(_,c)=>`<th class="dayhead">${["L","M","X","J","V"][c%5]}<br>${(c%5)+1}</th>`).join("")}</tr></thead><tbody>`;
+ const rows=p.rows.length?p.rows:[{name:"",shifts:Array(25).fill("")}];
+ for(let r=0;r<rows.length;r++){
+  const row=normalizeRow(rows[r].shifts||rows[r]);
+  const name=`Puesto ${r+1}`;
+  html+=`<tr data-row="${r}"><td class="pattern-name" title="Posición ${r+1} del patrón: al aplicarlo se reparte por orden, no por nombre">${escapeHtml(name)}</td><td class="pattern-action"><button type="button" class="danger delete-worker-btn" onclick="eliminarFilaPatron(this)">🗑 Eliminar</button></td>`;
+  for(let c=0;c<weeks*5;c++){const v=row[c]||"";html+=`<td contenteditable="true" data-pr="${r}" data-pc="${c}">${escapeHtml(v)}</td>`;}
+  html+=`</tr>`;
+ }
+ html+=`</tbody></table></div><div class="small">Turnos admitidos: M, T, N, AP, V, SS, NAV, LC, B, LE y CS. En el cuadrante principal también puedes editar sábados, domingos y festivos.</div>`;
+ document.getElementById("patternEditor").innerHTML=html;
+ document.querySelectorAll("#patternEditor td[contenteditable=true]").forEach(td=>td.addEventListener("blur",()=>{
+   let v=td.textContent.trim().toUpperCase();if(!codes.includes(v))v="";td.textContent=v;
+ }));
+}
+function refreshPatternWorkerOptions(){
+ const sw=document.getElementById("patternWorker"),startEl=document.getElementById("patternStart");
+ if(!sw||!startEl)return;
+ const prev=sw.value;
+ const ws=getWorkersAtDate(startEl.value||fmt(new Date()));
+ sw.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
+ if(ws.includes(prev))sw.value=prev;
+}
+function initPatternStartListener(){
+ const el=document.getElementById("patternStart");
+ if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",refreshPatternWorkerOptions)}
+}
+function togglePatterns(){
+ if(!editing)return;closePanels();fillPatternSelect();
+ document.getElementById("patternStart").value=fmt(mondayOf(`${year}-${pad(month+1)}-01`));
+ refreshPatternWorkerOptions();
+ initPatternStartListener();
+ document.getElementById("skipHolidays").checked=false;
+ loadPatternEditor();document.getElementById("patternPanel").style.display="block";
+}
+function readPatternFromEditor(){
+ const ps=getPatterns();
+ if(!ps.length)return null;
+ const i=+document.getElementById("patternSelect").value||0;
+ const rows=[...document.querySelectorAll("#patternEditor tbody tr")].map((tr,r)=>{
+   const name=`Puesto ${r+1}`;
+   const shifts=[...tr.querySelectorAll('td[data-pr]')].map(td=>{let v=td.textContent.trim().toUpperCase();return codes.includes(v)?v:""});
+   return {name,shifts};
+ });
+ ps[i].name=document.getElementById("patternName").value.trim()||`Patrón ${i+1}`;ps[i].rows=rows;savePatterns(ps);return ps[i];
+}
+
+function savePattern(){
+ if(!readPatternFromEditor()){alert("No hay ningún patrón. Crea uno nuevo primero.");return}
+ fillPatternSelect();alert("Patrón guardado.");
+}
+function newPattern(){
+ let ps=getPatterns();
+ if(ps.length)readPatternFromEditor();
+ ps=getPatterns();
+ ps.push({name:`Patrón ${ps.length+1}`,rows:[{name:"",shifts:Array(25).fill("")}]});
+ savePatterns(ps);fillPatternSelect();document.getElementById("patternSelect").value=ps.length-1;loadPatternEditor();
+}
+function addPatternRow(){
+ if(!getPatterns().length){alert("No hay ningún patrón. Crea uno nuevo primero.");return}
+ readPatternFromEditor();let ps=getPatterns(),i=+document.getElementById("patternSelect").value||0,p=ps[i];
+ const next=p.rows.length+1;p.rows.push({name:"",shifts:Array(patternLength(p)).fill("")});
+ savePatterns(ps);loadPatternEditor();
+}
+function removePatternRow(r){
+ let ps=getPatterns();if(!ps.length)return;
+ let i=+document.getElementById("patternSelect").value||0,p=ps[i];
+ if(p.rows.length<=1){alert("El patrón debe tener al menos una fila.");return}
+ if(confirm("¿Eliminar esta fila del patrón?")){readPatternFromEditor();p=ps[i];p.rows.splice(r,1);savePatterns(ps);loadPatternEditor();}
+}
+function deletePattern(){
+ let ps=getPatterns();
+ if(!ps.length)return;
+ let i=+document.getElementById("patternSelect").value||0;
+ if(ps.length<=1){
+   if(confirm("¿Eliminar este patrón? No quedará ningún patrón guardado.")){ps.splice(i,1);savePatterns(ps);fillPatternSelect();loadPatternEditor();}
+   return;
+ }
+ if(confirm("¿Eliminar este patrón?")){ps.splice(i,1);savePatterns(ps);fillPatternSelect();loadPatternEditor();}
+}
+function applyPatternByWorkers(){
+ const p=readPatternFromEditor();
+ if(!p){alert("No hay ningún patrón para aplicar. Crea uno nuevo primero.");return}
+ const startDate=document.getElementById("patternStart").value,workers=getWorkersAtDate(startDate),startWorker=document.getElementById("patternWorker").value;
+ let startIndex=workers.indexOf(startWorker);if(startIndex<0){alert("Selecciona el trabajador desde el que empezar.");return}
+ let start=mondayOf(document.getElementById("patternStart").value),skipHol=document.getElementById("skipHolidays").checked,written=0,assigned=0;
+ beginBatch();
+ for(let r=0;r<p.rows.length;r++){
+  const row=normalizeRow(p.rows[r].shifts||p.rows[r]);
+  if(!rowHasShifts(row)) continue; // Las filas vacías del Excel no consumen un trabajador.
+  const w=workers[(startIndex+assigned)%workers.length];assigned++;
+  for(let c=0;c<row.length;c++){
+   if(!row[c])continue;
+   let dt=new Date(start);dt.setDate(dt.getDate()+Math.floor(c/5)*7+(c%5));
+   let y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate(),ds=fmt(dt);
+   if(dt.getDay()!==0&&dt.getDay()!==6&&(!skipHol||!allHolidays(y).has(ds))){setShift(y,m,d,w,row[c]);written++;}
+  }
+ }
+ endBatch();
+ closePanels();render();alert(`Se han aplicado ${written} turnos empezando por ${startWorker}.`);
+}
+
+function mondayOf(v){let x=new Date(v+"T00:00:00"),day=x.getDay();x.setDate(x.getDate()-(day===0?6:day-1));return x}
+function getChangeRequests(){try{return JSON.parse(q("q_change_requests")||"[]")}catch(e){return[]}}
+function saveChangeRequests(x){set("q_change_requests",JSON.stringify(x))}
+function changeEligibleWorkers(date){const dt=new Date(date+"T00:00:00");if(Number.isNaN(dt.getTime()))return[];return getWorkersAtDate(date).filter(w=>["S","O","P","PP"].includes(workerTypeAtDate(w,date)))}
+function changeGroup(w,date){return workerTypeAtDate(w,date)==="PP"?"PP":"SOP"}
+function renderChangeRequestSelectors(){
+  const dateEl=document.getElementById("changeRequestDate");if(!dateEl)return;
+  if(!dateEl.value)dateEl.value=fmt(new Date());
+  const date=dateEl.value,ws=changeEligibleWorkers(date),from=document.getElementById("changeRequestFrom"),to=document.getElementById("changeRequestTo"),of=from.value,ot=to.value;
+  const opt=w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`;
+  from.innerHTML=ws.map(opt).join("");
+  if(ws.includes(of))from.value=of;
+  // Solo se puede cambiar con alguien del mismo grupo: PP con PP, y S, O y P entre ellos.
+  const partners=ws.filter(w=>w!==from.value&&changeGroup(w,date)===changeGroup(from.value,date));
+  to.innerHTML=partners.map(opt).join("");
+  if(partners.includes(ot))to.value=ot;
+  from.disabled=ws.length<2;to.disabled=partners.length<1;
+}
+function renderChangeRequestList(){const box=document.getElementById("changeRequestList");if(!box)return;const rs=getChangeRequests().filter(r=>r.status==="pending").sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));if(!rs.length){box.innerHTML='<div class="small">No hay cambios solicitados pendientes.</div>';return}box.innerHTML=rs.map(r=>`<div class="request-card pending"><b>${escapeHtml(r.date)}</b> — <b>${escapeHtml(r.from)}</b> solicita cambiar con <b>${escapeHtml(r.to)}</b> <span class="badge">Pendiente</span>${editing?`<button class="save" onclick="resolveChangeRequest('${r.id}','accepted')">✓ Aceptar</button><button class="danger" onclick="resolveChangeRequest('${r.id}','denied')">✕ Denegar</button>`:""}</div>`).join("")}
+function initChangeRequestDateListener(){const el=document.getElementById("changeRequestDate");if(el&&!el.dataset.bound){el.dataset.bound="1";el.addEventListener("change",renderChangeRequestSelectors)}const fr=document.getElementById("changeRequestFrom");if(fr&&!fr.dataset.bound){fr.dataset.bound="1";fr.addEventListener("change",renderChangeRequestSelectors)}}
+function toggleChangeRequests(){closePanels();renderChangeRequestSelectors();initChangeRequestDateListener();renderChangeRequestList();renderChangeRequestHistory();const formWrap=document.getElementById("changeRequestFormWrap");if(formWrap)formWrap.style.display=editing?"none":"block";const crList=document.getElementById("changeRequestList");if(crList)crList.style.display=(!editing&&!getChangeRequests().some(r=>r.status==="pending"))?"none":"";openPanelAsModal("changeRequestPanel")}
+function submitChangeRequest(){
+  if(!cloudReady()){alert(cloudGateMessage());return}
+  const date=document.getElementById("changeRequestDate").value,from=document.getElementById("changeRequestFrom").value,to=document.getElementById("changeRequestTo").value;
+  if(date&&from&&!to){alert("No hay otro trabajador de su mismo grupo con quien cambiar ese día.");return}
+  if(!date||!from||!to){alert("Completa la fecha y los dos trabajadores.");return}
+  if(from===to){alert("Los dos trabajadores deben ser diferentes.");return}
+  const eligible=changeEligibleWorkers(date);
+  if(!eligible.includes(from)||!eligible.includes(to)){alert("Los dos trabajadores deben ser de tipo S, O, P o PP en esa fecha.");return}
+  if(changeGroup(from,date)!==changeGroup(to,date)){alert("Los trabajadores PP solo pueden cambiar con otros PP, y los S, O y P solo entre ellos.");return}
+  const dt=new Date(date+"T00:00:00");
+  if(Number.isNaN(dt.getTime())){alert("La fecha del cambio no es válida.");return}
+  const y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate();
+  const a=getShift(y,m,d,from),b=getShift(y,m,d,to);
+  if(a===b){alert("Los dos trabajadores tienen el mismo turno ese día, no hay nada que cambiar.");return}
+  const rs=getChangeRequests();
+  const now=new Date().toISOString();
+  rs.push({id:"cr_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),date,from,to,status:"accepted",createdAt:now,resolvedAt:now,prevFrom:a,prevTo:b});
+  beginBatch();
+  setShift(y,m,d,from,b);
+  setShift(y,m,d,to,a);
+  markAcceptedChange(y,m,d,from);
+  markAcceptedChange(y,m,d,to);
+  saveChangeRequests(rs);
+  const sent=endBatch();
+  closePanels();render();
+  if(sent&&typeof sent.then==="function"){
+    sent.then(()=>alert("Cambio grabado correctamente.")).catch(err=>{console.error(err);alert("No se pudo grabar el cambio. Revisa la conexión y vuelve a intentarlo.")});
+  }else{
+    alert("Cambio grabado correctamente.");
+  }
+}
+function markAcceptedChange(y,m,d,w){set(`q_change_red_${y}_${m}_${d}_${w}`,"1")}
+function unmarkAcceptedChange(y,m,d,w){set(`q_change_red_${y}_${m}_${d}_${w}`,"0")}
+function isAcceptedChange(y,m,d,w){return q(`q_change_red_${y}_${m}_${d}_${w}`)==="1"}
+function resolveChangeRequest(id,status){
+  const rs=getChangeRequests(),r=rs.find(x=>x.id===id);
+  if(!r||r.status!=="pending")return;
+  beginBatch();
+  if(status==="accepted"){
+    const dt=new Date(r.date+"T00:00:00");
+    if(Number.isNaN(dt.getTime())){endBatch();alert("La fecha del cambio no es válida.");return}
+    const y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate();
+    const workers=getWorkersAtDate(r.date);
+    if(!workers.includes(r.from)||!workers.includes(r.to)){endBatch();alert("Uno de los trabajadores ya no está activo en esa fecha.");return}
+    const a=getShift(y,m,d,r.from),b=getShift(y,m,d,r.to);
+    setShift(y,m,d,r.from,b);
+    setShift(y,m,d,r.to,a);
+    markAcceptedChange(y,m,d,r.from);
+    markAcceptedChange(y,m,d,r.to);
+    r.prevFrom=a;r.prevTo=b;
+  }
+  r.status=status;r.resolvedAt=new Date().toISOString();
+  saveChangeRequests(rs);
+  endBatch();
+  render();
+  renderChangeRequestList();
+  const formWrap=document.getElementById("changeRequestFormWrap");
+  if(formWrap)formWrap.style.display=editing?"none":"block";
+  renderChangeRequestHistory();
+}
+function cancelChangeRequest(id){
+  const rs=getChangeRequests(),r=rs.find(x=>x.id===id);
+  if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
+  if(!confirm("¿Anular esta solicitud de cambio? "+(r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"")))return;
+  beginBatch();
+  if(r.status==="accepted"){
+    const dt=new Date(r.date+"T00:00:00");
+    if(!Number.isNaN(dt.getTime())){
+      const y=dt.getFullYear(),m=dt.getMonth(),d=dt.getDate();
+      if(r.prevFrom!==undefined)setShift(y,m,d,r.from,r.prevFrom);
+      if(r.prevTo!==undefined)setShift(y,m,d,r.to,r.prevTo);
+      unmarkAcceptedChange(y,m,d,r.from);
+      unmarkAcceptedChange(y,m,d,r.to);
+    }
+  }
+  r.status="cancelled";r.resolvedAt=new Date().toISOString();
+  saveChangeRequests(rs);
+  endBatch();
+  render();
+  renderChangeRequestList();
+  renderChangeRequestHistory();
+}
+function monthKey(y,m){return `${y}-${pad(m+1)}`}
+function renderChangeRequestHistory(){
+  const box=document.getElementById("changeRequestHistory");if(!box)return;
+  const mk=monthKey(year,month);
+  const rs=getChangeRequests().filter(r=>String(r.date||"").slice(0,7)===mk).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+  if(!rs.length){box.innerHTML=`<div class="small">No hay historial de cambios en ${months[month]} de ${year}.</div>`;return}
+  const labels={pending:"Pendiente",accepted:"Grabado",denied:"Denegado",cancelled:"Anulado"};
+  box.innerHTML=rs.map(r=>`<div class="request-card ${r.status}"><b>${escapeHtml(r.date)}</b> — <b>${escapeHtml(r.from)}</b> ⇄ <b>${escapeHtml(r.to)}</b> <span class="badge">${labels[r.status]||r.status}</span>${(r.status==="pending"||r.status==="accepted")?`<button class="danger" onclick="cancelChangeRequest('${r.id}')">✕ Anular</button>`:""}</div>`).join("");
+}
+const permissionTypeNames={AP:"Asuntos propios",V:"Vacaciones",LC:"Libre compensado",NAV:"Navidad",SS:"Semana Santa"};
+function getPermissionRequests(){try{return JSON.parse(q("q_permission_requests")||"[]")}catch(e){return[]}}
+function savePermissionRequests(x){set("q_permission_requests",JSON.stringify(x))}
+function permissionEligibleWorkers(date){const dt=new Date(date+"T00:00:00");if(Number.isNaN(dt.getTime()))return[];return getWorkersAtDate(date).filter(w=>["I","S","O","P","PP"].includes(workerTypeAtDate(w,date)))}
+function forEachDateInRange(startStr,endStr,cb){const d=new Date(startStr+"T00:00:00"),end=new Date(endStr+"T00:00:00");if(Number.isNaN(d.getTime())||Number.isNaN(end.getTime())||d>end)return;while(d<=end){cb(d.getFullYear(),d.getMonth(),d.getDate(),fmt(d));d.setDate(d.getDate()+1)}}
+function permissionDateLimits(){
+  const t=new Date();t.setHours(0,0,0,0);
+  const min=fmt(t);
+  const y=t.getFullYear(),m=t.getMonth()+2,day=t.getDate();
+  const last=new Date(y,m+1,0).getDate();
+  const max=fmt(new Date(y,m,Math.min(day,last)));
+  return {min,max};
+}
+function renderPermissionRequestSelectors(){
+  const startEl=document.getElementById("permissionRequestStart");if(!startEl)return;
+  const endEl=document.getElementById("permissionRequestEnd");
+  const lim=permissionDateLimits();
+  startEl.min=endEl.min=lim.min;startEl.max=endEl.max=lim.max;
+  if(!startEl.value||startEl.value<lim.min||startEl.value>lim.max)startEl.value=lim.min;
+  if(!endEl.value||endEl.value<startEl.value||endEl.value>lim.max)endEl.value=startEl.value;
+  setPermissionRangeHint("");
+  const ws=permissionEligibleWorkers(startEl.value),sel=document.getElementById("permissionRequestWorker"),ov=sel.value;
+  sel.innerHTML=ws.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
+  if(ws.includes(ov))sel.value=ov;
+  sel.disabled=ws.length<1;
+}
+function niceDate(x){return String(x).split("-").reverse().join("/")}
+function setPermissionRangeHint(warn){
+  const el=document.getElementById("permissionRangeHint");if(!el)return;
+  const lim=permissionDateLimits();
+  if(warn){el.style.color="#b00020";el.style.fontWeight="bold";el.textContent=warn;return}
+  el.style.color="";el.style.fontWeight="";
+  el.textContent="Solo puedes solicitar permisos desde hoy ("+niceDate(lim.min)+") hasta dos meses después ("+niceDate(lim.max)+").";
+}
+function clampPermissionDate(el){
+  // Los móviles dejan elegir días fuera de min/max: se corrige aquí y se avisa.
+  const lim=permissionDateLimits();
+  if(el.value&&el.value>lim.max){el.value=lim.max;return "Esa fecha queda fuera del periodo permitido. Se ha ajustado al "+niceDate(lim.max)+", el último día que se puede solicitar."}
+  if(el.value&&el.value<lim.min){el.value=lim.min;return "No se pueden solicitar permisos de días pasados. Se ha ajustado a hoy ("+niceDate(lim.min)+")."}
+  return "";
+}
+function initPermissionRequestDateListener(){
+  const s=document.getElementById("permissionRequestStart"),e=document.getElementById("permissionRequestEnd");
+  if(s&&!s.dataset.bound){s.dataset.bound="1";s.addEventListener("change",()=>{const msg=clampPermissionDate(s);if(e&&e.value<s.value)e.value=s.value;renderPermissionRequestSelectors();if(msg)setPermissionRangeHint(msg)})}
+  if(e&&!e.dataset.bound){e.dataset.bound="1";e.addEventListener("change",()=>{const msg=clampPermissionDate(e);if(s&&e.value<s.value)e.value=s.value;setPermissionRangeHint(msg)})}
+}
+function renderPermissionRequestList(){
+  const box=document.getElementById("permissionRequestList");if(!box)return;
+  const rs=getPermissionRequests().filter(r=>r.status==="pending").sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+  if(!rs.length){box.innerHTML='<div class="small">No hay permisos solicitados pendientes.</div>';return}
+  box.innerHTML=rs.map(r=>`<div class="request-card pending"><b>${escapeHtml(r.worker)}</b> solicita <b>${escapeHtml(r.type)} (${escapeHtml(permissionTypeNames[r.type]||r.type)})</b> del <b>${escapeHtml(r.start)}</b> al <b>${escapeHtml(r.end)}</b> <span class="badge">Pendiente</span>${editing?`<button class="save" onclick="resolvePermissionRequest('${r.id}','accepted')">✓ Aceptar</button><button class="danger" onclick="resolvePermissionRequest('${r.id}','denied')">✕ Denegar</button>`:""}</div>`).join("");
+}
+function togglePermissionRequests(){
+  closePanels();
+  renderPermissionRequestSelectors();
+  initPermissionRequestDateListener();
+  renderPermissionRequestList();
+  renderPermissionRequestHistory();
+  const formWrap=document.getElementById("permissionRequestFormWrap");
+  if(formWrap)formWrap.style.display=editing?"none":"block";
+  openPanelAsModal("permissionRequestPanel");
+}
+function submitPermissionRequest(){
+  if(!cloudReady()){alert(cloudGateMessage());return}
+  const worker=document.getElementById("permissionRequestWorker").value,
+        start=document.getElementById("permissionRequestStart").value,
+        end=document.getElementById("permissionRequestEnd").value,
+        type=document.getElementById("permissionRequestType").value;
+  if(!worker||!start||!end||!type){alert("Completa el trabajador, las fechas y el tipo de permiso.");return}
+  if(end<start){alert("La fecha de fin no puede ser anterior a la de inicio.");return}
+  const lim=permissionDateLimits();
+  if(start<lim.min||end>lim.max){
+    const nice=x=>x.split("-").reverse().join("/");
+    alert("Solo se pueden solicitar permisos desde hoy ("+nice(lim.min)+") hasta dos meses después ("+nice(lim.max)+"). Para fechas fuera de ese periodo, habla con un administrador.");return;
+  }
+  const eligible=permissionEligibleWorkers(start);
+  if(!eligible.includes(worker)){alert("El trabajador debe ser de tipo I, S, O, P o PP en esa fecha.");return}
+  const rs=getPermissionRequests();
+  rs.push({id:"pr_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),worker,start,end,type,status:"pending",createdAt:new Date().toISOString()});
+  savePermissionRequests(rs);
+  closePanels();render();
+  alert("Permiso solicitado. Queda pendiente de aceptación.");
+}
+function resolvePermissionRequest(id,status){
+  const rs=getPermissionRequests(),r=rs.find(x=>x.id===id);
+  if(!r||r.status!=="pending")return;
+  beginBatch();
+  if(status==="accepted"){
+    const skipNonWorkdays=["V","SS","NAV","AP","LC","LE"].includes(r.type);
+    const applied=[],coverage=[];
+    forEachDateInRange(r.start,r.end,(y,m,d,ds)=>{
+      if(skipNonWorkdays){
+        const dow=new Date(y,m,d).getDay();
+        if(dow===0||dow===6||allHolidays(y).has(ds))return;
+      }
+      const workers=getWorkersAtDate(ds);
+      if(workers.includes(r.worker)){
+        const prev=getShift(y,m,d,r.worker);
+        applied.push({y,m,d,prev});
+        setShift(y,m,d,r.worker,r.type);
+        // Si el permiso es de un trabajador PP que ese día tenía turno, el otro PP que queda trabajando pasa de tarde a mañana.
+        if(workerTypeAtDate(r.worker,ds)==="PP"&&(prev==="M"||prev==="T")){
+          workers.forEach(o=>{
+            if(o===r.worker||workerTypeAtDate(o,ds)!=="PP")return;
+            if(getShift(y,m,d,o)==="T"){coverage.push({y,m,d,w:o,prev:"T"});setShift(y,m,d,o,"M")}
+          });
+        }
+      }
+    });
+    r.applied=applied;r.coverage=coverage;
+  }
+  r.status=status;r.resolvedAt=new Date().toISOString();
+  savePermissionRequests(rs);
+  endBatch();
+  render();
+  renderPermissionRequestList();
+  const formWrap=document.getElementById("permissionRequestFormWrap");
+  if(formWrap)formWrap.style.display=editing?"none":"block";
+  renderPermissionRequestHistory();
+}
+function cancelPermissionRequest(id){
+  const rs=getPermissionRequests(),r=rs.find(x=>x.id===id);
+  if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
+  if(!confirm("¿Anular esta solicitud de permiso? "+(r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"")))return;
+  if(r.status==="accepted"&&Array.isArray(r.applied)){
+    beginBatch();
+    r.applied.forEach(a=>setShift(a.y,a.m,a.d,r.worker,a.prev));
+    // El compañero PP vuelve a la tarde solo si nadie ha tocado su casilla desde entonces.
+    if(Array.isArray(r.coverage))r.coverage.forEach(c=>{if(getShift(c.y,c.m,c.d,c.w)==="M")setShift(c.y,c.m,c.d,c.w,c.prev)});
+    endBatch();
+  }
+  r.status="cancelled";r.resolvedAt=new Date().toISOString();
+  savePermissionRequests(rs);
+  render();
+  renderPermissionRequestList();
+  renderPermissionRequestHistory();
+}
+function monthOverlapsRange(y,m,startStr,endStr){
+  const first=fmt(new Date(y,m,1)),last=fmt(new Date(y,m+1,0));
+  return startStr<=last&&endStr>=first;
+}
+function renderPermissionRequestHistory(){
+  const box=document.getElementById("permissionRequestHistory");if(!box)return;
+  const rs=getPermissionRequests().filter(r=>monthOverlapsRange(year,month,r.start,r.end)).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+  if(!rs.length){box.innerHTML=`<div class="small">No hay historial de permisos en ${months[month]} de ${year}.</div>`;return}
+  const labels={pending:"Pendiente",accepted:"Aceptado",denied:"Denegado",cancelled:"Anulado"};
+  box.innerHTML=rs.map(r=>`<div class="request-card ${r.status}"><b>${escapeHtml(r.worker)}</b> — <b>${escapeHtml(r.type)} (${escapeHtml(permissionTypeNames[r.type]||r.type)})</b> del <b>${escapeHtml(r.start)}</b> al <b>${escapeHtml(r.end)}</b> <span class="badge">${labels[r.status]||r.status}</span>${(r.status==="accepted"&&Array.isArray(r.coverage)&&r.coverage.length)?`<div class="small">↪ ${escapeHtml([...new Set(r.coverage.map(c=>c.w))].join(", "))} pasa a M ${r.coverage.length} ${r.coverage.length===1?"día":"días"} de tarde.</div>`:""}${(r.status==="pending"||r.status==="accepted")?`<button class="danger" onclick="cancelPermissionRequest('${r.id}')">✕ Anular</button>`:""}</div>`).join("");
+}
+function toggleStats(){renderStats();document.getElementById("statsPanel").style.display="block"}
+function computeDayCounts(y,m,d,ds){
+  const activeWorkers=getWorkersAtDate(ds).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,ds)));
+  let mCount=0,tCount=0;
+  activeWorkers.forEach(w=>{
+    const v=getShift(y,m,d,w);
+    if(v==="M")mCount++;else if(v==="T")tCount++;
+  });
+  return{m:mCount,t:tCount};
+}
+function imbalanceOverrideKey(y,m,d){return `q_imbalance_ok_${y}_${m}_${d}`}
+function isImbalanceOverridden(y,m,d){return q(imbalanceOverrideKey(y,m,d))==="1"}
+function computeImbalances(y,m){
+  const hol=allHolidays(y),n=daysInMonth(y,m),out=[];
+  for(let d=1;d<=n;d++){
+    const date=new Date(y,m,d),ds=fmt(date),offWeekend=date.getDay()===0||date.getDay()===6;
+    if(offWeekend||hol.has(ds))continue;
+    if(isImbalanceOverridden(y,m,d))continue;
+    const{m:mCount,t:tCount}=computeDayCounts(y,m,d,ds);
+    const total=mCount+tCount;
+    if(total===0)continue;
+    const expectedM=Math.ceil(total/2),expectedT=Math.floor(total/2);
+    if(mCount!==expectedM||tCount!==expectedT)out.push({d,weekday:["D","L","M","X","J","V","S"][date.getDay()],m:mCount,t:tCount});
+  }
+  return out;
+}
+function compensatedKey(y,m,d,w){return `q_comp_${y}_${m}_${d}_${w}`}
+function markCompensated(y,m,d,w){set(compensatedKey(y,m,d,w),"1")}
+function unmarkCompensated(y,m,d,w){set(compensatedKey(y,m,d,w),"0")}
+function isCompensated(y,m,d,w){return q(compensatedKey(y,m,d,w))==="1"}
+function imbalanceDirection(y,m,d,ds){
+  const{m:mCount,t:tCount}=computeDayCounts(y,m,d,ds);
+  const total=mCount+tCount,expectedM=Math.ceil(total/2),expectedT=Math.floor(total/2);
+  if(mCount>expectedM)return "M";
+  if(tCount>expectedT)return "T";
+  return null;
+}
+function toggleCompensationPanel(){
+  if(!editing)return;
+  closePanels();
+  document.getElementById("compensationMonthLabel").textContent=`${months[month]} ${year}`;
+  renderCompensationDays();
+  document.getElementById("compensationPanel").style.display="block";
+}
+function renderCompensationDays(){
+  const imbalances=computeImbalances(year,month);
+  const dsel=document.getElementById("compensationDay");
+  if(!imbalances.length){
+    dsel.innerHTML=`<option value="">No hay días descompensados este mes</option>`;
+    document.getElementById("compensationWorker").innerHTML="";
+    return;
+  }
+  dsel.innerHTML=imbalances.map(x=>`<option value="${x.d}">${x.d} ${x.weekday} (M:${x.m} T:${x.t})</option>`).join("");
+  renderCompensationWorkers();
+}
+function renderCompensationWorkers(){
+  const d=+document.getElementById("compensationDay").value||0;
+  const wsel=document.getElementById("compensationWorker");
+  if(!d){wsel.innerHTML="";return}
+  const ds=fmt(new Date(year,month,d));
+  const dir=imbalanceDirection(year,month,d,ds);
+  if(!dir){wsel.innerHTML=`<option value="">Ese día ya está equilibrado</option>`;return}
+  const workers=getWorkersAtDate(ds).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,ds))&&getShift(year,month,d,w)===dir);
+  if(!workers.length){
+    wsel.innerHTML=`<option value="">No hay nadie en el turno que sobra (${dir==="M"?"Mañana":"Tarde"}) ese día</option>`;
+    return;
+  }
+  wsel.innerHTML=workers.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)} (ahora ${dir==="M"?"Mañana":"Tarde"})</option>`).join("");
+}
+function applyCompensation(){
+  if(!editing)return;
+  const d=+document.getElementById("compensationDay").value||0;
+  const w=document.getElementById("compensationWorker").value;
+  if(!d||!w){alert("Elige un día y un trabajador.");return}
+  const ds=fmt(new Date(year,month,d));
+  const dir=imbalanceDirection(year,month,d,ds);
+  if(!dir){alert("Ese día ya no está descompensado.");renderCompensationDays();return}
+  const newShift=dir==="M"?"T":"M";
+  if(!confirm(`¿Cambiar el turno de ${w} el día ${d} de ${dir==="M"?"Mañana":"Tarde"} a ${newShift==="M"?"Mañana":"Tarde"} para compensar el cuadrante?`))return;
+  setShift(year,month,d,w,newShift);
+  markCompensated(year,month,d,w);
+  closePanels();
+  render();
+  alert("Turno compensado.");
+}
+function confirmDismissImbalance(d){
+  if(!editing)return;
+  if(confirm("¿Desmarcar descuadre por necesidades del servicio?")){
+    set(imbalanceOverrideKey(year,month,d),"1");
+    render();
+  }
+}
+function renderBalanceAlert(imbalances){
+  const box=document.getElementById("balanceAlert");if(!box)return;
+  if(!imbalances||!imbalances.length){box.style.display="none";box.innerHTML="";return}
+  box.style.display="block";
+  box.innerHTML=`<b>⚠️ Cuadrante descompensado en ${months[month]} ${year}</b><div class="small">Días descuadrados (distinto número de mañanas y tardes)${editing?" — pincha un día para desmarcarlo":""}:</div>`+
+    imbalances.map(x=>`<span class="badge balance-badge"${editing?` style="cursor:pointer" onclick="confirmDismissImbalance(${x.d})"`:""}>${x.d} ${x.weekday}</span>`).join(" ");
+}
+function countFridayT(y,w){let total=0;for(let m=0;m<12;m++)for(let d=1;d<=daysInMonth(y,m);d++){let dt=new Date(y,m,d);if(dt.getDay()===5&&getShift(y,m,d,w)==="T")total++}return total}
+function countMonthFridayT(y,m,w){let total=0;for(let d=1;d<=daysInMonth(y,m);d++){let dt=new Date(y,m,d);if(dt.getDay()===5&&getShift(y,m,d,w)==="T")total++}return total}
+function renderStats(){
+ const ws=getWorkers(year,month);
+ document.getElementById("statsRows").innerHTML='<div class="statgrid">'+ws.map(w=>`<div class="statcard"><b>${escapeHtml(w)}</b><br>Viernes T en ${year}: <b>${effectiveFridayYearCount(year,w)}</b><br>Viernes T en ${months[month]}: <b>${countMonthFridayT(year,month,w)}</b></div>`).join("")+'</div>';
+}
+function getCompanyName(){return q("q_company_name")||"Cuadrante de Turnos"}
+function saveCompanyName(){const el=document.getElementById("companyTitle");if(!el)return;const name=el.textContent.trim()||"Cuadrante de Turnos";set("q_company_name",name);el.textContent=name}
+function initCompanyTitle(){const el=document.getElementById("companyTitle");if(!el)return;el.textContent=getCompanyName();el.contentEditable=editing?"true":"false";if(!el.dataset.bound){el.dataset.bound="1";el.addEventListener("blur",saveCompanyName);el.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();el.blur()}})}}
+function initPrintSelectors(){
+  const sm=document.getElementById("printStartMonth"),sy=document.getElementById("printStartYear"),em=document.getElementById("printEndMonth"),ey=document.getElementById("printEndYear");
+  if(!sm||!sy||!em||!ey)return;
+  const old={sm:sm.value,sy:sy.value,em:em.value,ey:ey.value};
+  sm.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+  em.innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+  const minY=Math.min(2020,year-2),maxY=Math.max(2035,year+3),years=[];
+  for(let y=minY;y<=maxY;y++)years.push(y);
+  const opts=years.map(y=>`<option value="${y}">${y}</option>`).join("");
+  sy.innerHTML=opts;ey.innerHTML=opts;
+  sm.value=old.sm!==""?old.sm:String(month);sy.value=old.sy!==""&&years.includes(+old.sy)?old.sy:String(year);
+  em.value=old.em!==""?old.em:String(month);ey.value=old.ey!==""&&years.includes(+old.ey)?old.ey:String(year);
+}
+function buildPrintTableForMonth(y,m){
+  const savedY=year,savedM=month;
+  year=y;month=m;render();
+  const source=document.getElementById("grid");
+  if(!source){year=savedY;month=savedM;render();return ""}
+  const table=source.cloneNode(true);
+  table.removeAttribute("id");
+  table.querySelectorAll("select.grid-shift-select").forEach(sel=>{
+    const span=document.createElement("span");span.className="pdf-shift-value";span.textContent=sel.options[sel.selectedIndex]?.text||"";sel.replaceWith(span);
+  });
+  // En el PDF no mostramos la columna "Tipo"; solo el nombre del trabajador y los turnos.
+  table.querySelectorAll("tr").forEach(row=>{
+    const first=row.firstElementChild;
+    if(first && first.classList.contains("worker-code-cell")) first.remove();
+  });
+  table.querySelectorAll(".today").forEach(el=>el.classList.remove("today"));
+  return table.outerHTML;
+}
+function monthIndexValue(y,m){return y*12+m}
+function printSelectedMonths(){
+  const sm=document.getElementById("printStartMonth"),sy=document.getElementById("printStartYear"),em=document.getElementById("printEndMonth"),ey=document.getElementById("printEndYear");
+  if(!sm||!sy||!em||!ey)return;
+  const startY=+sy.value,startM=+sm.value,endY=+ey.value,endM=+em.value;
+  if(monthIndexValue(endY,endM)<monthIndexValue(startY,startM)){alert("El mes final no puede ser anterior al mes inicial.");return}
+  const originalY=year,originalM=month,area=document.getElementById("pdfPrintArea");
+  if(!area)return;
+  closePanels(); // la ventana de PDF (y su fondo oscuro) no debe quedar delante al imprimir
+  const pdfTitle=getCompanyName()||"Cuadrante de turnos";
+  const firstDate=new Date(startY,startM,1),lastDate=new Date(endY,endM+1,0);
+  const fmtPdfDate=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  const legend=[
+    ["M","Mañana","m"],["T","Tarde","t"],["N","Noche","n"],["AP","Asuntos Propios","ap"],["V","Vacaciones","v"],["SS","Semana Santa","ss"],["NAV","Navidad","nav"],["LC","Libre compensado","lc"],["B","Baja","b"],["LE","Permiso enfermedad","le"],["CS","Comisión","cs"],["INC","Incidencias","inc"]
+  ];
+  const legendHtml=legend.map(([code,label,cls])=>`<span class="pdf-legend-item"><span class="pdf-legend-badge pdf-legend-${cls}">${code}</span>${label}</span>`).join("")+`<span class="pdf-legend-item"><span class="pdf-legend-badge pdf-legend-holiday"> </span>Festivo / Fin de semana</span>`;
+
+  // Se agrupan hasta 4 meses en cada página A4 horizontal para mejorar legibilidad.
+  const monthsToPrint=[];
+  for(let idx=monthIndexValue(startY,startM);idx<=monthIndexValue(endY,endM);idx++){
+    monthsToPrint.push({y:Math.floor(idx/12),m:idx%12});
+  }
+
+  let html="";
+  for(let pageStart=0;pageStart<monthsToPrint.length;pageStart+=4){
+    const pageMonths=monthsToPrint.slice(pageStart,pageStart+4);
+    const pageLabel=pageMonths.length===1
+      ? `${months[pageMonths[0].m]} ${pageMonths[0].y}`
+      : `${months[pageMonths[0].m]} ${pageMonths[0].y} – ${months[pageMonths[pageMonths.length-1].m]} ${pageMonths[pageMonths.length-1].y}`;
+    let blocks="";
+    pageMonths.forEach(({y,m})=>{
+      const table=buildPrintTableForMonth(y,m);
+      blocks+=`<div class="pdf-month-block"><div class="pdf-month">${escapeHtml(months[m])} ${y}</div><div class="pdf-table-wrap">${table}</div></div>`;
+    });
+    html+=`<section class="pdf-page multi-month four-month"><div class="pdf-header"><div><div class="pdf-title">${escapeHtml(pdfTitle)}</div><div class="pdf-range">Del ${fmtPdfDate(firstDate)} al ${fmtPdfDate(lastDate)}</div></div><div class="pdf-brand">${escapeHtml(pageLabel)}</div></div>${blocks}<div class="pdf-legend">${legendHtml}</div></section>`;
+  }
+
+  year=originalY;month=originalM;render();
+  area.innerHTML=html;
+  if(!html){alert("No se ha podido preparar el PDF.");return}
+  const cleanup=()=>{area.innerHTML="";area.style.display="none";window.removeEventListener("afterprint",cleanup);render()};
+  area.style.display="block";
+  window.addEventListener("afterprint",cleanup);
+  setTimeout(()=>{try{window.print()}catch(e){cleanup();alert("No se ha podido abrir la impresión del PDF. Usa un navegador con impresión habilitada.")}},250);
+}
+function render(){
+ applyCloudGate();
+ checkYearRollover();
+ initCompanyTitle();initPrintSelectors();
+ document.getElementById("holidayYear").textContent=year;
+ const ys=document.getElementById("yearSelect");
+ const realYear=new Date().getFullYear();
+ const minYear=2026,maxYear=Math.max(realYear,year)+3;
+ const wantedYears=[];for(let y=minYear;y<=maxYear;y++)wantedYears.push(y);
+ const curYears=[...ys.options].map(o=>+o.value);
+ if(curYears.length!==wantedYears.length||curYears.some((v,i)=>v!==wantedYears[i])){
+   ys.innerHTML=wantedYears.map(y=>`<option value="${y}">${y}</option>`).join("");
+ }
+ ys.value=year;
+ const ms=document.getElementById("monthSelect");
+ if(!ms.dataset.filled){
+   ms.innerHTML=months.map((mn,i)=>`<option value="${i}">${mn}</option>`).join("");
+   ms.dataset.filled="1";
+ }
+ ms.value=month;
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
+ const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display=(!editing&&isAdmin&&(pendingChanges||pendingPermissions))?"block":"none";
+ const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
+ for(let d=1;d<=n;d++){const date=new Date(year,month,d);workerSets.push(getWorkersAtDate(fmt(date)))}
+ const imbalances=computeImbalances(year,month),imbalanceDays=new Set(imbalances.map(x=>x.d));
+ const workers=[...new Set(workerSets.flat())];
+ const typeOrder={I:0,S:1,O:2,P:3,PP:4};
+ const sortDate=`${year}-${pad(month+1)}-01`;
+ workers.sort((a,b)=>{
+   const ta=typeOrder[workerTypeAtDate(a,sortDate)]??99,tb=typeOrder[workerTypeAtDate(b,sortDate)]??99;
+   return ta-tb;
+ });
+ let s="<thead><tr><th class='worker-code-cell'>Tipo</th><th class='worker'>Trabajador</th>";
+ for(let d=1;d<=n;d++){let date=new Date(year,month,d),ds=fmt(date),offWeekend=date.getDay()===0||date.getDay()===6,off=offWeekend||hol.has(ds),imb=imbalanceDays.has(d);s+=`<th class="${off?"holiday ":""}${imb?"imbalance-col ":""}${year===new Date().getFullYear()&&month===new Date().getMonth()&&d===new Date().getDate()?"today":""}">${d}<br>${["D","L","M","X","J","V","S"][date.getDay()]}</th>`}s+="</tr></thead><tbody>";
+
+ for(const w of workers){
+   const workerDate=`${year}-${pad(month+1)}-01`,wtype=workerTypeAtDate(w,workerDate);
+   s+=`<tr class="${["I","PP"].includes(wtype)?"worker-row-secondary":""}"><td class="worker-code-cell">${escapeHtml(wtype)}</td><td class="worker">${escapeHtml(w)}</td>`;
+   for(let d=1;d<=n;d++){
+     let v=getShift(year,month,d,w),date=new Date(year,month,d),ds=fmt(date),offWeekend=date.getDay()===0||date.getDay()===6,off=offWeekend||hol.has(ds),active=workerSets[d-1].includes(w),imb=imbalanceDays.has(d);
+     let sp=v&&["AP","V","SS","NAV","LC","N","B","LE","CS","INC"].includes(v)?`status-${v}`:"";const acceptedChange=isAcceptedChange(year,month,d,w);const compensated=isCompensated(year,month,d,w);
+     if(editing&&active){
+       const opts=(codes.includes(v)||!v?codes:[...codes,v]).map(c=>`<option value="${escapeHtml(c)}"${c===v?" selected":""}>${escapeHtml(c||"—")}</option>`).join("");
+       s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${imb?" imbalance-col":""}${compensated?" compensated":""}" data-w="${escapeHtml(w)}" data-d="${d}"><select class="grid-shift-select ${sp}${acceptedChange?" change-red":""}${imb?" imbalance-col":""}${compensated?" compensated":""}" aria-label="Turno de ${escapeHtml(w)} día ${d}">${opts}</select></td>`;
+     }else{
+       s+=`<td class="${sp}${acceptedChange?" change-red":""}${off?" holiday":""}${!active?" inactive":""}${imb?" imbalance-col":""}${compensated?" compensated":""}">${active?escapeHtml(v):""}</td>`;
+     }
+   }
+   s+="</tr>";
+ }
+ s+="</tbody>";document.getElementById("grid").innerHTML=s;document.getElementById("grid").classList.toggle("hide-type-col",!editing);
+ renderBalanceAlert(imbalances);
+ scrollToTodayOnce();
+ if(document.getElementById("changeRequestPanel")?.style.display==="block")renderChangeRequestHistory();
+ if(document.getElementById("permissionRequestPanel")?.style.display==="block")renderPermissionRequestHistory();
+
+ if(editing){
+   document.querySelectorAll(".grid-shift-select").forEach(sel=>{
+     sel.addEventListener("change",()=>{
+       const td=sel.closest("td"),v=sel.value,w=td.dataset.w,d=+td.dataset.d;
+       setShift(year,month,d,w,v);
+       unmarkCompensated(year,month,d,w);
+       render();
+       focusNextShiftCell(w,d);
+     });
+   });
+ }
+}
+function focusNextShiftCell(w,d){
+  const cells=[...document.querySelectorAll("#grid td[data-w][data-d] select.grid-shift-select")];
+  const idx=cells.findIndex(sel=>{const td=sel.closest("td");return td.dataset.w===w&&+td.dataset.d===d});
+  if(idx>=0&&idx+1<cells.length)cells[idx+1].focus();
+}
+function edit(){
+  if(!cloudReady()){alert(cloudGateMessage());return}
+  if(isAdmin){editing=true;sessionStorage.setItem("quadEdit","1");render();return}
+  document.getElementById("loginEmail").value="";
+  document.getElementById("loginPassword").value="";
+  document.getElementById("loginError").style.display="none";
+  document.getElementById("loginModal").style.display="flex";
+  document.getElementById("loginEmail").focus();
+}
+function closeLoginModal(){document.getElementById("loginModal").style.display="none"}
+function submitLogin(){
+  const email=document.getElementById("loginEmail").value.trim();
+  const pass=document.getElementById("loginPassword").value;
+  const errEl=document.getElementById("loginError");
+  errEl.style.display="none";
+  if(!email||!pass){errEl.textContent="Introduce correo y contraseña.";errEl.style.display="block";return}
+  auth.signInWithEmailAndPassword(email,pass).then(()=>{
+    editing=true;sessionStorage.setItem("quadEdit","1");
+    closeLoginModal();
+    render();
+  }).catch(()=>{
+    errEl.textContent="Correo o contraseña incorrectos.";
+    errEl.style.display="block";
+  });
+}
+function saveAndView(){editing=false;sessionStorage.removeItem("quadEdit");closePanels();render();alert("Cambios guardados y modo consulta activado.")}
+function logout(){auth.signOut();editing=false;sessionStorage.removeItem("quadEdit");closePanels();render()}
+function exitApp(){
+  if(!confirm("¿Seguro que quieres salir del cuadrante?"))return;
+  window.close();
+  setTimeout(()=>{
+    document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial,sans-serif;font-size:18px;color:#333;text-align:center;padding:20px">Ya puedes cerrar esta pestaña.</div>';
+  },300);
+}
+function toggleSecurityMenu(){
+  const m=document.getElementById("securityMenu");
+  m.style.display=m.style.display==="block"?"none":"block";
+}
+function closeSecurityMenu(){document.getElementById("securityMenu").style.display="none"}
+function toggleGestionMenu(){
+  const m=document.getElementById("gestionMenu");
+  m.style.display=m.style.display==="block"?"none":"block";
+}
+function closeGestionMenu(){document.getElementById("gestionMenu").style.display="none"}
+document.addEventListener("click",e=>{
+  const wrap=document.getElementById("securityMenuWrap");
+  if(wrap&&!wrap.contains(e.target))closeSecurityMenu();
+  const gwrap=document.getElementById("gestionWrap");
+  if(gwrap&&!gwrap.contains(e.target))closeGestionMenu();
+});
+function openChangePassword(){
+  document.getElementById("oldPassword").value="";
+  document.getElementById("newPassword1").value="";
+  document.getElementById("newPassword2").value="";
+  document.getElementById("changePassError").style.display="none";
+  document.getElementById("changePassModal").style.display="flex";
+  document.getElementById("oldPassword").focus();
+}
+function closeChangePasswordModal(){document.getElementById("changePassModal").style.display="none"}
+function submitChangePassword(){
+  const oldPass=document.getElementById("oldPassword").value;
+  const p1=document.getElementById("newPassword1").value;
+  const p2=document.getElementById("newPassword2").value;
+  const errEl=document.getElementById("changePassError");
+  errEl.style.display="none";
+  const user=auth.currentUser;
+  if(!user){errEl.textContent="No hay ninguna sesión activa.";errEl.style.display="block";return}
+  if(!oldPass||!p1||!p2){errEl.textContent="Rellena los tres campos.";errEl.style.display="block";return}
+  if(p1.length<6){errEl.textContent="La nueva contraseña debe tener al menos 6 caracteres.";errEl.style.display="block";return}
+  if(p1!==p2){errEl.textContent="Las dos contraseñas nuevas no coinciden.";errEl.style.display="block";return}
+  const cred=firebase.auth.EmailAuthProvider.credential(user.email,oldPass);
+  user.reauthenticateWithCredential(cred).then(()=>user.updatePassword(p1)).then(()=>{
+    closeChangePasswordModal();
+    alert("Contraseña actualizada correctamente. Úsala la próxima vez que inicies sesión.");
+  }).catch(()=>{
+    errEl.textContent="La contraseña actual no es correcta o ha ocurrido un error.";
+    errEl.style.display="block";
+  });
+}
+function changeMonth(d){
+  month+=d;
+  if(month>11){month=0;year++}
+  if(month<0){month=11;year--}
+  render();
+  resetGridScroll();
+}
+function setYear(v){
+  year=+v;
+  render();
+  resetGridScroll();
+}
+function setMonth(v){month=+v;render();resetGridScroll()}
+function resetGridScroll(){
+  const wrap=document.querySelector("#grid")?.closest(".tablewrap");
+  if(wrap)wrap.scrollLeft=0;
+}
+function resetPanelModal(){
+  ["changeRequestPanel","permissionRequestPanel","workerPanel","holidayPanel","printPanel"].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove("panel-modal","panel-modal-wide")});
+  const bd=document.getElementById("panelBackdrop");if(bd)bd.remove();
+  document.body.style.overflow="";
+}
+function openPanelAsModal(id,always,wide){
+  const el=document.getElementById(id);if(!el)return;
+  el.style.display="block";
+  if(editing&&!always)return; // solicitudes: en modo edición el panel se queda dentro de la página, como antes
+  const bd=document.createElement("div");bd.id="panelBackdrop";bd.onclick=closePanels;document.body.appendChild(bd);
+  el.classList.add("panel-modal");if(wide)el.classList.add("panel-modal-wide");
+  document.body.style.overflow="hidden";
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("panelBackdrop"))closePanels()});
+function closePanels(){resetPanelModal();document.getElementById("workerPanel").style.display="none";document.getElementById("holidayPanel").style.display="none";document.getElementById("patternPanel").style.display="none";document.getElementById("statsPanel").style.display="none";document.getElementById("changeRequestPanel").style.display="none";document.getElementById("permissionRequestPanel").style.display="none";document.getElementById("printPanel").style.display="none";document.getElementById("compensationPanel").style.display="none"}
+function togglePrintPanel(){if(!editing)return;closePanels();initPrintSelectors();openPanelAsModal("printPanel",true,true)}
+function workerTypesAtDate(date){
+  // Los tipos también son efectivos por fecha para que el histórico conserve su configuración.
+  let bestDate="";
+  for(const rd of typesDateIndex){if(rd<=date&&rd>bestDate)bestDate=rd}
+  if(bestDate){try{const raw=q("q_worker_types_date_"+bestDate);if(raw)return JSON.parse(raw)}catch(e){}}
+  try{return JSON.parse(q("q_worker_types")||"{}")}catch(e){return {}}
+}
+function workerTypeAtDate(name,date){
+  const types=workerTypesAtDate(date);
+  const v=String(types[name]||"").toUpperCase();
+  return ["I","S","O","P","PP"].includes(v)?v:"";
+}
+function saveWorkerTypesAtDate(date,names,codesByName){
+  const out={};
+  names.forEach((name,i)=>{out[name]=codesByName[i]||""});
+  set("q_worker_types_date_"+date,JSON.stringify(out));
+  set("q_worker_types",JSON.stringify(out));
+}
+function workerEditorRows(){
+  const rows=document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]");
+  return [...rows].map((row,i)=>({
+    name:row.querySelector(".worker-name").value.trim().toUpperCase(),
+    code:row.querySelector(".worker-code").value.trim().toUpperCase(),
+    original:(row.dataset.original||"").trim().toUpperCase()
+  }));
+}
+function addWorkerRow(){
+  const box=document.getElementById("workerRows");
+  const rows=box.querySelectorAll(".worker-edit-row[data-worker-row]");
+  const i=rows.length;
+  const div=document.createElement("div");
+  div.className="worker-edit-row";div.dataset.workerRow="1";div.dataset.original="";
+  div.innerHTML=`<b>${i+1}.</b>
+    <select class="worker-code" title="Categoría: I, S, O, P o PP"><option value="">—</option><option value="I">I</option><option value="S">S</option><option value="O">O</option><option value="P">P</option><option value="PP">PP</option></select>
+    <input class="worker-name" placeholder="Nombre del trabajador">
+    <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,-1)" title="Subir">▲</button>
+    <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,1)" title="Bajar">▼</button>
+    <button class="danger delete-worker-btn" type="button" onclick="removeWorkerRow(this)" title="Eliminar trabajador" aria-label="Eliminar trabajador">🗑<span class="btn-txt"> Eliminar</span></button>`;
+  box.appendChild(div);
+  refreshWorkerRowNumbers();
+}
+function removeWorkerRow(btn){
+  const row=btn.closest(".worker-edit-row");
+  if(row)row.remove();
+  refreshWorkerRowNumbers();
+}
+function moveWorkerRow(btn,dir){
+  const row=btn.closest(".worker-edit-row");
+  if(!row)return;
+  if(dir<0){
+    const prev=row.previousElementSibling;
+    if(prev&&prev.classList.contains("worker-edit-row"))row.parentElement.insertBefore(row,prev);
+  }else{
+    const next=row.nextElementSibling;
+    if(next&&next.classList.contains("worker-edit-row"))row.parentElement.insertBefore(next,row);
+  }
+  refreshWorkerRowNumbers();
+}
+function refreshWorkerRowNumbers(){
+  document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{
+    const n=row.querySelector("b");if(n)n.textContent=(i+1)+".";
+  });
+}
+let workerEditorBase={names:[],types:{}};
+function renderWorkerEditor(){
+  const ws=getWorkers(year,month);
+  // Si todavía no hay ningún trabajador guardado, se propone empezar el 01/01/2026.
+  const d=rosterDateIndex.length?`${year}-${pad(month+1)}-01`:"2026-01-01";
+  const types=workerTypesAtDate(d);
+  workerEditorBase={names:ws.slice(),types:Object.fromEntries(ws.map(w=>[w,String(types[w]||"").toUpperCase()]))};
+  document.getElementById("workerRows").innerHTML=
+    `<div class="row"><label><b>Aplicar cambios desde:</b> <input id="workerStart" type="date" value="${d}" min="2020-01-01"></label></div>`+
+    ws.map((w,i)=>`<div class="worker-edit-row" data-worker-row="1" data-original="${escapeHtml(w)}">
+      <b>${i+1}.</b>
+      <select class="worker-code" title="Categoría: I, S, O, P o PP"><option value="">—</option><option value="I">I</option><option value="S">S</option><option value="O">O</option><option value="P">P</option><option value="PP">PP</option></select>
+      <input class="worker-name" value="${escapeHtml(w)}">
+      <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,-1)" title="Subir">▲</button>
+      <button class="move-worker-btn" type="button" onclick="moveWorkerRow(this,1)" title="Bajar">▼</button>
+      <button class="danger delete-worker-btn" type="button" onclick="removeWorkerRow(this)" title="Eliminar trabajador" aria-label="Eliminar trabajador">🗑<span class="btn-txt"> Eliminar</span></button>
+    </div>`).join("");
+  document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{
+    const name=row.querySelector(".worker-name").value.trim().toUpperCase();
+    const sel=row.querySelector(".worker-code");
+    if(sel)sel.value=String(types[name]||"").toUpperCase();
+  });
+  document.getElementById("workerPanel").style.display="block";
+}
+function toggleWorkers(){if(!editing)return;closePanels();renderWorkerEditor();openPanelAsModal("workerPanel",true,true)}
+function transferWorkerShifts(oldName,newName,fromDate){
+  if(!oldName||!newName||oldName===newName)return;
+  const prefix="q_shift_",suffix="_"+oldName,toMove=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(!k||!k.startsWith(prefix)||!k.endsWith(suffix))continue;
+    const rest=k.slice(prefix.length,k.length-suffix.length),parts=rest.split("_");
+    if(parts.length!==3)continue;
+    const y=+parts[0],m=+parts[1],d=+parts[2];
+    if(Number.isNaN(y)||Number.isNaN(m)||Number.isNaN(d))continue;
+    let ds;try{ds=fmt(new Date(y,m,d))}catch(e){continue}
+    if(ds>=fromDate)toMove.push({k,y,m,d});
+  }
+  toMove.forEach(({k,y,m,d})=>{
+    const v=q(k);
+    if(v===null)return;
+    localStorage.removeItem(k);
+    setShift(y,m,d,newName,v);
+  });
+}
+function propagateWorkerChangeForward(start,diff){
+  // Los cambios anteriores dejaron "fotos" de la plantilla en fechas posteriores (p. ej. 01/06, 01/07...).
+  // Aquí se les aplica la misma diferencia para que el cambio siga vigente desde 'start' en adelante.
+  const {renames,removed,added,typeChanges,newTypeOf,finalTypeOf}=diff;
+  rosterDateIndex.filter(d=>d>start).forEach(d=>{
+    let list;try{list=JSON.parse(q(rosterDateKey(d))||"[]")}catch(e){return}
+    if(!Array.isArray(list))return;
+    list=list.map(n=>renames[n]||n).filter(n=>!removed.includes(n));
+    added.forEach(n=>{if(!list.includes(n))list.push(n)});
+    set(rosterDateKey(d),JSON.stringify(list));
+  });
+  typesDateIndex.filter(d=>d>start).forEach(d=>{
+    const key="q_worker_types_date_"+d;
+    let t;try{t=JSON.parse(q(key)||"{}")}catch(e){return}
+    Object.keys(renames).forEach(o=>{if(o in t){t[renames[o]]=t[o];delete t[o]}});
+    removed.forEach(n=>{delete t[n]});
+    // Categoría cambiada: se aplica donde seguía igual que antes del cambio o donde estaba en blanco.
+    typeChanges.forEach(c=>{const cur=t[c.name]||"";if(cur===c.from||cur==="")t[c.name]=c.to});
+    added.forEach(n=>{if(!(n in t))t[n]=newTypeOf[n]||""});
+    // Categorías que se quedaron en blanco en meses posteriores se rellenan con la vigente.
+    let laterRoster=[];try{laterRoster=JSON.parse(q(rosterDateKey(d))||"[]")}catch(e){}
+    Object.keys(finalTypeOf).forEach(n=>{if(finalTypeOf[n]&&!t[n]&&((n in t)||laterRoster.includes(n)))t[n]=finalTypeOf[n]});
+    set(key,JSON.stringify(t));
+  });
+}
+function applyWorkers(){
+  const rows=workerEditorRows(),start=document.getElementById("workerStart").value;
+  if(!start){alert("Indica la fecha desde la que se aplicará el cambio.");return}
+  if(rows.some(r=>!r.name)){alert("Revisa los nombres: no pueden estar vacíos.");return}
+  if(new Set(rows.map(r=>r.name)).size!==rows.length){alert("Revisa los nombres: no pueden estar repetidos.");return}
+  if(rows.some(r=>r.code&&!["I","S","O","P","PP"].includes(r.code))){
+    alert("La categoría de cada trabajador solo puede ser I, S, O, P o PP.");
+    return;
+  }
+  const names=rows.map(r=>r.name);
+  // Diferencia entre lo que se cargó en el editor y lo que se guarda ahora.
+  const base=workerEditorBase;
+  // Solo cuenta lo que el usuario ha tocado: una categoría sin tocar conserva la que ya estaba vigente en la fecha de inicio,
+  // así no se pisa con lo que se ve en otro mes (p. ej. un mes donde estaba en blanco).
+  const inForce=workerTypesAtDate(start);
+  const typeMap=rows.map(r=>{
+    const touched=r.original?(r.code!==(base.types[r.original]||"")):true;
+    if(touched)return r.code;
+    const cur=String(inForce[r.original]||"").toUpperCase();
+    return ["I","S","O","P","PP"].includes(cur)?cur:r.code;
+  });
+  const originals=new Set(rows.filter(r=>r.original).map(r=>r.original));
+  const renames={};rows.forEach(r=>{if(r.original&&r.original!==r.name)renames[r.original]=r.name});
+  const removed=base.names.filter(n=>!originals.has(n)&&!names.includes(n));
+  const added=rows.filter(r=>!r.original).map(r=>r.name);
+  const typeChanges=[];rows.forEach(r=>{if(r.original){const from=base.types[r.original]||"";if(from!==r.code)typeChanges.push({name:r.name,from,to:r.code})}});
+  const finalTypeOf=Object.fromEntries(rows.map((r,i)=>[r.name,typeMap[i]]));
+  const newTypeOf=finalTypeOf;
+  beginBatch();
+  set(rosterDateKey(start),JSON.stringify(names));
+  saveWorkerTypesAtDate(start,names,typeMap);
+  rows.forEach(r=>{if(r.original&&r.original!==r.name)transferWorkerShifts(r.original,r.name,start)});
+  propagateWorkerChangeForward(start,{renames,removed,added,typeChanges,newTypeOf,finalTypeOf});
+  endBatch();
+  // El editor sigue abierto: lo guardado pasa a ser el nuevo punto de partida.
+  document.querySelectorAll("#workerRows .worker-edit-row[data-worker-row]").forEach((row,i)=>{
+    if(!rows[i])return;
+    row.dataset.original=rows[i].name;
+    const sel=row.querySelector(".worker-code");if(sel)sel.value=typeMap[i]||"";
+  });
+  workerEditorBase={names:names.slice(),types:finalTypeOf};
+  render();
+  alert(`Cambios aplicados desde ${start}. Se mantienen en todos los meses siguientes; los cuadrantes anteriores conservan los trabajadores y categorías anteriores.`);
+}
+function manualCompensateFridayYear(){
+  if(!editing)return;
+  const start=document.getElementById("workerStart").value;
+  if(!start){alert("Indica primero, arriba, la fecha desde la que se aplica el cambio de trabajadores.");return}
+  const refYear=+start.slice(0,4);
+  const previousDate=new Date(start+"T00:00:00");
+  previousDate.setDate(previousDate.getDate()-1);
+  const previousDateStr=fmt(previousDate);
+  const currentWorkers=getWorkersAtDate(start);
+  const previousWorkers=getWorkersAtDate(previousDateStr);
+  const currentEligible=currentWorkers.filter(w=>["S","O","P"].includes(workerTypeAtDate(w,start)));
+  const previousEligible=previousWorkers.filter(w=>["S","O","P"].includes(workerTypeAtDate(w,previousDateStr)));
+  const existing=currentEligible.filter(w=>previousEligible.includes(w));
+  const newcomers=currentEligible.filter(w=>!previousEligible.includes(w));
+  if(!existing.length){alert("No hay trabajadores anteriores sobre los que aplicar la compensación.");return}
+  const yearOffsets=getFridayYearOffsets();
+  const displayed=existing.map(w=>Math.max(0,countFridayT(refYear,w)-(yearOffsets[w]||0)));
+  const amount=Math.min(...displayed);
+  if(amount<=0){
+    newcomers.forEach(w=>{yearOffsets[w]=countFridayT(refYear,w);});
+    saveFridayYearOffsets(yearOffsets);
+    const generalOffsets=getFridayGeneralOffsets();
+    newcomers.forEach(w=>{generalOffsets[w]=sumFridayRaw(w,refYear);});
+    saveFridayGeneralOffsets(generalOffsets);
+    render();
+    alert("El trabajador nuevo ya queda con 0. No había una cantidad positiva que compensar en los trabajadores anteriores.");
+    return;
+  }
+  if(!confirm(`¿Resetear la compensación de viernes desde ${start}? Se tomará como referencia el trabajador anterior con menos viernes (${amount}). A los trabajadores anteriores se les restarán ${amount}; el trabajador nuevo quedará en 0. La misma compensación se aplicará al cómputo general.`))return;
+  existing.forEach(w=>{yearOffsets[w]=(yearOffsets[w]||0)+amount;});
+  newcomers.forEach(w=>{yearOffsets[w]=countFridayT(refYear,w);});
+  saveFridayYearOffsets(yearOffsets);
+  const generalOffsets=getFridayGeneralOffsets();
+  existing.forEach(w=>{generalOffsets[w]=(generalOffsets[w]||0)+amount;});
+  newcomers.forEach(w=>{generalOffsets[w]=sumFridayRaw(w,refYear);});
+  saveFridayGeneralOffsets(generalOffsets);
+  render();
+  alert(`Compensación aplicada: ${amount} viernes. Se ha actualizado el cómputo anual y el cómputo general.`);
+}
+function toggleHolidays(){if(!editing)return;closePanels();renderHolidayRows();openPanelAsModal("holidayPanel",true,true)}
+function renderHolidayRows(){
+ const excluded=new Set(excludedAutoHolidays(year));
+ const byDate=(x,y)=>String(x||"9999").localeCompare(String(y||"9999"));
+ // Los manuales se numeran en el orden en que se muestran, para que cada fila apunte a su propio festivo.
+ const man=manualHolidays(year).map(x=>({date:x.date,name:x.name})).sort((a,b)=>byDate(a.date,b.date));
+ const items=[...rawAutoHolidayDates(year)].map(date=>({kind:"auto",date})).concat(man.map((x,k)=>({kind:"man",date:x.date,k,x})));
+ items.sort((a,b)=>byDate(a.date,b.date)||(a.kind===b.kind?0:(a.kind==="auto"?-1:1)));
+ let rows="";
+ items.forEach(it=>{
+  if(it.kind==="auto"){
+    const date=it.date,isExcluded=excluded.has(date);
+    rows+=`<div class="row"${isExcluded?' style="opacity:.5"':''}><input type="date" value="${date}" disabled><input value="${escapeHtml(holidayName(date))}" disabled><span class="small hol-tag">Automático</span>${isExcluded?`<span class="badge hol-tag">Eliminado</span><button onclick="restoreAutoHoliday('${date}')" title="Restaurar festivo" aria-label="Restaurar festivo">↺<span class="btn-txt"> Restaurar</span></button>`:`<button class="danger" onclick="removeAutoHoliday('${date}')" title="Eliminar festivo" aria-label="Eliminar festivo">🗑<span class="btn-txt"> Eliminar</span></button>`}</div>`;
+  }else{
+    rows+=`<div class="row"><input id="hd_${it.k}" type="date" value="${it.x.date}"><input id="hn_${it.k}" value="${escapeHtml(it.x.name||"Festivo local")}"><button class="danger" onclick="deleteHoliday(${it.k})" title="Eliminar festivo" aria-label="Eliminar festivo">🗑<span class="btn-txt"> Eliminar</span></button></div>`;
+  }
+ });
+ document.getElementById("holidayRows").innerHTML=rows||"<p>No hay festivos.</p>";
+}
+function removeAutoHoliday(date){
+  const ex=excludedAutoHolidays(year);
+  if(!ex.includes(date))ex.push(date);
+  set(excludedAutoHolidayKey(year),JSON.stringify(ex));
+  renderHolidayRows();render();
+}
+function restoreAutoHoliday(date){
+  const ex=excludedAutoHolidays(year).filter(d=>d!==date);
+  set(excludedAutoHolidayKey(year),JSON.stringify(ex));
+  renderHolidayRows();render();
+}
+function holidayName(d){const names={"01-01":"Año Nuevo","01-06":"Epifanía del Señor","05-01":"Fiesta del Trabajo","08-15":"Asunción de la Virgen","10-12":"Fiesta Nacional de España","11-01":"Todos los Santos","12-06":"Día de la Constitución","12-08":"Inmaculada Concepción","12-25":"Navidad","04-23":"Fiesta de Castilla y León"};
+  const y=+d.slice(0,4);
+  if(y){const e=easter(y),jue=new Date(e),vie=new Date(e);jue.setDate(jue.getDate()-3);vie.setDate(vie.getDate()-2);if(d===fmt(jue))return "Jueves Santo";if(d===fmt(vie))return "Viernes Santo"}
+  return names[d.slice(5)]||"Festivo"}
+function collectHolidayInputsFromDom(){
+  const container=document.getElementById("holidayRows");
+  if(!container)return manualHolidays(year);
+  const inputs=[...container.querySelectorAll('input[id^="hd_"]')];
+  if(!inputs.length)return manualHolidays(year);
+  return inputs.map(inp=>{
+    const i=inp.id.slice(3);
+    return {date:inp.value,name:(document.getElementById(`hn_${i}`)?.value||"").trim()||"Festivo"};
+  });
+}
+function addHolidayRow(){
+  const man=collectHolidayInputsFromDom();
+  man.push({date:`${year}-${pad(month+1)}-01`,name:"Nuevo festivo"});
+  set(manualHolidayKey(year),JSON.stringify(man));
+  renderHolidayRows();
+  const nd=`${year}-${pad(month+1)}-01`;
+  const hn=[...document.querySelectorAll('#holidayRows input[id^="hn_"]')].reverse().find(el=>el.value==="Nuevo festivo"&&document.getElementById("hd_"+el.id.slice(3))?.value===nd);
+  if(hn){const row=hn.closest(".row");if(row){row.style.background="#fff7d6";row.scrollIntoView({block:"center"})}}
+}
+function deleteHoliday(i){
+  const man=collectHolidayInputsFromDom();
+  man.splice(i,1);
+  set(manualHolidayKey(year),JSON.stringify(man));
+  renderHolidayRows();render();
+}
+function saveHolidays(){let old=manualHolidays(year),out=[];for(let i=0;i<old.length;i++){let date=document.getElementById(`hd_${i}`).value,name=document.getElementById(`hn_${i}`).value.trim()||"Festivo";if(date&&date.startsWith(String(year)))out.push({date,name})}set(manualHolidayKey(year),JSON.stringify(out));closePanels();render();alert("Festivos guardados para "+year+".")}
+function getFridayYearOffsets(){try{return JSON.parse(q("q_friday_year_offsets")||"{}")}catch(e){return{}}}
+function saveFridayYearOffsets(x){set("q_friday_year_offsets",JSON.stringify(x))}
+function getFridayGeneralOffsets(){try{return JSON.parse(q("q_friday_general_offsets")||"{}")}catch(e){return{}}}
+function saveFridayGeneralOffsets(x){set("q_friday_general_offsets",JSON.stringify(x))}
+function effectiveFridayYearCount(y,w){const offsets=getFridayYearOffsets();return Math.max(0,countFridayT(y,w)-(offsets[w]||0))}
+function sumFridayRaw(w,uptoYear){let total=0;for(let y=2026;y<=uptoYear;y++)total+=countFridayT(y,w);return total}
+function effectiveFridayGeneralCount(w,uptoYear){const offsets=getFridayGeneralOffsets();return Math.max(0,sumFridayRaw(w,uptoYear)-(offsets[w]||0))}
+function resetFridayOffsets(){
+  if(!editing)return;
+  if(!confirm("¿Resetear toda la compensación de viernes de tarde (año actual y cómputo general)? Ambos conteos volverán a ser los números reales, y la compensación se irá reconstruyendo desde cero a partir de ahora."))return;
+  set("q_friday_year_offsets","{}");
+  set("q_friday_general_offsets","{}");
+  set("q_friday_last_balance_year",String(new Date().getFullYear()));
+  render();
+  alert("Compensación de viernes reseteada.");
+}
+// Compensa el AÑO EN CURSO al incorporar trabajadores.
+// El mínimo se calcula SOLO entre quienes ya estaban antes de atDate.
+// Los trabajadores nuevos parten de 0 y no alteran el mínimo.
+function rebalanceFridayYearOffsets(refYear,atDate){
+  const dateForRoster=atDate||fmt(new Date());
+  const d=new Date(dateForRoster+"T00:00:00");
+  d.setDate(d.getDate()-1);
+  const previousDate=fmt(d);
+  const current=getWorkersAtDate(dateForRoster).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,dateForRoster)));
+  const previous=getWorkersAtDate(previousDate).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,previousDate)));
+  const existing=current.filter(w=>previous.includes(w));
+  const newcomers=current.filter(w=>!previous.includes(w));
+  if(!existing.length)return;
+  const offsets=getFridayYearOffsets();
+  const displayed=existing.map(w=>Math.max(0,countFridayT(refYear,w)-(offsets[w]||0)));
+  const m=Math.min(...displayed);
+  existing.forEach(w=>{offsets[w]=(offsets[w]||0)+m;});
+  newcomers.forEach(w=>{offsets[w]=countFridayT(refYear,w);});
+  saveFridayYearOffsets(offsets);
+}
+// Se dispara SOLO al pasar de un año a otro: compensa el CÓMPUTO GENERAL (acumulado de todos los años)
+// para que no se desmadre la cifra con el paso del tiempo.
+function rebalanceFridayGeneralOffsets(refYear,atDate){
+  const dateForRoster=atDate||fmt(new Date());
+  const ws=getWorkersAtDate(dateForRoster).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,dateForRoster)));
+  if(!ws.length)return;
+  const offsets=getFridayGeneralOffsets();
+  const displayed=ws.map(w=>effectiveFridayGeneralCount(w,refYear));
+  const m=Math.min(...displayed);
+  if(m>0){
+    ws.forEach(w=>{offsets[w]=(offsets[w]||0)+m});
+    saveFridayGeneralOffsets(offsets);
+  }
+}
+// Trabajadores que deben aparecer en Estadísticas para el año consultado.
+// Se incluye a cualquiera que haya estado activo en algún momento de ese año,
+// de modo que un trabajador incorporado a mitad de año aparece desde su fecha
+// de incorporación y no queda oculto por no ser trabajador "de hoy".
+function sopWorkersForStatYear(statYear){
+  const seen=new Set();
+  for(let m=0;m<12;m++){
+    const first=fmt(new Date(statYear,m,1));
+    getWorkersAtDate(first).forEach(w=>{
+      if(["S","O","P"].includes(workerTypeAtDate(w,first)))seen.add(w);
+    });
+    const last=fmt(new Date(statYear,m,daysInMonth(statYear,m)));
+    getWorkersAtDate(last).forEach(w=>{
+      if(["S","O","P"].includes(workerTypeAtDate(w,last)))seen.add(w);
+    });
+  }
+  return [...seen];
+}
+function sopWorkersToday(){
+  const today=fmt(new Date());
+  return getWorkersAtDate(today).filter(w=>["S","O","P"].includes(workerTypeAtDate(w,today)));
+}
+function countCodeYear(y,w,code){let total=0;for(let m=0;m<12;m++)for(let d=1;d<=daysInMonth(y,m);d++){if(getShift(y,m,d,w)===code)total++}return total}
+function toggleStatsMenu(){
+  const m=document.getElementById("statsMenu");
+  const willOpen=m.style.display!=="block";
+  document.getElementById("statMenuMornings").style.display=editing?"block":"none";
+  document.getElementById("statMenuAfternoons").style.display=editing?"block":"none";
+  document.getElementById("statMenuResetFriday").style.display=editing?"block":"none";
+  m.style.display=willOpen?"block":"none";
+}
+function closeStatsMenu(){document.getElementById("statsMenu").style.display="none"}
+document.addEventListener("click",e=>{
+  const wrap=document.getElementById("statsMenuWrap");
+  if(wrap&&!wrap.contains(e.target))closeStatsMenu();
+});
+function statCardsHtml(rows){
+  if(!rows.length)return '<div class="small">No hay trabajadores con tipo S, O o P.</div>';
+  return '<div class="statgrid">'+rows.map(([name,value])=>`<div class="statcard"><b>${escapeHtml(name)}</b><br>${value}</div>`).join("")+'</div>';
+}
+function openStatView(kind){
+  closeStatsMenu();
+  const ws=sopWorkersForStatYear(year);
+  let title="",rows=[];
+  if(kind==="fridayYear"){
+    title=`🗓️ Viernes de tarde en ${year}`;
+    rows=ws.map(w=>[w,effectiveFridayYearCount(year,w)]).sort((a,b)=>a[1]-b[1]);
+  }else if(kind==="fridayAll"){
+    title="🗓️ Viernes de tarde — cómputo general";
+    rows=ws.map(w=>[w,effectiveFridayGeneralCount(w,Math.max(year,new Date().getFullYear()))]).sort((a,b)=>a[1]-b[1]);
+  }else if(kind==="changes"){
+    title="🔄 Cambios grabados";
+    const accepted=getChangeRequests().filter(r=>r.status==="accepted");
+    rows=ws.map(w=>[w,accepted.filter(r=>r.from===w).length]);
+  }else if(kind==="mornings"){
+    title=`🌅 Mañanas trabajadas en ${year}`;
+    rows=ws.map(w=>[w,countCodeYear(year,w,"M")]);
+  }else if(kind==="afternoons"){
+    title=`🌇 Tardes trabajadas en ${year}`;
+    rows=ws.map(w=>[w,countCodeYear(year,w,"T")]);
+  }
+  document.getElementById("statViewTitle").textContent=title;
+  document.getElementById("statViewBody").innerHTML=statCardsHtml(rows);
+  document.getElementById("statViewModal").style.display="flex";
+}
+function closeStatView(){document.getElementById("statViewModal").style.display="none"}
+// IMPORTANTE: esta función solo debe invocarse con el año REAL del calendario
+// (ver checkYearRollover). No debe llamarse nunca desde changeMonth/setYear,
+// o el simple hecho de navegar por el cuadrante hacia un año futuro dispararía
+// la compensación de forma prematura y "quemaría" el salto de año real.
+function onYearChanged(newYear){
+  const stored=q("q_friday_last_balance_year");
+  const last=stored?parseInt(stored,10):null;
+  if(last===null){set("q_friday_last_balance_year",String(newYear));return}
+  if(newYear>last){
+    for(let y=last;y<newYear;y++)rebalanceFridayGeneralOffsets(y,`${y}-12-31`);
+    set("q_friday_year_offsets","{}");
+    set("q_friday_last_balance_year",String(newYear));
+  }
+}
+let scrolledToToday=false;
+function scrollToTodayOnce(){
+  if(scrolledToToday)return;
+  const now=new Date();
+  if(year!==now.getFullYear()||month!==now.getMonth())return;
+  const todayCell=document.querySelector("#grid th.today");
+  const wrap=todayCell?todayCell.closest(".tablewrap"):null;
+  if(!todayCell||!wrap)return;
+  scrolledToToday=true;
+  const workerTh=document.querySelector("#grid th.worker");
+  // El día actual queda como primera columna, pegado a los nombres de los trabajadores.
+  // Se mide con las posiciones reales en pantalla (offsetLeft se contaba desde el borde de la
+  // página y no desde la tabla, y dejaba la celda a medias bajo la columna de nombres).
+  const wr=wrap.getBoundingClientRect(),tr=todayCell.getBoundingClientRect();
+  const workerW=workerTh?workerTh.getBoundingClientRect().width:0;
+  const target=wrap.scrollLeft+(tr.left-(wr.left+wrap.clientLeft+workerW));
+  wrap.scrollLeft=Math.max(0,target);
+}
+function checkYearRollover(){
+  if(!cloudLive)return;
+  // Solo el administrador escribe la compensación de fin de año: así no se duplica
+  // si varios trabajadores abren la app a la vez y no se intentan escrituras sin permiso.
+  if(!isAdmin)return;
+  const realYear=new Date().getFullYear();
+  onYearChanged(realYear);
+}
+
+// --- Reubicado aqui (antes en <script> aparte, mas abajo en el documento) ---
+// Si se quedaban en su propio <script> al final del body, en una carga muy
+// rapida de Firebase el primer aviso de datos podia llegar antes de que el
+// navegador hubiera terminado de parsear el HTML hasta llegar a ese bloque,
+// y estas funciones (llamadas desde ese aviso) todavia no existian todavia.
+// Al estar aqui, dentro del mismo bloque <script> que registra ese aviso,
+// quedan disponibles siempre antes de que se puedan necesitar.
+let deferredInstallPrompt=null;
+function isRunningStandalone(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;
+}
+window.addEventListener("beforeinstallprompt",e=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  if(isRunningStandalone())return;
+  let dismissed=false;
+  try{dismissed=sessionStorage.getItem("installPromptDismissed")==="1"}catch(err){}
+  if(dismissed)return;
+  document.getElementById("installPromptModal").style.display="flex";
+});
+function acceptInstallPrompt(){
+  document.getElementById("installPromptModal").style.display="none";
+  if(!deferredInstallPrompt)return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.finally(()=>{deferredInstallPrompt=null});
+}
+function declineInstallPrompt(){
+  document.getElementById("installPromptModal").style.display="none";
+  try{sessionStorage.setItem("installPromptDismissed","1")}catch(err){}
+}
+window.addEventListener("appinstalled",()=>{
+  document.getElementById("installPromptModal").style.display="none";
+  deferredInstallPrompt=null;
+});
+document.addEventListener("DOMContentLoaded",()=>{
+  try{
+    if(new URLSearchParams(location.search).get("verInstalarApp")==="1"){
+      document.getElementById("installPromptModal").style.display="flex";
+    }
+  }catch(err){}
+});
+function formatNoticeDate(ts){
+  const d=new Date(Number(ts));
+  return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear();
+}
+function maybeRequestNotificationPermission(){
+  if(isAdmin)return;
+  if(!("Notification" in window))return;
+  if(!isRunningStandalone())return;
+  if(Notification.permission!=="default")return;
+  Notification.requestPermission().catch(()=>{});
+}
+let lastKnownNoticeTs=null;
+function toggleNoticePanel(){
+  if(!isAdmin)return;
+  let current;try{current=JSON.parse(q("q_notice")||"null")}catch(err){current=null}
+  document.getElementById("noticeText").value=(current&&current.text)||"";
+  document.getElementById("noticePanel").style.display="flex";
+}
+function publishNotice(){
+  if(!isAdmin)return;
+  const text=document.getElementById("noticeText").value.trim();
+  if(!text){alert("Escribe el texto del aviso antes de publicarlo.");return}
+  if(!confirm("¿Publicar este aviso?\n\nA todos los trabajadores les aparecerá en una ventana cada vez que abran la aplicación, hasta que lo quites."))return;
+  const ts=String(Date.now());
+  set("q_notice",JSON.stringify({text,ts}));
+  lastKnownNoticeTs=ts;
+  document.getElementById("noticePanel").style.display="none";
+  alert("Aviso publicado.");
+}
+function removeNotice(){
+  if(!isAdmin)return;
+  let current;try{current=JSON.parse(q("q_notice")||"null")}catch(err){current=null}
+  if(!current){alert("No hay ningún aviso publicado ahora mismo.");return}
+  if(!confirm("¿Quitar el aviso? Dejará de aparecerles a los trabajadores."))return;
+  localStorage.removeItem("q_notice");
+  lastKnownNoticeTs=null;
+  document.getElementById("noticeText").value="";
+  document.getElementById("noticePanel").style.display="none";
+  alert("Aviso retirado.");
+}
+function checkNoticeAlert(){
+  if(isAdmin)return;
+  let notice;try{notice=JSON.parse(q("q_notice")||"null")}catch(err){notice=null}
+  if(!notice||!notice.ts||notice.ts===lastKnownNoticeTs)return;
+  const isFirstCheck=lastKnownNoticeTs===null;
+  lastKnownNoticeTs=notice.ts;
+  document.getElementById("noticeModalText").textContent=notice.text;
+  document.getElementById("noticeModalDate").textContent=formatNoticeDate(notice.ts);
+  document.getElementById("noticeModal").style.display="flex";
+  if(!isFirstCheck)sendSystemNoticeNotification(notice);
+}
+function sendSystemNoticeNotification(notice){
+  if(!("Notification" in window)||Notification.permission!=="granted")return;
+  const body=notice.text;
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.getRegistration().then(reg=>{
+      if(reg)reg.showNotification("Aviso del cuadrante",{body,icon:"icon-192.png"});
+      else new Notification("Aviso del cuadrante",{body,icon:"icon-192.png"});
+    }).catch(()=>{});
+  }else{
+    try{new Notification("Aviso del cuadrante",{body,icon:"icon-192.png"})}catch(err){}
+  }
+}
+function closeNoticeAlert(){
+  document.getElementById("noticeModal").style.display="none";
+}
+</script>
+
+<div id="noticeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:360px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <img src="icon-192.png" alt="" style="width:64px;height:64px;border-radius:14px;margin-bottom:8px">
+    <h3 style="margin:0 0 8px">Aviso</h3>
+    <p class="small" style="margin:0 0 4px;white-space:pre-wrap;text-align:center" id="noticeModalText"></p>
+    <p class="small" style="margin:8px 0 16px;color:#777">Publicado el <span id="noticeModalDate"></span></p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="save" type="button" onclick="closeNoticeAlert()">Entendido</button>
+    </div>
+  </div>
+</div>
+<div id="noticePanel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9997;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:420px;width:90%;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <h3 style="margin:0 0 10px">📣 Publicar un aviso</h3>
+    <p class="small" style="margin:0 0 10px">Este texto les aparecerá a los trabajadores en una ventana al abrir la aplicación.</p>
+    <textarea id="noticeText" rows="5" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;padding:8px"></textarea>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap">
+      <button type="button" class="danger" onclick="removeNotice()">🗑 Quitar aviso</button>
+      <button type="button" onclick="document.getElementById('noticePanel').style.display='none'">Cancelar</button>
+      <button class="save" type="button" onclick="publishNotice()">📣 Publicar aviso</button>
+    </div>
+  </div>
+</div>
+<div id="installPromptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:22px;max-width:340px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
+    <div style="font-size:34px;margin-bottom:6px">📲</div>
+    <h3 style="margin:0 0 8px">Instalar Cuadrante</h3>
+    <p class="small" style="margin:0 0 16px">¿Quieres añadir un acceso directo de la aplicación a este dispositivo?</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button type="button" onclick="declineInstallPrompt()">No</button>
+      <button class="save" type="button" onclick="acceptInstallPrompt()">✓ Instalar</button>
+    </div>
+  </div>
+</div>
+<style>#myShiftView .compensated{background:#fdba74!important;color:#7c2d12!important}</style>
+<div id="myShiftView" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9500;font-family:Arial,sans-serif">
+  <div style="max-width:760px;margin:0 auto;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.3)">
+    <div style="background:#123a6b;color:#fff;padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px">
+      <b style="font-size:15px;flex:1">👤 Mi turno</b>
+      <button type="button" onclick="closeMyShift()">Cerrar</button>
+    </div>
+    <div id="myShiftBody"></div>
+  </div>
+</div>
+<script>
+/* ===== Vista "Mi turno" (consulta rápida) =====
+   Solo lee los datos que la app ya tiene cargados (getShift, getWorkersAtDate...).
+   El trabajador elegido se guarda en este dispositivo con window.localStorage, porque
+   "localStorage" a secas está sustituido más arriba por la copia sincronizada con Firebase. */
+const MY_WORKER_KEY="cuadrante_mi_trabajador";
+const MY_STATUS_CODES=["AP","V","SS","NAV","LC","N","B","LE","CS","INC"];
+const MY_WEEKDAYS=["D","L","M","X","J","V","S"];
+const MY_FROM_SHORTCUT=new URLSearchParams(location.search).get("view")==="miturno";
+let myShiftOpen=false,myShiftChoosing=false,myLastSync=null,myPushed=false;
+function myWorkerSaved(){try{return window.localStorage.getItem(MY_WORKER_KEY)||""}catch(e){return ""}}
+function myWorkerSave(v){try{window.localStorage.setItem(MY_WORKER_KEY,v)}catch(e){}}
+function myUpcomingWorkers(days){
+  const set=new Set(),t=new Date();
+  for(let i=0;i<days;i++){const d=new Date(t.getFullYear(),t.getMonth(),t.getDate()+i);getWorkersAtDate(fmt(d)).forEach(w=>set.add(w))}
+  return [...set];
+}
+function openMyShift(){
+  myShiftOpen=true;
+  const ov=document.getElementById("myShiftView");
+  ov.style.display="block";
+  if(MY_FROM_SHORTCUT)ov.style.background="#f5f6f8"; /* desde el atajo: solo se ve la ventana pequeña */
+  if(!MY_FROM_SHORTCUT){try{history.pushState({miTurno:1},"");myPushed=true}catch(e){}}
+  renderMyShift();
+}
+function hideMyShift(){
+  myShiftOpen=false;myShiftChoosing=false;
+  document.getElementById("myShiftView").style.display="none";
+}
+function closeMyShift(fromPop){
+  if(MY_FROM_SHORTCUT){
+    /* Abierta desde el atajo del icono: se intenta cerrar la aplicación entera. */
+    try{window.close()}catch(e){}
+    setTimeout(()=>{
+      const box=document.getElementById("myShiftBody");
+      if(box)box.innerHTML='<div style="padding:14px;text-align:center"><p style="margin:0 0 12px">Ya puedes salir: pulsa el botón atrás o inicio del móvil.</p><button type="button" onclick="openFullFromShift()">Abrir el cuadrante completo</button></div>';
+    },400);
+    return;
+  }
+  hideMyShift();
+  if(!fromPop&&myPushed){myPushed=false;try{history.back()}catch(e){}}
+}
+window.addEventListener("popstate",()=>{if(myShiftOpen&&!MY_FROM_SHORTCUT){myPushed=false;closeMyShift(true)}});
+function openFullFromShift(){hideMyShift();try{history.replaceState(null,"",location.pathname)}catch(e){}}
+function chooseMyWorker(name){myWorkerSave(name);myShiftChoosing=false;renderMyShift()}
+function changeMyWorker(){myShiftChoosing=true;renderMyShift()}
+function renderMyShift(){
+  if(!myShiftOpen)return;
+  const box=document.getElementById("myShiftBody");
+  if(!(typeof appInitialized!=="undefined"&&appInitialized)){box.innerHTML='<p style="text-align:center;color:#555;margin:14px">Conectando con la base de datos…</p>';return}
+  const workers=myUpcomingWorkers(31).sort((a,b)=>a.localeCompare(b,"es"));
+  let me=myWorkerSaved();
+  if(me&&!workers.includes(me))me="";
+  if(!me||myShiftChoosing){
+    box.innerHTML='<div style="padding:12px"><b>¿Quién eres?</b><p class="small" style="margin:6px 0 10px">Elige tu nombre. Quedará guardado en este dispositivo y podrás cambiarlo cuando quieras.</p>'+
+      (workers.length?workers.map(w=>'<button type="button" style="display:block;width:100%;text-align:left;margin:0 0 8px" data-w="'+escapeHtml(w)+'">'+escapeHtml(w)+'</button>').join(""):'<p>No hay trabajadores definidos todavía.</p>')+'</div>';
+    box.querySelectorAll("button[data-w]").forEach(b=>b.addEventListener("click",()=>chooseMyWorker(b.getAttribute("data-w"))));
+    return;
+  }
+  const n=window.innerWidth<560?7:8,today=new Date(),cellBase="border-left:1px solid #ddd;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;height:50px;font-size:15px;font-weight:bold";
+  let row='<div style="display:flex;align-items:stretch;border-bottom:1px solid #ddd"><div style="display:flex;align-items:center;padding:0 10px;font-weight:bold;font-size:15px;max-width:34%;overflow:hidden;text-overflow:ellipsis">'+escapeHtml(me)+'</div>';
+  for(let i=0;i<n;i++){
+    const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i),ds=fmt(d),y=d.getFullYear(),m=d.getMonth(),dd=d.getDate();
+    const active=getWorkersAtDate(ds).includes(me);
+    const code=active?getShift(y,m,dd,me):"";
+    const off=d.getDay()===0||d.getDay()===6||allHolidays(y).has(ds);
+    let cls=[];
+    if(code&&MY_STATUS_CODES.includes(code))cls.push("status-"+code);
+    if(off)cls.push("holiday");
+    if(!active)cls.push("inactive");
+    try{if(active&&code&&typeof isAcceptedChange==="function"&&isAcceptedChange(y,m,dd,me))cls.push("change-red")}catch(e){}
+    try{if(active&&code&&typeof isCompensated==="function"&&isCompensated(y,m,dd,me))cls.push("compensated")}catch(e){}
+    row+='<div class="'+cls.join(" ")+'" style="'+cellBase+'" title="'+escapeHtml(d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"}))+'"><span>'+escapeHtml(code)+'</span><span style="font-size:9px;font-weight:normal;opacity:.7">'+MY_WEEKDAYS[d.getDay()]+dd+'</span></div>';
+  }
+  row+='<div style="display:flex;align-items:center;padding:0 8px;border-left:1px solid #ddd"><button type="button" onclick="changeMyWorker()" style="padding:5px 8px;font-size:12px">Cambiar</button></div></div>';
+  let sync;
+  if(typeof cloudLive!=="undefined"&&cloudLive){
+    const online=typeof cloudOnline!=="undefined"&&cloudOnline;
+    const t=myLastSync?new Date(myLastSync).toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}):"";
+    sync=online?'<span style="color:#166534">● Actualizado'+(t?' a las '+t:'')+'</span>':'<span style="color:#b45309">⚠ Sin conexión. Datos de las '+(t||"—")+'; pueden estar desactualizados.</span>';
+  }else{
+    const ts=typeof cachedTs!=="undefined"&&cachedTs?new Date(cachedTs).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"fecha desconocida";
+    sync='<span style="color:#b45309">⚠ Copia guardada ('+escapeHtml(ts)+'). Pueden haber cambiado; esperando conexión.</span>';
+  }
+  box.innerHTML=row+'<div class="small" style="padding:7px 10px">'+sync+'<br><span style="color:#666">El primer día es el día de hoy.</span></div>';
+}
+dbRef.on("value",()=>{myLastSync=Date.now();renderMyShift()});
+setInterval(renderMyShift,60000);
+window.addEventListener("resize",renderMyShift);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderMyShift()});
+if(MY_FROM_SHORTCUT){openMyShift();setTimeout(renderMyShift,150);setTimeout(renderMyShift,1500)}
+</script>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
