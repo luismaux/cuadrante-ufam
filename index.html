@@ -1915,7 +1915,9 @@ function myUpcomingWorkers(days){
 }
 function openMyShift(){
   myShiftOpen=true;
-  document.getElementById("myShiftView").style.display="block";
+  const ov=document.getElementById("myShiftView");
+  ov.style.display="block";
+  if(MY_FROM_SHORTCUT)ov.style.background="#f5f6f8"; /* desde el atajo: solo se ve la ventana pequeña */
   if(!MY_FROM_SHORTCUT){try{history.pushState({miTurno:1},"");myPushed=true}catch(e){}}
   renderMyShift();
 }
@@ -1927,13 +1929,17 @@ function closeMyShift(fromPop){
   if(MY_FROM_SHORTCUT){
     /* Abierta desde el atajo del icono: se intenta cerrar la aplicación entera. */
     try{window.close()}catch(e){}
-    setTimeout(()=>{hideMyShift();try{history.replaceState(null,"",location.pathname)}catch(e){}},400);
+    setTimeout(()=>{
+      const box=document.getElementById("myShiftBody");
+      if(box)box.innerHTML='<div style="padding:14px;text-align:center"><p style="margin:0 0 12px">Ya puedes salir: pulsa el botón atrás o inicio del móvil.</p><button type="button" onclick="openFullFromShift()">Abrir el cuadrante completo</button></div>';
+    },400);
     return;
   }
   hideMyShift();
   if(!fromPop&&myPushed){myPushed=false;try{history.back()}catch(e){}}
 }
 window.addEventListener("popstate",()=>{if(myShiftOpen&&!MY_FROM_SHORTCUT){myPushed=false;closeMyShift(true)}});
+function openFullFromShift(){hideMyShift();try{history.replaceState(null,"",location.pathname)}catch(e){}}
 function chooseMyWorker(name){myWorkerSave(name);myShiftChoosing=false;renderMyShift()}
 function changeMyWorker(){myShiftChoosing=true;renderMyShift()}
 function renderMyShift(){
@@ -1974,7 +1980,7 @@ function renderMyShift(){
     const ts=typeof cachedTs!=="undefined"&&cachedTs?new Date(cachedTs).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"fecha desconocida";
     sync='<span style="color:#b45309">⚠ Copia guardada ('+escapeHtml(ts)+'). Pueden haber cambiado; esperando conexión.</span>';
   }
-  box.innerHTML=row+'<div class="small" style="padding:7px 10px">'+sync+'<br><span style="color:#666">El primer día corresponde al día de hoy.</span></div>';
+  box.innerHTML=row+'<div class="small" style="padding:7px 10px">'+sync+'<br><span style="color:#666">La primera casilla es hoy. Casilla vacía = sin turno anotado (no es un descanso confirmado).</span></div>';
 }
 dbRef.on("value",()=>{myLastSync=Date.now();renderMyShift()});
 setInterval(renderMyShift,60000);
