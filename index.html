@@ -1886,12 +1886,15 @@ function closeNoticeAlert(){
     </div>
   </div>
 </div>
-<div id="myShiftView" style="display:none;position:fixed;inset:0;background:#f5f6f8;z-index:9500;overflow-y:auto;font-family:Arial,sans-serif">
-  <div style="background:#123a6b;color:#fff;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px">
-    <b style="font-size:18px;flex:1">👤 Mi turno</b>
-    <button type="button" onclick="closeMyShift()">Cerrar</button>
+<style>#myShiftView .compensated{background:#fdba74!important;color:#7c2d12!important}</style>
+<div id="myShiftView" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9500;font-family:Arial,sans-serif">
+  <div style="max-width:760px;margin:0 auto;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.3)">
+    <div style="background:#123a6b;color:#fff;padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px">
+      <b style="font-size:15px;flex:1">👤 Mi turno</b>
+      <button type="button" onclick="closeMyShift()">Cerrar</button>
+    </div>
+    <div id="myShiftBody"></div>
   </div>
-  <div id="myShiftBody" style="max-width:520px;margin:0 auto;padding:14px 14px calc(24px + env(safe-area-inset-bottom,0px))"></div>
 </div>
 <script>
 /* ===== Vista "Mi turno" (consulta rápida) =====
@@ -1899,9 +1902,10 @@ function closeNoticeAlert(){
    El trabajador elegido se guarda en este dispositivo con window.localStorage, porque
    "localStorage" a secas está sustituido más arriba por la copia sincronizada con Firebase. */
 const MY_WORKER_KEY="cuadrante_mi_trabajador";
-const MY_SHIFT_LABELS={M:"Mañana",T:"Tarde",N:"Noche",AP:"Asuntos propios",V:"Vacaciones",SS:"Semana Santa",NAV:"Navidad",LC:"Libre compensado",B:"Baja",LE:"Permiso enfermedad",CS:"Comisión",INC:"Incidencias"};
-const MY_SHIFT_COLORS={M:"#fef9c3",T:"#ffedd5",N:"#e9d5ff",AP:"#fff3cd",V:"#d1e7dd",SS:"#cfe2ff",NAV:"#e2d9f3",LC:"#cff4fc"};
-let myShiftOpen=false,myShiftChoosing=false,myLastSync=null;
+const MY_STATUS_CODES=["AP","V","SS","NAV","LC","N","B","LE","CS","INC"];
+const MY_WEEKDAYS=["D","L","M","X","J","V","S"];
+const MY_FROM_SHORTCUT=new URLSearchParams(location.search).get("view")==="miturno";
+let myShiftOpen=false,myShiftChoosing=false,myLastSync=null,myPushed=false;
 function myWorkerSaved(){try{return window.localStorage.getItem(MY_WORKER_KEY)||""}catch(e){return ""}}
 function myWorkerSave(v){try{window.localStorage.setItem(MY_WORKER_KEY,v)}catch(e){}}
 function myUpcomingWorkers(days){
@@ -1912,51 +1916,55 @@ function myUpcomingWorkers(days){
 function openMyShift(){
   myShiftOpen=true;
   document.getElementById("myShiftView").style.display="block";
-  try{history.pushState({miTurno:1},"")}catch(e){}
+  if(!MY_FROM_SHORTCUT){try{history.pushState({miTurno:1},"");myPushed=true}catch(e){}}
   renderMyShift();
 }
-function closeMyShift(fromPop){
+function hideMyShift(){
   myShiftOpen=false;myShiftChoosing=false;
   document.getElementById("myShiftView").style.display="none";
-  if(!fromPop){try{if(history.state&&history.state.miTurno)history.back()}catch(e){}}
 }
-window.addEventListener("popstate",()=>{if(myShiftOpen)closeMyShift(true)});
+function closeMyShift(fromPop){
+  if(MY_FROM_SHORTCUT){
+    /* Abierta desde el atajo del icono: se intenta cerrar la aplicación entera. */
+    try{window.close()}catch(e){}
+    setTimeout(()=>{hideMyShift();try{history.replaceState(null,"",location.pathname)}catch(e){}},400);
+    return;
+  }
+  hideMyShift();
+  if(!fromPop&&myPushed){myPushed=false;try{history.back()}catch(e){}}
+}
+window.addEventListener("popstate",()=>{if(myShiftOpen&&!MY_FROM_SHORTCUT){myPushed=false;closeMyShift(true)}});
 function chooseMyWorker(name){myWorkerSave(name);myShiftChoosing=false;renderMyShift()}
 function changeMyWorker(){myShiftChoosing=true;renderMyShift()}
 function renderMyShift(){
   if(!myShiftOpen)return;
   const box=document.getElementById("myShiftBody");
-  if(!(typeof appInitialized!=="undefined"&&appInitialized)){box.innerHTML='<p style="text-align:center;color:#555">Conectando con la base de datos…</p>';return}
+  if(!(typeof appInitialized!=="undefined"&&appInitialized)){box.innerHTML='<p style="text-align:center;color:#555;margin:14px">Conectando con la base de datos…</p>';return}
   const workers=myUpcomingWorkers(31).sort((a,b)=>a.localeCompare(b,"es"));
   let me=myWorkerSaved();
   if(me&&!workers.includes(me))me="";
   if(!me||myShiftChoosing){
-    box.innerHTML='<div style="background:#fff;border:1px solid #d9dee5;border-radius:10px;padding:16px"><b>¿Quién eres?</b><p class="small" style="margin:6px 0 12px">Elige tu nombre. Quedará guardado en este dispositivo y podrás cambiarlo cuando quieras.</p>'+
-      (workers.length?workers.map(w=>'<button type="button" style="display:block;width:100%;text-align:left;margin:0 0 8px;padding:12px" data-w="'+escapeHtml(w)+'">'+escapeHtml(w)+'</button>').join(""):'<p>No hay trabajadores definidos todavía.</p>')+'</div>';
+    box.innerHTML='<div style="padding:12px"><b>¿Quién eres?</b><p class="small" style="margin:6px 0 10px">Elige tu nombre. Quedará guardado en este dispositivo y podrás cambiarlo cuando quieras.</p>'+
+      (workers.length?workers.map(w=>'<button type="button" style="display:block;width:100%;text-align:left;margin:0 0 8px" data-w="'+escapeHtml(w)+'">'+escapeHtml(w)+'</button>').join(""):'<p>No hay trabajadores definidos todavía.</p>')+'</div>';
     box.querySelectorAll("button[data-w]").forEach(b=>b.addEventListener("click",()=>chooseMyWorker(b.getAttribute("data-w"))));
     return;
   }
-  const today=new Date(),rows=[];let next=null;
-  for(let i=0;i<14;i++){
-    const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i),ds=fmt(d);
+  const n=window.innerWidth<560?7:8,today=new Date(),cellBase="border-left:1px solid #ddd;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;height:50px;font-size:15px;font-weight:bold";
+  let row='<div style="display:flex;align-items:stretch;border-bottom:1px solid #ddd"><div style="display:flex;align-items:center;padding:0 10px;font-weight:bold;font-size:15px;max-width:34%;overflow:hidden;text-overflow:ellipsis">'+escapeHtml(me)+'</div>';
+  for(let i=0;i<n;i++){
+    const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i),ds=fmt(d),y=d.getFullYear(),m=d.getMonth(),dd=d.getDate();
     const active=getWorkersAtDate(ds).includes(me);
-    const code=active?getShift(d.getFullYear(),d.getMonth(),d.getDate(),me):"";
-    let extra="";
-    try{if(active&&code&&typeof isAcceptedChange==="function"&&isAcceptedChange(d.getFullYear(),d.getMonth(),d.getDate(),me))extra=" · cambio";}catch(e){}
-    try{if(active&&code&&typeof isCompensated==="function"&&isCompensated(d.getFullYear(),d.getMonth(),d.getDate(),me))extra+=" · compensado";}catch(e){}
-    const hol=allHolidays(d.getFullYear()).has(ds);
-    if(!next&&i>0&&["M","T","N"].includes(code))next={d,code,i};
-    rows.push({d,i,code,active,extra,hol});
+    const code=active?getShift(y,m,dd,me):"";
+    const off=d.getDay()===0||d.getDay()===6||allHolidays(y).has(ds);
+    let cls=[];
+    if(code&&MY_STATUS_CODES.includes(code))cls.push("status-"+code);
+    if(off)cls.push("holiday");
+    if(!active)cls.push("inactive");
+    try{if(active&&code&&typeof isAcceptedChange==="function"&&isAcceptedChange(y,m,dd,me))cls.push("change-red")}catch(e){}
+    try{if(active&&code&&typeof isCompensated==="function"&&isCompensated(y,m,dd,me))cls.push("compensated")}catch(e){}
+    row+='<div class="'+cls.join(" ")+'" style="'+cellBase+'" title="'+escapeHtml(d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"}))+'"><span>'+escapeHtml(code)+'</span><span style="font-size:9px;font-weight:normal;opacity:.7">'+MY_WEEKDAYS[d.getDay()]+dd+'</span></div>';
   }
-  const f=d=>d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"});
-  const label=r=>!r.active?"Sin asignación (no figuras en plantilla)":(r.code?(MY_SHIFT_LABELS[r.code]||r.code):"Sin turno asignado");
-  const r0=rows[0];
-  let h='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><b style="font-size:17px;flex:1">'+escapeHtml(me)+'</b><button type="button" onclick="changeMyWorker()">Cambiar</button></div>';
-  h+='<div style="background:'+(MY_SHIFT_COLORS[r0.code]||"#fff")+';border:2px solid #123a6b;border-radius:12px;padding:16px;margin-bottom:12px"><div class="small" style="text-transform:capitalize">Hoy · '+escapeHtml(f(r0.d))+(r0.hol?" · festivo":"")+'</div><div style="font-size:30px;font-weight:800;margin-top:4px">'+escapeHtml(label(r0))+'</div>'+(r0.code?'<div class="small">Código '+escapeHtml(r0.code)+escapeHtml(r0.extra)+'</div>':'')+'</div>';
-  if(next)h+='<div style="background:#fff;border:1px solid #d9dee5;border-radius:10px;padding:12px;margin-bottom:12px"><span class="small">Próximo turno</span><div style="font-size:18px;font-weight:700"><span style="text-transform:capitalize">'+escapeHtml(f(next.d))+'</span> · '+escapeHtml(MY_SHIFT_LABELS[next.code])+'</div></div>';
-  h+='<div style="background:#fff;border:1px solid #d9dee5;border-radius:10px;overflow:hidden">';
-  rows.slice(1).forEach(r=>{h+='<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid #eef0f3;background:'+(MY_SHIFT_COLORS[r.code]||"#fff")+'"><span style="text-transform:capitalize">'+escapeHtml(f(r.d))+(r.hol?" 🎌":"")+'</span><b style="text-align:right">'+escapeHtml(label(r))+escapeHtml(r.extra)+'</b></div>'});
-  h+='</div>';
+  row+='<div style="display:flex;align-items:center;padding:0 8px;border-left:1px solid #ddd"><button type="button" onclick="changeMyWorker()" style="padding:5px 8px;font-size:12px">Cambiar</button></div></div>';
   let sync;
   if(typeof cloudLive!=="undefined"&&cloudLive){
     const online=typeof cloudOnline!=="undefined"&&cloudOnline;
@@ -1966,13 +1974,13 @@ function renderMyShift(){
     const ts=typeof cachedTs!=="undefined"&&cachedTs?new Date(cachedTs).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"fecha desconocida";
     sync='<span style="color:#b45309">⚠ Copia guardada ('+escapeHtml(ts)+'). Pueden haber cambiado; esperando conexión.</span>';
   }
-  h+='<p class="small" style="margin:12px 2px">'+sync+'</p><p class="small" style="margin:0 2px;color:#666">"Sin turno asignado" significa que no hay nada anotado ese día, no que sea un descanso confirmado.</p>';
-  box.innerHTML=h;
+  box.innerHTML=row+'<div class="small" style="padding:7px 10px">'+sync+'<br><span style="color:#666">La primera casilla es hoy. Casilla vacía = sin turno anotado (no es un descanso confirmado).</span></div>';
 }
 dbRef.on("value",()=>{myLastSync=Date.now();renderMyShift()});
 setInterval(renderMyShift,60000);
+window.addEventListener("resize",renderMyShift);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderMyShift()});
-if(new URLSearchParams(location.search).get("view")==="miturno"){openMyShift();setTimeout(renderMyShift,150);setTimeout(renderMyShift,1500)}
+if(MY_FROM_SHORTCUT){openMyShift();setTimeout(renderMyShift,150);setTimeout(renderMyShift,1500)}
 </script>
 <script>
 if("serviceWorker" in navigator){
