@@ -1974,7 +1974,7 @@ function renderMyShift(){
     const ts=typeof cachedTs!=="undefined"&&cachedTs?new Date(cachedTs).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"fecha desconocida";
     sync='<span style="color:#b45309">⚠ Copia guardada ('+escapeHtml(ts)+'). Pueden haber cambiado; esperando conexión.</span>';
   }
-  box.innerHTML=row+'<div class="small" style="padding:7px 10px">'+sync+'<br><span style="color:#666">La primera casilla es hoy. Casilla vacía = sin turno anotado (no es un descanso confirmado).</span></div>';
+  box.innerHTML=row+'<div class="small" style="padding:7px 10px">'+sync+'<br><span style="color:#666">El primer día corresponde al día de hoy.</span></div>';
 }
 dbRef.on("value",()=>{myLastSync=Date.now();renderMyShift()});
 setInterval(renderMyShift,60000);
