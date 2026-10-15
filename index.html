@@ -208,7 +208,17 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 #miTurnoView .mt-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%}
 #miTurnoView .mt-dot.chg{background:#dc2626}
 #miTurnoView .mt-dot.cmp{background:#ea580c;right:13px}
-@media print{#miTurnoView{display:none!important}}
+#miTurnoView .mt-week{width:100%;min-width:0!important;border-collapse:collapse;table-layout:fixed;background:#fff;box-shadow:0 2px 10px #0001;margin:0 0 16px}
+#miTurnoView .mt-week th{position:static;background:#eef0f3;font-size:12px;line-height:1.15;padding:5px 0;border:1px solid #d0d5dd;color:#14213d}
+#miTurnoView .mt-week th small{display:block;font-size:10px;font-weight:normal;opacity:.8}
+#miTurnoView .mt-week th.mt-off{background:#e6e9ed}
+#miTurnoView .mt-week th.mt-now{background:#dc2626;color:#fff}
+#miTurnoView .mt-week td{height:48px;text-align:center;font-size:16px;font-weight:bold;border:1px solid #d0d5dd;background:#fff;color:#14213d}
+#miTurnoView .mt-week td.mt-off{background:#e6e9ed}
+#miTurnoView .mt-week td.chg{background:#f8d7da;color:#8b0015}
+#miTurnoView .mt-week td.cmp{background:#fdba74;color:#7c2d12;box-shadow:inset 0 0 0 2px #ea580c}
+#miToast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:90%;z-index:9100;background:#fff;color:#14213d;border:1px solid #d0d5dd;border-radius:14px;padding:10px 14px;font:14px Arial,sans-serif;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+@media print{#miTurnoView,#miToast{display:none!important}}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -502,6 +512,27 @@ function maybeAutoOpenMiTurno(){
   const name=miGet(MT_KEY_NAME),auto=miGet(MT_KEY_AUTO)!=="0";
   if(byUrl||(name&&auto&&!isAdmin)){miAutoOpened=!byUrl;openMiTurno()}
 }
+function miWeekHtml(name,today){
+  let th="",td="";
+  for(let k=0;k<=7;k++){
+    const dt=new Date(today);dt.setDate(dt.getDate()+k);
+    const i=miDayInfo(dt,name),c=MT_COLORS[i.code];
+    const wd=["D","L","M","X","J","V","S"][dt.getDay()];
+    th+=`<th class="${k===0?"mt-now":(i.off?"mt-off":"")}">${dt.getDate()}<br>${wd}${dt.getDate()===1?`<small>${months[dt.getMonth()].slice(0,3).toLowerCase()}</small>`:""}</th>`;
+    td+=`<td class="${i.comp?"cmp":(i.changed?"chg":((i.off&&!c)?"mt-off":""))}"${(!i.comp&&!i.changed&&c)?` style="background:${c}"`:""} title="${escapeHtml(miDesc(i))}">${escapeHtml(i.code)}</td>`;
+  }
+  return `<table class="mt-week"><thead><tr>${th}</tr></thead><tbody><tr>${td}</tr></tbody></table>`;
+}
+function miToast(msg){
+  let t=document.getElementById("miToast");if(t)t.remove();
+  t=document.createElement("div");t.id="miToast";t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>{if(t.parentNode)t.remove()},6000);
+}
+function closeApp(){
+  // Una página web solo puede cerrarse a sí misma si el navegador lo permite (suele funcionar con la app instalada).
+  try{window.close()}catch(e){}
+  setTimeout(()=>{if(!document.hidden)miToast("Tu navegador no permite cerrar la aplicación desde aquí. Ciérrala con el botón de inicio o recientes de tu móvil.")},400);
+}
 function miMonthHtml(name,today){
   const base=new Date(today.getFullYear(),today.getMonth()+miMonthOffset,1);
   const y=base.getFullYear(),m=base.getMonth(),n=new Date(y,m+1,0).getDate(),lead=(base.getDay()+6)%7,todayStr=fmt(today);
@@ -520,7 +551,7 @@ function renderMiTurno(){
   const today=new Date();today.setHours(0,0,0,0);
   const roster=getWorkersAtDate(fmt(today)),name=miGet(MT_KEY_NAME);
   const company=escapeHtml(getCompanyName()||"Cuadrante de turnos");
-  const keepScroll=el.scrollTop,closeBtn='<button class="mt-x" onclick="closeMiTurno()">✕ Cerrar</button>';
+  const keepScroll=el.scrollTop,closeBtn='<button class="mt-x" onclick="closeApp()">✕ Cerrar</button>';
   if(miPicking||!name||!roster.includes(name)){
     miRoster=roster;
     const lost=(!miPicking&&name&&!roster.includes(name))?`<p class="mt-note">No encuentro a «${escapeHtml(name)}» en el cuadrante actual. Elige tu nombre.</p>`:"";
@@ -528,7 +559,7 @@ function renderMiTurno(){
     el.scrollTop=keepScroll;return;
   }
   const auto=miGet(MT_KEY_AUTO)!=="0";
-  el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-name">${escapeHtml(name)}</div></div><div class="mt-body">${miMonthHtml(name,today)}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button><button onclick="miChangeName()">✏️ Cambiar de nombre</button></div><label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
+  el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-name">${escapeHtml(name)}</div></div><div class="mt-body">${miWeekHtml(name,today)}${miMonthHtml(name,today)}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button><button onclick="miChangeName()">✏️ Cambiar de nombre</button></div><label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
   el.scrollTop=keepScroll;
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&miOpen)renderMiTurno()});
