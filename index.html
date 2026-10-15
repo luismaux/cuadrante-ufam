@@ -181,6 +181,34 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 .btn-txt,.hol-tag{display:none}
 }
 @media print{#panelBackdrop,#cloudBanner{display:none!important}body{overflow:visible!important}}
+#miTurnoView{position:fixed;inset:0;z-index:8000;background:#f5f6f8;overflow:auto;overscroll-behavior:contain;font-family:Arial,sans-serif;color:#14213d;-webkit-overflow-scrolling:touch}
+#miTurnoView .mt-head{background:#123a6b;color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px}
+#miTurnoView .mt-company{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.8}
+#miTurnoView .mt-name{font-size:24px;font-weight:bold;margin-top:4px}
+#miTurnoView .mt-body{max-width:520px;margin:0 auto;padding:14px 14px calc(24px + env(safe-area-inset-bottom,0px))}
+#miTurnoView .mt-today{border-radius:16px;text-align:center;padding:16px 12px;background:#fff;box-shadow:0 2px 10px #0002;border:1px solid #d0d5dd}
+#miTurnoView .mt-label{font-size:14px;font-weight:bold;opacity:.75;text-transform:uppercase;letter-spacing:1px}
+#miTurnoView .mt-big{font-size:84px;line-height:1.05;font-weight:bold;margin:6px 0 0}
+#miTurnoView .mt-sname{font-size:22px;font-weight:bold}
+#miTurnoView .mt-tags{margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+#miTurnoView .mt-tag{font-size:12px;border-radius:10px;padding:2px 9px;background:#ffffffb0;border:1px solid #0002}
+#miTurnoView .mt-tag.chg{background:#f8d7da;color:#8b0015;border-color:#e3a3ab;font-weight:bold}
+#miTurnoView .mt-tag.cmp{background:#fdba74;color:#7c2d12;border-color:#ea580c;font-weight:bold}
+#miTurnoView h3{margin:18px 4px 8px;font-size:15px;color:#475467}
+#miTurnoView .mt-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:8px 10px;margin-bottom:6px}
+#miTurnoView .mt-row.mt-off{background:#e6e9ed}
+#miTurnoView .mt-day{width:76px;flex:none;line-height:1.2}
+#miTurnoView .mt-day b{display:block;font-size:14px}
+#miTurnoView .mt-day span{font-size:12px;color:#475467}
+#miTurnoView .mt-code{min-width:46px;flex:none;text-align:center;font-size:20px;font-weight:bold;border-radius:10px;padding:6px 4px;background:#ffffffa0;border:1px solid #0002}
+#miTurnoView .mt-desc{flex:1;min-width:0;font-size:14px;line-height:1.25}
+#miTurnoView .mt-actions{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+#miTurnoView button{font-size:16px;padding:12px;border-radius:12px;border:1px solid #b8bec9;background:#fff;color:#14213d}
+#miTurnoView button.mt-pick{display:block;width:100%;margin-bottom:8px;font-size:18px;font-weight:bold;text-align:left;padding:14px 16px}
+#miTurnoView .mt-note{font-size:14px;color:#475467;margin:10px 4px}
+#miTurnoView .mt-auto{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:14px;color:#475467}
+#miTurnoView .mt-auto input{width:20px;height:20px}
+@media print{#miTurnoView{display:none!important}}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -224,7 +252,6 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
   <div class="header-inner">
   <div class="header-title-row"><h1 id="companyTitle" title="En modo edición puedes cambiar el nombre">Cuadrante de Turnos</h1></div>
   <div class="header-actions-row">
-<button id="myShiftBtn" type="button" onclick="openMyShift()">👤 Mi turno</button>
     <span id="editState">Consulta</span>
     <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición<span id="editBtnDot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #123a6b"></span></button>
     <div id="statsMenuWrap" style="position:relative">
@@ -275,7 +302,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 <div id="compensationWrap" style="position:relative;display:none">
   <button id="compensationBtn" onclick="toggleCompensationPanel()">⚖️ Compensación</button>
 </div>
-<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="miTurnoBtn" class="change-request-btn" onclick="openMiTurno()">👤 Mi turno</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
 <div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta dos meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
 <div id="pdfPrintArea" style="display:none"></div>
@@ -322,7 +349,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 <button onclick="closePanels()">Cerrar</button>
 </div>
 
-<div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Grabar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede grabar un cambio de turno con otro de su mismo grupo: los de Protección entre ellos, y los de Investigación solo entre ellos. Indica el día y los dos trabajadores; el cambio se graba en el cuadrante al momento.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>cambia con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Grabar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
+<div id="changeRequestPanel" class="panel change-request-panel"><h3>🔄 Grabar cambio</h3><div id="changeRequestFormWrap"><div class="small">Cualquier trabajador puede grabar un cambio de turno con otro de su mismo grupo: los PP solo entre ellos, y los S, O y P solo entre ellos. Indica el día y los dos trabajadores; el cambio se graba en el cuadrante al momento.</div><div class="row"><label>Fecha: <input id="changeRequestDate" type="date"></label><label>Trabajador: <select id="changeRequestFrom"></select></label><span><b>cambia con</b></span><label>Trabajador: <select id="changeRequestTo"></select></label><button class="save" onclick="submitChangeRequest()">✓ Grabar</button></div></div><div id="changeRequestList"></div><details style="margin-top:10px"><summary style="cursor:pointer;font-weight:bold">📜 Historial de cambios</summary><div id="changeRequestHistory"></div></details><div class="row"><button onclick="closePanels()">Cerrar</button></div></div>
 
 <div id="permissionRequestPanel" class="panel change-request-panel"><h3>📄 Solicitar permiso</h3><div id="permissionRequestFormWrap"><div class="small">Cualquier trabajador del desplegable puede solicitar un permiso. Indica el trabajador, el periodo de fechas y el tipo de permiso.</div><div id="permissionRangeHint" class="small" style="margin:4px 0"></div><div class="row"><label>Trabajador: <select id="permissionRequestWorker"></select></label><label>Desde: <input id="permissionRequestStart" type="date"></label><label>Hasta: <input id="permissionRequestEnd" type="date"></label><label>Tipo de permiso: <select id="permissionRequestType">
 <option value="AP">AP Asuntos propios</option><option value="V">V Vacaciones</option><option value="LC">LC Libre compensado</option><option value="NAV">NAV Navidad</option><option value="SS">SS Semana Santa</option>
@@ -440,6 +467,74 @@ function applyCloudGate(){
   });
   updateCloudBanner();
 }
+/* ====== Mi turno: vista personal de cada trabajador ====== */
+const MT_KEY_NAME="cuadrante_mi_nombre",MT_KEY_AUTO="cuadrante_mi_auto";
+const MT_NAMES={M:"Mañana",T:"Tarde",N:"Noche",AP:"Asuntos propios",V:"Vacaciones",SS:"Semana Santa",NAV:"Navidad",LC:"Libre compensado",B:"Baja",LE:"Permiso enfermedad",CS:"Comisión",INC:"Incidencia"};
+const MT_COLORS={AP:"#fff3cd",V:"#d1e7dd",SS:"#cfe2ff",NAV:"#e2d9f3",LC:"#cff4fc",N:"#e9d5ff",B:"#f8d7da",LE:"#fde2e2",CS:"#d9f2e6",INC:"#fce4ec"};
+const MT_WD=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+let miOpen=false,miAutoChecked=false,miAutoOpened=false,miPicking=false,miRoster=[];
+function miGet(k){try{return window.localStorage.getItem(k)}catch(e){return null}}
+function miSet(k,v){try{window.localStorage.setItem(k,v)}catch(e){}}
+function miDayInfo(date,w){
+  const y=date.getFullYear(),m=date.getMonth(),d=date.getDate(),ds=fmt(date),dow=date.getDay();
+  const holiday=allHolidays(y).has(ds),weekend=dow===0||dow===6;
+  return {date,y,m,d,ds,holiday,weekend,off:holiday||weekend,code:getShift(y,m,d,w)||"",changed:isAcceptedChange(y,m,d,w),comp:isCompensated(y,m,d,w)};
+}
+function miDesc(i){
+  if(i.code)return MT_NAMES[i.code]||i.code;
+  if(i.holiday)return "Festivo";
+  if(i.weekend)return "Fin de semana";
+  return "Sin turno";
+}
+function miTags(i,full){
+  let t="";
+  if(full&&i.code&&i.holiday)t+='<span class="mt-tag">Festivo</span>';
+  else if(full&&i.code&&i.weekend)t+='<span class="mt-tag">Fin de semana</span>';
+  if(i.changed)t+='<span class="mt-tag chg">🔄 Cambio grabado</span>';
+  if(i.comp)t+='<span class="mt-tag cmp">Turno compensado</span>';
+  return t;
+}
+function openMiTurno(){miOpen=true;miPicking=false;renderMiTurno()}
+function closeMiTurno(){miOpen=false;miAutoOpened=false;const el=document.getElementById("miTurnoView");if(el)el.remove()}
+function miChoose(i){
+  const w=miRoster[i];if(w===undefined)return;
+  miSet(MT_KEY_NAME,w);if(miGet(MT_KEY_AUTO)===null)miSet(MT_KEY_AUTO,"1");
+  miPicking=false;renderMiTurno();
+}
+function miChangeName(){miPicking=true;renderMiTurno()}
+function miToggleAuto(on){miSet(MT_KEY_AUTO,on?"1":"0")}
+function maybeAutoOpenMiTurno(){
+  if(miAutoChecked)return;miAutoChecked=true;
+  const byUrl=/[?&]mi=1(&|$)/.test(location.search);
+  const name=miGet(MT_KEY_NAME),auto=miGet(MT_KEY_AUTO)!=="0";
+  if(byUrl||(name&&auto&&!isAdmin)){miAutoOpened=!byUrl;openMiTurno()}
+}
+function renderMiTurno(){
+  if(!miOpen)return;
+  let el=document.getElementById("miTurnoView");
+  if(!el){el=document.createElement("div");el.id="miTurnoView";document.body.appendChild(el)}
+  const today=new Date();today.setHours(0,0,0,0);
+  const roster=getWorkersAtDate(fmt(today)),name=miGet(MT_KEY_NAME);
+  const company=escapeHtml(getCompanyName()||"Cuadrante de turnos");
+  if(miPicking||!name||!roster.includes(name)){
+    miRoster=roster;
+    const lost=(!miPicking&&name&&!roster.includes(name))?`<p class="mt-note">No encuentro a «${escapeHtml(name)}» en el cuadrante actual. Elige tu nombre.</p>`:"";
+    el.innerHTML=`<div class="mt-head"><div class="mt-company">${company}</div><div class="mt-name">¿Quién eres?</div></div><div class="mt-body">${lost}<p class="mt-note">Elige tu nombre para ver solo tu turno. Se recordará en este móvil.</p>${roster.map((w,i)=>`<button class="mt-pick" onclick="miChoose(${i})">${escapeHtml(w)}</button>`).join("")||'<p class="mt-note">Todavía no hay trabajadores en el cuadrante.</p>'}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button></div></div>`;
+    return;
+  }
+  const t=miDayInfo(today,name);
+  const bg=MT_COLORS[t.code]||"#fff";
+  let rows="";
+  for(let k=1;k<=7;k++){
+    const dt=new Date(today);dt.setDate(dt.getDate()+k);
+    const i=miDayInfo(dt,name),c=MT_COLORS[i.code];
+    const label=k===1?"Mañana":MT_WD[dt.getDay()][0].toUpperCase()+MT_WD[dt.getDay()].slice(1,3);
+    rows+=`<div class="mt-row${(i.off&&!c)?" mt-off":""}"${c?` style="background:${c}"`:""}><div class="mt-day"><b>${label}</b><span>${dt.getDate()} ${months[dt.getMonth()].slice(0,3).toLowerCase()}</span></div><div class="mt-code">${escapeHtml(i.code||"·")}</div><div class="mt-desc">${escapeHtml(miDesc(i))}<div class="mt-tags" style="justify-content:flex-start;margin-top:3px">${miTags(i,false)}</div></div></div>`;
+  }
+  const auto=miGet(MT_KEY_AUTO)!=="0";
+  el.innerHTML=`<div class="mt-head"><div class="mt-company">${company}</div><div class="mt-name">${escapeHtml(name)}</div></div><div class="mt-body"><div class="mt-today" style="background:${bg}"><div class="mt-label">Hoy · ${MT_WD[today.getDay()]} ${today.getDate()} de ${months[today.getMonth()].toLowerCase()}</div><div class="mt-big">${escapeHtml(t.code||"·")}</div><div class="mt-sname">${escapeHtml(miDesc(t))}</div><div class="mt-tags">${miTags(t,true)}</div></div><h3>Próximos días</h3>${rows}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button><button onclick="miChangeName()">✏️ Cambiar de nombre</button></div><label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
+}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&miOpen)renderMiTurno()});
 let appInitialized=false;
 dbRef.on("value",snap=>{
   const val=snap.val()||{};
@@ -478,6 +573,7 @@ setTimeout(()=>{
 },0);
 auth.onAuthStateChanged(user=>{
   isAdmin=!!user;
+  if(isAdmin&&miAutoOpened)closeMiTurno(); // un administrador no debe quedarse en la vista personal si se abrió sola
   if(!isAdmin){
     editing=false;pendingEdit=false;sessionStorage.removeItem("quadEdit");
   }else if(sessionStorage.getItem("quadEdit")==="1"){
@@ -1126,6 +1222,7 @@ function printSelectedMonths(){
 }
 function render(){
  applyCloudGate();
+ maybeAutoOpenMiTurno();if(miOpen)renderMiTurno();
  checkYearRollover();
  initCompanyTitle();initPrintSelectors();
  document.getElementById("holidayYear").textContent=year;
@@ -1144,7 +1241,7 @@ function render(){
    ms.dataset.filled="1";
  }
  ms.value=month;
- document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const mtb=document.getElementById("miTurnoBtn");if(mtb)mtb.style.display=editing?"none":"inline-block";const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
  const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
  const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display=(!editing&&isAdmin&&(pendingChanges||pendingPermissions))?"block":"none";
  const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
@@ -1886,108 +1983,6 @@ function closeNoticeAlert(){
     </div>
   </div>
 </div>
-<style>#myShiftView .compensated{background:#fdba74!important;color:#7c2d12!important}</style>
-<div id="myShiftView" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9500;font-family:Arial,sans-serif">
-  <div style="max-width:760px;margin:0 auto;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.3)">
-    <div style="background:#123a6b;color:#fff;padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px">
-      <b style="font-size:15px;flex:1">👤 Mi turno</b>
-      <button type="button" onclick="closeMyShift()">Cerrar</button>
-    </div>
-    <div id="myShiftBody"></div>
-  </div>
-</div>
-<script>
-/* ===== Vista "Mi turno" (consulta rápida) =====
-   Solo lee los datos que la app ya tiene cargados (getShift, getWorkersAtDate...).
-   El trabajador elegido se guarda en este dispositivo con window.localStorage, porque
-   "localStorage" a secas está sustituido más arriba por la copia sincronizada con Firebase. */
-const MY_WORKER_KEY="cuadrante_mi_trabajador";
-const MY_STATUS_CODES=["AP","V","SS","NAV","LC","N","B","LE","CS","INC"];
-const MY_WEEKDAYS=["D","L","M","X","J","V","S"];
-const MY_FROM_SHORTCUT=new URLSearchParams(location.search).get("view")==="miturno";
-let myShiftOpen=false,myShiftChoosing=false,myLastSync=null,myPushed=false;
-function myWorkerSaved(){try{return window.localStorage.getItem(MY_WORKER_KEY)||""}catch(e){return ""}}
-function myWorkerSave(v){try{window.localStorage.setItem(MY_WORKER_KEY,v)}catch(e){}}
-function myUpcomingWorkers(days){
-  const set=new Set(),t=new Date();
-  for(let i=0;i<days;i++){const d=new Date(t.getFullYear(),t.getMonth(),t.getDate()+i);getWorkersAtDate(fmt(d)).forEach(w=>set.add(w))}
-  return [...set];
-}
-function openMyShift(){
-  myShiftOpen=true;
-  const ov=document.getElementById("myShiftView");
-  ov.style.display="block";
-  if(MY_FROM_SHORTCUT)ov.style.background="#f5f6f8"; /* desde el atajo: solo se ve la ventana pequeña */
-  if(!MY_FROM_SHORTCUT){try{history.pushState({miTurno:1},"");myPushed=true}catch(e){}}
-  renderMyShift();
-}
-function hideMyShift(){
-  myShiftOpen=false;myShiftChoosing=false;
-  document.getElementById("myShiftView").style.display="none";
-}
-function closeMyShift(fromPop){
-  if(MY_FROM_SHORTCUT){
-    /* Abierta desde el atajo del icono: se intenta cerrar la aplicación entera. */
-    try{window.close()}catch(e){}
-    setTimeout(()=>{
-      const box=document.getElementById("myShiftBody");
-      if(box)box.innerHTML='<div style="padding:14px;text-align:center"><p style="margin:0 0 12px">Ya puedes salir: pulsa el botón atrás o inicio del móvil.</p><button type="button" onclick="openFullFromShift()">Abrir el cuadrante completo</button></div>';
-    },400);
-    return;
-  }
-  hideMyShift();
-  if(!fromPop&&myPushed){myPushed=false;try{history.back()}catch(e){}}
-}
-window.addEventListener("popstate",()=>{if(myShiftOpen&&!MY_FROM_SHORTCUT){myPushed=false;closeMyShift(true)}});
-function openFullFromShift(){hideMyShift();try{history.replaceState(null,"",location.pathname)}catch(e){}}
-function chooseMyWorker(name){myWorkerSave(name);myShiftChoosing=false;renderMyShift()}
-function changeMyWorker(){myShiftChoosing=true;renderMyShift()}
-function renderMyShift(){
-  if(!myShiftOpen)return;
-  const box=document.getElementById("myShiftBody");
-  if(!(typeof appInitialized!=="undefined"&&appInitialized)){box.innerHTML='<p style="text-align:center;color:#555;margin:14px">Conectando con la base de datos…</p>';return}
-  const workers=myUpcomingWorkers(31).sort((a,b)=>a.localeCompare(b,"es"));
-  let me=myWorkerSaved();
-  if(me&&!workers.includes(me))me="";
-  if(!me||myShiftChoosing){
-    box.innerHTML='<div style="padding:12px"><b>¿Quién eres?</b><p class="small" style="margin:6px 0 10px">Elige tu nombre. Quedará guardado en este dispositivo y podrás cambiarlo cuando quieras.</p>'+
-      (workers.length?workers.map(w=>'<button type="button" style="display:block;width:100%;text-align:left;margin:0 0 8px" data-w="'+escapeHtml(w)+'">'+escapeHtml(w)+'</button>').join(""):'<p>No hay trabajadores definidos todavía.</p>')+'</div>';
-    box.querySelectorAll("button[data-w]").forEach(b=>b.addEventListener("click",()=>chooseMyWorker(b.getAttribute("data-w"))));
-    return;
-  }
-  const n=window.innerWidth<560?7:8,today=new Date(),cellBase="border-left:1px solid #ddd;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;height:50px;font-size:15px;font-weight:bold";
-  let row='<div style="display:flex;align-items:stretch;border-bottom:1px solid #ddd"><div style="display:flex;align-items:center;padding:0 10px;font-weight:bold;font-size:15px;max-width:34%;overflow:hidden;text-overflow:ellipsis">'+escapeHtml(me)+'</div>';
-  for(let i=0;i<n;i++){
-    const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i),ds=fmt(d),y=d.getFullYear(),m=d.getMonth(),dd=d.getDate();
-    const active=getWorkersAtDate(ds).includes(me);
-    const code=active?getShift(y,m,dd,me):"";
-    const off=d.getDay()===0||d.getDay()===6||allHolidays(y).has(ds);
-    let cls=[];
-    if(code&&MY_STATUS_CODES.includes(code))cls.push("status-"+code);
-    if(off)cls.push("holiday");
-    if(!active)cls.push("inactive");
-    try{if(active&&code&&typeof isAcceptedChange==="function"&&isAcceptedChange(y,m,dd,me))cls.push("change-red")}catch(e){}
-    try{if(active&&code&&typeof isCompensated==="function"&&isCompensated(y,m,dd,me))cls.push("compensated")}catch(e){}
-    row+='<div class="'+cls.join(" ")+'" style="'+cellBase+'" title="'+escapeHtml(d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"}))+'"><span>'+escapeHtml(code)+'</span><span style="font-size:9px;font-weight:normal;opacity:.7">'+MY_WEEKDAYS[d.getDay()]+dd+'</span></div>';
-  }
-  row+='<div style="display:flex;align-items:center;padding:0 8px;border-left:1px solid #ddd"><button type="button" onclick="changeMyWorker()" style="padding:5px 8px;font-size:12px">Cambiar</button></div></div>';
-  let sync;
-  if(typeof cloudLive!=="undefined"&&cloudLive){
-    const online=typeof cloudOnline!=="undefined"&&cloudOnline;
-    const t=myLastSync?new Date(myLastSync).toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}):"";
-    sync=online?'<span style="color:#166534">● Actualizado'+(t?' a las '+t:'')+'</span>':'<span style="color:#b45309">⚠ Sin conexión. Datos de las '+(t||"—")+'; pueden estar desactualizados.</span>';
-  }else{
-    const ts=typeof cachedTs!=="undefined"&&cachedTs?new Date(cachedTs).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"fecha desconocida";
-    sync='<span style="color:#b45309">⚠ Copia guardada ('+escapeHtml(ts)+'). Pueden haber cambiado; esperando conexión.</span>';
-  }
-  box.innerHTML=row+'<div class="small" style="padding:7px 10px">'+sync+'<br><span style="color:#666">El primer día corresponde al día de hoy.</span></div>';
-}
-dbRef.on("value",()=>{myLastSync=Date.now();renderMyShift()});
-setInterval(renderMyShift,60000);
-window.addEventListener("resize",renderMyShift);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderMyShift()});
-if(MY_FROM_SHORTCUT){openMyShift();setTimeout(renderMyShift,150);setTimeout(renderMyShift,1500)}
-</script>
 <script>
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
