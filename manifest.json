@@ -38,8 +38,8 @@
     {
       "name": "Mi turno",
       "short_name": "Mi turno",
-      "description": "Ver mi turno de hoy y los próximos días",
-      "url": "./index.html?view=miturno",
+      "description": "Ver mi turno de hoy y de los próximos días",
+      "url": "./?mi=1",
       "icons": [
         {
           "src": "icon-192.png",
