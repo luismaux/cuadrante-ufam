@@ -182,7 +182,8 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 }
 @media print{#panelBackdrop,#cloudBanner{display:none!important}body{overflow:visible!important}}
 #miTurnoView{position:fixed;inset:0;z-index:8000;background:#f5f6f8;overflow:auto;overscroll-behavior:contain;font-family:Arial,sans-serif;color:#14213d;-webkit-overflow-scrolling:touch}
-#miTurnoView .mt-head{background:#123a6b;color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px}
+#miTurnoView .mt-head{position:sticky;top:0;z-index:2;background:#123a6b;color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top,0px)) 92px 14px}
+#miTurnoView .mt-x{position:absolute;right:10px;top:calc(12px + env(safe-area-inset-top,0px));padding:7px 11px;font-size:14px;border-radius:10px;background:#ffffff22;color:#fff;border:1px solid #ffffff77}
 #miTurnoView .mt-company{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.8}
 #miTurnoView .mt-name{font-size:24px;font-weight:bold;margin-top:4px}
 #miTurnoView .mt-body{max-width:520px;margin:0 auto;padding:14px 14px calc(24px + env(safe-area-inset-bottom,0px))}
@@ -208,6 +209,20 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 #miTurnoView .mt-note{font-size:14px;color:#475467;margin:10px 4px}
 #miTurnoView .mt-auto{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:14px;color:#475467}
 #miTurnoView .mt-auto input{width:20px;height:20px}
+#miTurnoView .mt-mnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+#miTurnoView .mt-mnav span{font-size:17px;font-weight:bold}
+#miTurnoView .mt-mnav button{padding:6px 16px;font-size:20px;line-height:1}
+#miTurnoView .mt-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+#miTurnoView .mt-wd{text-align:center;font-size:12px;font-weight:bold;color:#475467;padding:2px 0}
+#miTurnoView .mt-c{position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1.05;border-radius:8px;border:1px solid #d0d5dd;background:#fff;min-width:0}
+#miTurnoView .mt-c.mt-empty{border:0;background:transparent}
+#miTurnoView .mt-c.mt-off{background:#e6e9ed}
+#miTurnoView .mt-c.mt-now{box-shadow:inset 0 0 0 3px #dc2626}
+#miTurnoView .mt-c .mt-n{position:absolute;top:2px;left:4px;font-size:10px;color:#475467}
+#miTurnoView .mt-c b{font-size:15px}
+#miTurnoView .mt-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%}
+#miTurnoView .mt-dot.chg{background:#dc2626}
+#miTurnoView .mt-dot.cmp{background:#ea580c;right:13px}
 @media print{#miTurnoView{display:none!important}}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -472,7 +487,7 @@ const MT_KEY_NAME="cuadrante_mi_nombre",MT_KEY_AUTO="cuadrante_mi_auto";
 const MT_NAMES={M:"Mañana",T:"Tarde",N:"Noche",AP:"Asuntos propios",V:"Vacaciones",SS:"Semana Santa",NAV:"Navidad",LC:"Libre compensado",B:"Baja",LE:"Permiso enfermedad",CS:"Comisión",INC:"Incidencia"};
 const MT_COLORS={AP:"#fff3cd",V:"#d1e7dd",SS:"#cfe2ff",NAV:"#e2d9f3",LC:"#cff4fc",N:"#e9d5ff",B:"#f8d7da",LE:"#fde2e2",CS:"#d9f2e6",INC:"#fce4ec"};
 const MT_WD=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-let miOpen=false,miAutoChecked=false,miAutoOpened=false,miPicking=false,miRoster=[];
+let miOpen=false,miAutoChecked=false,miAutoOpened=false,miPicking=false,miRoster=[],miMonthOffset=0;
 function miGet(k){try{return window.localStorage.getItem(k)}catch(e){return null}}
 function miSet(k,v){try{window.localStorage.setItem(k,v)}catch(e){}}
 function miDayInfo(date,w){
@@ -494,13 +509,14 @@ function miTags(i,full){
   if(i.comp)t+='<span class="mt-tag cmp">Turno compensado</span>';
   return t;
 }
-function openMiTurno(){miOpen=true;miPicking=false;renderMiTurno()}
+function openMiTurno(){miOpen=true;miPicking=false;miMonthOffset=0;renderMiTurno()}
 function closeMiTurno(){miOpen=false;miAutoOpened=false;const el=document.getElementById("miTurnoView");if(el)el.remove()}
 function miChoose(i){
   const w=miRoster[i];if(w===undefined)return;
   miSet(MT_KEY_NAME,w);if(miGet(MT_KEY_AUTO)===null)miSet(MT_KEY_AUTO,"1");
-  miPicking=false;renderMiTurno();
+  miPicking=false;miMonthOffset=0;renderMiTurno();
 }
+function miMonth(delta){miMonthOffset+=delta;renderMiTurno()}
 function miChangeName(){miPicking=true;renderMiTurno()}
 function miToggleAuto(on){miSet(MT_KEY_AUTO,on?"1":"0")}
 function maybeAutoOpenMiTurno(){
@@ -509,6 +525,17 @@ function maybeAutoOpenMiTurno(){
   const name=miGet(MT_KEY_NAME),auto=miGet(MT_KEY_AUTO)!=="0";
   if(byUrl||(name&&auto&&!isAdmin)){miAutoOpened=!byUrl;openMiTurno()}
 }
+function miMonthHtml(name,today){
+  const base=new Date(today.getFullYear(),today.getMonth()+miMonthOffset,1);
+  const y=base.getFullYear(),m=base.getMonth(),n=new Date(y,m+1,0).getDate(),lead=(base.getDay()+6)%7,todayStr=fmt(today);
+  let cells="";
+  for(let i=0;i<lead;i++)cells+='<div class="mt-c mt-empty"></div>';
+  for(let d=1;d<=n;d++){
+    const dt=new Date(y,m,d),i=miDayInfo(dt,name),c=MT_COLORS[i.code];
+    cells+=`<div class="mt-c${(i.off&&!c)?" mt-off":""}${fmt(dt)===todayStr?" mt-now":""}"${c?` style="background:${c}"`:""} title="${escapeHtml(miDesc(i))}"><span class="mt-n">${d}</span><b>${escapeHtml(i.code)}</b>${i.changed?'<i class="mt-dot chg"></i>':""}${i.comp?'<i class="mt-dot cmp"></i>':""}</div>`;
+  }
+  return `<h3>Mes completo</h3><div class="mt-mnav"><button onclick="miMonth(-1)" aria-label="Mes anterior">‹</button><span>${months[m]} ${y}</span><button onclick="miMonth(1)" aria-label="Mes siguiente">›</button></div><div class="mt-grid">${["L","M","X","J","V","S","D"].map(x=>`<div class="mt-wd">${x}</div>`).join("")}${cells}</div>`;
+}
 function renderMiTurno(){
   if(!miOpen)return;
   let el=document.getElementById("miTurnoView");
@@ -516,11 +543,12 @@ function renderMiTurno(){
   const today=new Date();today.setHours(0,0,0,0);
   const roster=getWorkersAtDate(fmt(today)),name=miGet(MT_KEY_NAME);
   const company=escapeHtml(getCompanyName()||"Cuadrante de turnos");
+  const keepScroll=el.scrollTop,closeBtn='<button class="mt-x" onclick="closeMiTurno()">✕ Cerrar</button>';
   if(miPicking||!name||!roster.includes(name)){
     miRoster=roster;
     const lost=(!miPicking&&name&&!roster.includes(name))?`<p class="mt-note">No encuentro a «${escapeHtml(name)}» en el cuadrante actual. Elige tu nombre.</p>`:"";
-    el.innerHTML=`<div class="mt-head"><div class="mt-company">${company}</div><div class="mt-name">¿Quién eres?</div></div><div class="mt-body">${lost}<p class="mt-note">Elige tu nombre para ver solo tu turno. Se recordará en este móvil.</p>${roster.map((w,i)=>`<button class="mt-pick" onclick="miChoose(${i})">${escapeHtml(w)}</button>`).join("")||'<p class="mt-note">Todavía no hay trabajadores en el cuadrante.</p>'}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button></div></div>`;
-    return;
+    el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-name">¿Quién eres?</div></div><div class="mt-body">${lost}<p class="mt-note">Elige tu nombre para ver solo tu turno. Se recordará en este móvil.</p>${roster.map((w,i)=>`<button class="mt-pick" onclick="miChoose(${i})">${escapeHtml(w)}</button>`).join("")||'<p class="mt-note">Todavía no hay trabajadores en el cuadrante.</p>'}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button></div></div>`;
+    el.scrollTop=keepScroll;return;
   }
   const t=miDayInfo(today,name);
   const bg=MT_COLORS[t.code]||"#fff";
@@ -532,7 +560,8 @@ function renderMiTurno(){
     rows+=`<div class="mt-row${(i.off&&!c)?" mt-off":""}"${c?` style="background:${c}"`:""}><div class="mt-day"><b>${label}</b><span>${dt.getDate()} ${months[dt.getMonth()].slice(0,3).toLowerCase()}</span></div><div class="mt-code">${escapeHtml(i.code||"·")}</div><div class="mt-desc">${escapeHtml(miDesc(i))}<div class="mt-tags" style="justify-content:flex-start;margin-top:3px">${miTags(i,false)}</div></div></div>`;
   }
   const auto=miGet(MT_KEY_AUTO)!=="0";
-  el.innerHTML=`<div class="mt-head"><div class="mt-company">${company}</div><div class="mt-name">${escapeHtml(name)}</div></div><div class="mt-body"><div class="mt-today" style="background:${bg}"><div class="mt-label">Hoy · ${MT_WD[today.getDay()]} ${today.getDate()} de ${months[today.getMonth()].toLowerCase()}</div><div class="mt-big">${escapeHtml(t.code||"·")}</div><div class="mt-sname">${escapeHtml(miDesc(t))}</div><div class="mt-tags">${miTags(t,true)}</div></div><h3>Próximos días</h3>${rows}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button><button onclick="miChangeName()">✏️ Cambiar de nombre</button></div><label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
+  el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-name">${escapeHtml(name)}</div></div><div class="mt-body"><div class="mt-today" style="background:${bg}"><div class="mt-label">Hoy · ${MT_WD[today.getDay()]} ${today.getDate()} de ${months[today.getMonth()].toLowerCase()}</div><div class="mt-big">${escapeHtml(t.code||"·")}</div><div class="mt-sname">${escapeHtml(miDesc(t))}</div><div class="mt-tags">${miTags(t,true)}</div></div><h3>Próximos días</h3>${rows}${miMonthHtml(name,today)}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button><button onclick="miChangeName()">✏️ Cambiar de nombre</button><button onclick="closeMiTurno()">✕ Cerrar</button></div><label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
+  el.scrollTop=keepScroll;
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&miOpen)renderMiTurno()});
 let appInitialized=false;
@@ -1974,7 +2003,7 @@ function closeNoticeAlert(){
 </div>
 <div id="installPromptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:10px;padding:22px;max-width:340px;width:90%;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.25)">
-   <img src="icon-192.png" alt="Cuadrante" style="width:96px;height:96px;border-radius:20px;box-shadow:0 4px 14px rgba(0,0,0,.15)">
+    <div style="font-size:34px;margin-bottom:6px">📲</div>
     <h3 style="margin:0 0 8px">Instalar Cuadrante</h3>
     <p class="small" style="margin:0 0 16px">¿Quieres añadir un acceso directo de la aplicación a este dispositivo?</p>
     <div style="display:flex;gap:10px;justify-content:center">
