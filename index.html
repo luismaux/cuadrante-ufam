@@ -218,7 +218,26 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 #miTurnoView .mt-week td.chg{background:#f8d7da;color:#8b0015}
 #miTurnoView .mt-week td.cmp{background:#fdba74;color:#7c2d12;box-shadow:inset 0 0 0 2px #ea580c}
 #miToast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:90%;z-index:9100;background:#fff;color:#14213d;border:1px solid #d0d5dd;border-radius:14px;padding:10px 14px;font:14px Arial,sans-serif;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-@media print{#miTurnoView,#miToast{display:none!important}}
+#miTurnoView .mt-c{cursor:pointer}
+#miTurnoView .mt-c .mt-note-ic{position:absolute;bottom:2px;right:3px;font-size:11px;line-height:1}
+#miNoteBg,#miRemBg{position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 14px 14px;overflow:auto;font-family:Arial,sans-serif}
+#miRemBg{z-index:9300}
+.mt-dlg{background:#fff;color:#14213d;border-radius:14px;max-width:460px;width:100%;margin-top:5vh;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35);box-sizing:border-box}
+.mt-dlg h4{margin:0 0 4px;font-size:18px}
+.mt-dlg .mt-dlg-sub{font-size:14px;color:#475467;margin-bottom:10px}
+.mt-dlg textarea{width:100%;box-sizing:border-box;font:16px Arial,sans-serif;padding:10px;border:1px solid #b8bec9;border-radius:10px;resize:vertical;min-height:90px}
+.mt-dlg .mt-chk{display:flex;align-items:center;gap:8px;font-size:15px;margin-top:10px}
+.mt-dlg .mt-chk input{width:20px;height:20px}
+.mt-dlg .mt-dlg-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.mt-dlg button{font-size:16px;padding:10px 14px;border-radius:10px;border:1px solid #b8bec9;background:#fff;color:#14213d}
+.mt-dlg button.mt-ok{background:#d1e7dd;font-weight:bold}
+.mt-dlg button.mt-del{background:#f8d7da}
+.mt-dlg .mt-dlg-hint{font-size:12px;color:#667085;margin-top:10px}
+.mt-dlg .mt-rem-item{border:1px solid #d0d5dd;border-radius:10px;padding:8px 10px;margin:8px 0;background:#fffbeb}
+.mt-dlg .mt-rem-item b{display:block;font-size:14px}
+.mt-dlg .mt-rem-item span{font-size:13px;color:#475467}
+.mt-dlg .mt-rem-item p{margin:4px 0 0;white-space:pre-wrap;word-break:break-word;font-size:16px}
+@media print{#miTurnoView,#miToast,#miNoteBg,#miRemBg{display:none!important}}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -533,14 +552,81 @@ function closeApp(){
   try{window.close()}catch(e){}
   setTimeout(()=>{if(!document.hidden)miToast("Tu navegador no permite cerrar la aplicación desde aquí. Ciérrala con el botón de inicio o recientes de tu móvil.")},400);
 }
+/* ====== Notas y recordatorios personales (se guardan solo en este móvil) ====== */
+const MT_KEY_NOTES="cuadrante_mis_notas_v1",MT_KEY_SEEN="cuadrante_notas_vistas_v1";
+let miRemChecked=false;
+function miJson(k){try{const o=JSON.parse(miGet(k)||"{}");return(o&&typeof o==="object")?o:{}}catch(e){return{}}}
+function miNotes(name){return miJson(MT_KEY_NOTES)[name]||{}}
+function miSaveNote(name,ds,note){
+  const all=miJson(MT_KEY_NOTES);all[name]=all[name]||{};
+  if(note)all[name][ds]=note;else delete all[name][ds];
+  miSet(MT_KEY_NOTES,JSON.stringify(all));
+}
+function miNiceDate(dt){return MT_WD[dt.getDay()][0].toUpperCase()+MT_WD[dt.getDay()].slice(1)+" "+dt.getDate()+" de "+months[dt.getMonth()].toLowerCase()}
+function closeMiNote(){const e=document.getElementById("miNoteBg");if(e)e.remove()}
+function miOpenNote(ds){
+  const name=miGet(MT_KEY_NAME);if(!name)return;
+  const dt=new Date(ds+"T00:00:00");if(Number.isNaN(dt.getTime()))return;
+  const i=miDayInfo(dt,name),n=miNotes(name)[ds];
+  closeMiNote();
+  const bg=document.createElement("div");bg.id="miNoteBg";
+  bg.innerHTML=`<div class="mt-dlg"><h4>${escapeHtml(miNiceDate(dt))}</h4><div class="mt-dlg-sub">Turno: ${escapeHtml(i.code||"—")} · ${escapeHtml(miDesc(i))}</div><textarea id="miNoteText" maxlength="300" placeholder="Escribe aquí tu anotación…"></textarea><label class="mt-chk"><input type="checkbox" id="miRemB"> 🔔 Recordarme el día anterior</label><label class="mt-chk"><input type="checkbox" id="miRemS"> 🔔 Recordarme el mismo día</label><div class="mt-dlg-btns"><button class="mt-ok" onclick="miSaveNoteUI('${ds}')">Guardar</button>${n?`<button class="mt-del" onclick="miDeleteNote('${ds}')">🗑 Borrar</button>`:""}<button onclick="closeMiNote()">Cancelar</button></div><div class="mt-dlg-hint">La nota se guarda solo en este móvil.</div></div>`;
+  document.body.appendChild(bg);
+  document.getElementById("miNoteText").value=n?n.t:"";
+  document.getElementById("miRemB").checked=n?!!n.b:true;
+  document.getElementById("miRemS").checked=n?!!n.s:true;
+  bg.addEventListener("click",e=>{if(e.target===bg)closeMiNote()});
+  if(!n)document.getElementById("miNoteText").focus();
+}
+function miSaveNoteUI(ds){
+  const name=miGet(MT_KEY_NAME);if(!name)return;
+  const t=document.getElementById("miNoteText").value.trim();
+  miSaveNote(name,ds,t?{t,b:document.getElementById("miRemB").checked,s:document.getElementById("miRemS").checked}:null);
+  closeMiNote();renderMiTurno();
+}
+function miDeleteNote(ds){const name=miGet(MT_KEY_NAME);if(!name)return;miSaveNote(name,ds,null);closeMiNote();renderMiTurno()}
+function miPruneOld(){
+  // Se olvidan las notas y avisos de hace más de 60 días para no acumular datos.
+  const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-60);const limS=fmt(lim);
+  const all=miJson(MT_KEY_NOTES);let ch=false;
+  Object.keys(all).forEach(w=>Object.keys(all[w]||{}).forEach(ds=>{if(ds<limS){delete all[w][ds];ch=true}}));
+  if(ch)miSet(MT_KEY_NOTES,JSON.stringify(all));
+  const seen=miJson(MT_KEY_SEEN);let ch2=false;
+  Object.keys(seen).forEach(k=>{if(k.slice(0,10)<limS){delete seen[k];ch2=true}});
+  if(ch2)miSet(MT_KEY_SEEN,JSON.stringify(seen));
+}
+function miRemindersDue(name){
+  const today=new Date();today.setHours(0,0,0,0);const tom=new Date(today);tom.setDate(tom.getDate()+1);
+  const tds=fmt(today),mds=fmt(tom),notes=miNotes(name),seen=miJson(MT_KEY_SEEN),out=[];
+  if(notes[tds]&&notes[tds].s&&!seen[tds+"|s"])out.push({key:tds+"|s",kind:"Hoy",dt:today,t:notes[tds].t});
+  if(notes[mds]&&notes[mds].b&&!seen[mds+"|b"])out.push({key:mds+"|b",kind:"Mañana",dt:tom,t:notes[mds].t});
+  return out;
+}
+function miCheckReminders(){
+  if(document.getElementById("miRemBg"))return;
+  const name=miGet(MT_KEY_NAME);if(!name)return;
+  const due=miRemindersDue(name);if(!due.length)return;
+  const items=due.map(r=>{const i=miDayInfo(r.dt,name);return `<div class="mt-rem-item"><b>${r.kind} · ${escapeHtml(miNiceDate(r.dt))}</b><span>Turno: ${escapeHtml(i.code||"—")} · ${escapeHtml(miDesc(i))}</span><p>${escapeHtml(r.t)}</p></div>`}).join("");
+  const bg=document.createElement("div");bg.id="miRemBg";
+  bg.innerHTML=`<div class="mt-dlg"><h4>🔔 Recordatorios</h4>${items}<div class="mt-dlg-btns"><button class="mt-ok" id="miRemOk">Entendido</button></div></div>`;
+  document.body.appendChild(bg);
+  document.getElementById("miRemOk").onclick=()=>{
+    const seen=miJson(MT_KEY_SEEN);due.forEach(r=>{seen[r.key]=1});miSet(MT_KEY_SEEN,JSON.stringify(seen));bg.remove();
+  };
+}
+function maybeCheckReminders(){
+  if(miRemChecked)return;miRemChecked=true;
+  miPruneOld();miCheckReminders();
+}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)miCheckReminders()});
 function miMonthHtml(name,today){
-  const base=new Date(today.getFullYear(),today.getMonth()+miMonthOffset,1);
+  const notes=miNotes(name),base=new Date(today.getFullYear(),today.getMonth()+miMonthOffset,1);
   const y=base.getFullYear(),m=base.getMonth(),n=new Date(y,m+1,0).getDate(),lead=(base.getDay()+6)%7,todayStr=fmt(today);
   let cells="";
   for(let i=0;i<lead;i++)cells+='<div class="mt-c mt-empty"></div>';
   for(let d=1;d<=n;d++){
     const dt=new Date(y,m,d),i=miDayInfo(dt,name),c=MT_COLORS[i.code];
-    cells+=`<div class="mt-c${(i.off&&!c)?" mt-off":""}${fmt(dt)===todayStr?" mt-now":""}"${c?` style="background:${c}"`:""} title="${escapeHtml(miDesc(i))}"><span class="mt-n">${d}</span><b>${escapeHtml(i.code)}</b>${i.changed?'<i class="mt-dot chg"></i>':""}${i.comp?'<i class="mt-dot cmp"></i>':""}</div>`;
+    cells+=`<div class="mt-c${(i.off&&!c)?" mt-off":""}${fmt(dt)===todayStr?" mt-now":""}"${c?` style="background:${c}"`:""} title="${escapeHtml(miDesc(i))}" onclick="miOpenNote('${i.ds}')"><span class="mt-n">${d}</span><b>${escapeHtml(i.code)}</b>${i.changed?'<i class="mt-dot chg"></i>':""}${i.comp?'<i class="mt-dot cmp"></i>':""}${notes[i.ds]?'<span class="mt-note-ic">📝</span>':""}</div>`;
   }
   return `<div class="mt-mnav"><button onclick="miMonth(-1)" aria-label="Mes anterior">‹</button><span>${months[m]} ${y}</span><button onclick="miMonth(1)" aria-label="Mes siguiente">›</button></div><div class="mt-grid">${["L","M","X","J","V","S","D"].map(x=>`<div class="mt-wd">${x}</div>`).join("")}${cells}</div>`;
 }
@@ -1250,7 +1336,7 @@ function printSelectedMonths(){
 }
 function render(){
  applyCloudGate();
- maybeAutoOpenMiTurno();if(miOpen)renderMiTurno();
+ maybeAutoOpenMiTurno();if(miOpen)renderMiTurno();maybeCheckReminders();
  checkYearRollover();
  initCompanyTitle();initPrintSelectors();
  document.getElementById("holidayYear").textContent=year;
