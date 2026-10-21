@@ -579,13 +579,18 @@ function miOpenNote(ds){
   bg.addEventListener("click",e=>{if(e.target===bg)closeMiNote()});
   if(!n)document.getElementById("miNoteText").focus();
 }
+function miClearSeen(ds){
+  // Al guardar o borrar una nota, sus avisos se "rearman": vuelven a poder salir aunque antes se hubieran silenciado.
+  const seen=miJson(MT_KEY_SEEN);delete seen[ds+"|b"];delete seen[ds+"|s"];miSet(MT_KEY_SEEN,JSON.stringify(seen));
+}
 function miSaveNoteUI(ds){
   const name=miGet(MT_KEY_NAME);if(!name)return;
   const t=document.getElementById("miNoteText").value.trim();
   miSaveNote(name,ds,t?{t,b:document.getElementById("miRemB").checked,s:document.getElementById("miRemS").checked}:null);
+  miClearSeen(ds);
   closeMiNote();renderMiTurno();
 }
-function miDeleteNote(ds){const name=miGet(MT_KEY_NAME);if(!name)return;miSaveNote(name,ds,null);closeMiNote();renderMiTurno()}
+function miDeleteNote(ds){const name=miGet(MT_KEY_NAME);if(!name)return;miSaveNote(name,ds,null);miClearSeen(ds);closeMiNote();renderMiTurno()}
 function miPruneOld(){
   // Se olvidan las notas y avisos de hace más de 60 días para no acumular datos.
   const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-60);const limS=fmt(lim);
