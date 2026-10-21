@@ -237,6 +237,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 .mt-dlg .mt-rem-item b{display:block;font-size:14px}
 .mt-dlg .mt-rem-item span{font-size:13px;color:#475467}
 .mt-dlg .mt-rem-item p{margin:4px 0 0;white-space:pre-wrap;word-break:break-word;font-size:16px}
+.mt-dlg .mt-rem-item .mt-dlg-btns{margin-top:10px}
 @media print{#miTurnoView,#miToast,#miNoteBg,#miRemBg{display:none!important}}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -602,17 +603,27 @@ function miRemindersDue(name){
   if(notes[mds]&&notes[mds].b&&!seen[mds+"|b"])out.push({key:mds+"|b",kind:"Mañana",dt:tom,t:notes[mds].t});
   return out;
 }
+function miRemAck(key,mode,btn){
+  // "keep" (Aceptar): no se marca como visto, volverá a salir la próxima vez que se abra la app.
+  // "seen" (Entendido) y "never" (No volver a avisar): no vuelve a avisar de ese recordatorio.
+  if(mode!=="keep"){const seen=miJson(MT_KEY_SEEN);seen[key]=1;miSet(MT_KEY_SEEN,JSON.stringify(seen))}
+  const item=btn.closest(".mt-rem-item");if(item)item.remove();
+  if(!document.querySelector("#miRemBg .mt-rem-item")){const bg=document.getElementById("miRemBg");if(bg)bg.remove()}
+}
 function miCheckReminders(){
   if(document.getElementById("miRemBg"))return;
   const name=miGet(MT_KEY_NAME);if(!name)return;
   const due=miRemindersDue(name);if(!due.length)return;
-  const items=due.map(r=>{const i=miDayInfo(r.dt,name);return `<div class="mt-rem-item"><b>${r.kind} · ${escapeHtml(miNiceDate(r.dt))}</b><span>Turno: ${escapeHtml(i.code||"—")} · ${escapeHtml(miDesc(i))}</span><p>${escapeHtml(r.t)}</p></div>`}).join("");
+  const items=due.map(r=>{
+    const i=miDayInfo(r.dt,name),k=escapeHtml(r.key);
+    const btns=r.key.endsWith("|b")
+      ?`<button class="mt-ok" onclick="miRemAck('${k}','keep',this)">Aceptar</button><button class="mt-del" onclick="miRemAck('${k}','never',this)">No volver a avisar</button>`
+      :`<button class="mt-ok" onclick="miRemAck('${k}','seen',this)">Entendido</button>`;
+    return `<div class="mt-rem-item"><b>${r.kind} · ${escapeHtml(miNiceDate(r.dt))}</b><span>Turno: ${escapeHtml(i.code||"—")} · ${escapeHtml(miDesc(i))}</span><p>${escapeHtml(r.t)}</p><div class="mt-dlg-btns">${btns}</div></div>`;
+  }).join("");
   const bg=document.createElement("div");bg.id="miRemBg";
-  bg.innerHTML=`<div class="mt-dlg"><h4>🔔 Recordatorios</h4>${items}<div class="mt-dlg-btns"><button class="mt-ok" id="miRemOk">Entendido</button></div></div>`;
+  bg.innerHTML=`<div class="mt-dlg"><h4>🔔 Recordatorios</h4>${items}</div>`;
   document.body.appendChild(bg);
-  document.getElementById("miRemOk").onclick=()=>{
-    const seen=miJson(MT_KEY_SEEN);due.forEach(r=>{seen[r.key]=1});miSet(MT_KEY_SEEN,JSON.stringify(seen));bg.remove();
-  };
 }
 function maybeCheckReminders(){
   if(miRemChecked)return;miRemChecked=true;
