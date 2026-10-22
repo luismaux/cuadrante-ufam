@@ -38,7 +38,7 @@
     {
       "name": "Mi turno",
       "short_name": "Mi turno",
-      "description": "Ver mi turno de hoy y de los próximos días",
+      "description": "Ver mi turno y mis notas del mes",
       "url": "./?mi=1",
       "icons": [
         {
