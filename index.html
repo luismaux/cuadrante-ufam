@@ -114,13 +114,14 @@ td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;col
 
 .worker-code{width:34px;min-width:34px;max-width:34px;text-align:center;font-weight:bold;text-transform:uppercase}
 .worker-code-cell{width:34px;min-width:34px;text-align:center;font-weight:bold}
+@media (min-width:701px){.worker-code-cell,th.worker-code-cell,td.worker-code-cell{width:54px;min-width:54px;font-size:14px;white-space:nowrap}}
 #grid.hide-type-col .worker-code-cell{display:none}
 td:not(.worker-code-cell){font-size:13px}
 .worker-edit-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}
 .worker-edit-row input.worker-name{min-width:160px;flex:1}
 .worker-edit-row input.worker-code{flex:0 0 34px}
 .add-worker-btn{background:#d1e7dd;font-weight:bold}
-.change-request-btn{background:#e8eefc;font-weight:bold}.change-request-btn.pending{background:#28a745;color:#fff;border-color:#1e7e34}
+.change-request-btn{background:#e8eefc;font-weight:bold}.change-request-btn.pending{background:#28a745;color:#fff;border-color:#1e7e34}#editBtn.pending-green{background:#28a745!important;color:#fff!important;border-color:#1e7e34!important;font-weight:bold}
 .change-request-panel .request-card{border:1px solid #ddd;border-radius:7px;padding:10px;margin:8px 0;background:#fafafa}.change-request-panel .request-card.pending{border-left:5px solid #62b77b}.change-request-panel .request-card.accepted{border-left:5px solid #d33;background:#fde2e2}.change-request-panel .request-card.denied{border-left:5px solid #999;opacity:.7}.change-request-panel .request-card.cancelled{border-left:5px solid #999;opacity:.55;text-decoration:line-through}.change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}
 .balance-alert{display:block;background:#fff3cd;border-color:#ffe69c;color:#7a5b00}.balance-alert b{color:#7a5b00}.balance-badge{background:#fff;border-color:#e0b400;color:#7a5b00;font-weight:bold}
 .imbalance-col{box-shadow:inset 0 0 0 9999px rgba(255,193,7,.35)}
@@ -183,6 +184,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 @media print{#panelBackdrop,#cloudBanner{display:none!important}body{overflow:visible!important}}
 #miTurnoView{position:fixed;inset:0;z-index:8000;background:#f5f6f8;overflow:auto;overscroll-behavior:contain;font-family:Arial,sans-serif;color:#14213d;-webkit-overflow-scrolling:touch}
 #miTurnoView .mt-head{position:sticky;top:0;z-index:2;background:#123a6b;color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px}
+#miTurnoView .mt-hbtns{display:flex;gap:8px;justify-content:center;margin-top:10px}#miTurnoView .mt-hbtns button{flex:1;max-width:220px;padding:10px 12px;font-size:15px;font-weight:bold}
 #miTurnoView .mt-company{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.8}
 #miTurnoView .mt-name{font-size:24px;font-weight:bold;margin-top:4px}
 #miTurnoView .mt-body{max-width:520px;margin:0 auto;padding:14px 14px calc(24px + env(safe-area-inset-bottom,0px))}
@@ -273,13 +275,12 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
   <div class="header-title-row"><h1 id="companyTitle" title="En modo edición puedes cambiar el nombre">Cuadrante de Turnos</h1></div>
   <div class="header-actions-row">
     <span id="editState">Consulta</span>
-    <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición<span id="editBtnDot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #123a6b"></span></button>
+    <button id="editBtn" onclick="edit()">✎ Edición</button>
     <div id="statsMenuWrap" style="position:relative">
       <button id="statsMenuBtn" onclick="toggleStatsMenu()">📊 Estadísticas ▾</button>
       <div id="statsMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:280px;overflow:hidden">
         <button type="button" onclick="openStatView('fridayYear')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px">🗓️ Viernes tarde — año actual</button>
         <button type="button" onclick="openStatView('fridayAll')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🗓️ Viernes tarde — cómputo general</button>
-        <button type="button" onclick="openStatView('changes')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔄 Cambios grabados</button>
         <button id="statMenuMornings" type="button" onclick="openStatView('mornings')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌅 Mañanas trabajadas</button>
         <button id="statMenuAfternoons" type="button" onclick="openStatView('afternoons')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌇 Tardes trabajadas</button>
         <button id="statMenuResetFriday" type="button" onclick="closeStatsMenu();resetFridayOffsets()" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee;color:#b00020">🔄 Resetear compensación de viernes</button>
@@ -508,9 +509,10 @@ function miDesc(i){
 }
 function openMiTurno(){miOpen=true;miPicking=false;miMonthOffset=0;renderMiTurno()}
 function closeMiTurno(){miOpen=false;miAutoOpened=false;const el=document.getElementById("miTurnoView");if(el)el.remove()}
+function miUpdateBtn(){const b=document.getElementById("miTurnoBtn");if(!b)return;const n=miGet(MT_KEY_NAME);b.textContent="👤 "+(n||"Mi turno")}
 function miChoose(i){
   const w=miRoster[i];if(w===undefined)return;
-  miSet(MT_KEY_NAME,w);if(miGet(MT_KEY_AUTO)===null)miSet(MT_KEY_AUTO,"1");
+  miSet(MT_KEY_NAME,w);miUpdateBtn();if(miGet(MT_KEY_AUTO)===null)miSet(MT_KEY_AUTO,"1");
   miPicking=false;miMonthOffset=0;renderMiTurno();
 }
 function miMonth(delta){miMonthOffset+=delta;renderMiTurno()}
@@ -640,6 +642,7 @@ function miMonthHtml(name,today){
   return `<div class="mt-mnav"><button onclick="miMonth(-1)" aria-label="Mes anterior">‹</button><span>${months[m]} ${y}</span><button onclick="miMonth(1)" aria-label="Mes siguiente">›</button></div><div class="mt-grid">${["L","M","X","J","V","S","D"].map(x=>`<div class="mt-wd">${x}</div>`).join("")}${cells}</div>`;
 }
 function renderMiTurno(){
+  miUpdateBtn();
   if(!miOpen)return;
   let el=document.getElementById("miTurnoView");
   if(!el){el=document.createElement("div");el.id="miTurnoView";document.body.appendChild(el)}
@@ -654,7 +657,7 @@ function renderMiTurno(){
     el.scrollTop=keepScroll;return;
   }
   const auto=miGet(MT_KEY_AUTO)!=="0";
-  el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-name">${escapeHtml(name)}</div></div><div class="mt-body">${miMonthHtml(name,today)}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button><button onclick="closeApp()">✕ Cerrar</button></div><label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
+  el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-hbtns"><button onclick="closeMiTurno()">← Volver al cuadrante</button><button onclick="exitApp()">🚪 Salir</button></div></div><div class="mt-body">${miMonthHtml(name,today)}<label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
   el.scrollTop=keepScroll;
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&miOpen)renderMiTurno()});
@@ -1345,7 +1348,7 @@ function printSelectedMonths(){
 }
 function render(){
  applyCloudGate();
- maybeAutoOpenMiTurno();if(miOpen)renderMiTurno();maybeCheckReminders();
+ miUpdateBtn();maybeAutoOpenMiTurno();if(miOpen)renderMiTurno();maybeCheckReminders();
  checkYearRollover();
  initCompanyTitle();initPrintSelectors();
  document.getElementById("holidayYear").textContent=year;
@@ -1366,7 +1369,7 @@ function render(){
  ms.value=month;
  document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const mtb=document.getElementById("miTurnoBtn");if(mtb)mtb.style.display=editing?"none":"inline-block";const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
  const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
- const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display=(!editing&&isAdmin&&(pendingChanges||pendingPermissions))?"block":"none";
+ const eb=document.getElementById("editBtn");if(eb)eb.classList.toggle("pending-green",!!(!editing&&isAdmin&&(pendingChanges||pendingPermissions)));
  const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
  for(let d=1;d<=n;d++){const date=new Date(year,month,d);workerSets.push(getWorkersAtDate(fmt(date)))}
  const imbalances=computeImbalances(year,month),imbalanceDays=new Set(imbalances.map(x=>x.d));
