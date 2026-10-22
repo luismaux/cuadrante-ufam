@@ -182,8 +182,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 }
 @media print{#panelBackdrop,#cloudBanner{display:none!important}body{overflow:visible!important}}
 #miTurnoView{position:fixed;inset:0;z-index:8000;background:#f5f6f8;overflow:auto;overscroll-behavior:contain;font-family:Arial,sans-serif;color:#14213d;-webkit-overflow-scrolling:touch}
-#miTurnoView .mt-head{position:sticky;top:0;z-index:2;background:#123a6b;color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top,0px)) 92px 14px}
-#miTurnoView .mt-x{position:absolute;right:10px;top:calc(12px + env(safe-area-inset-top,0px));padding:7px 11px;font-size:14px;border-radius:10px;background:#ffffff22;color:#fff;border:1px solid #ffffff77}
+#miTurnoView .mt-head{position:sticky;top:0;z-index:2;background:#123a6b;color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px}
 #miTurnoView .mt-company{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.8}
 #miTurnoView .mt-name{font-size:24px;font-weight:bold;margin-top:4px}
 #miTurnoView .mt-body{max-width:520px;margin:0 auto;padding:14px 14px calc(24px + env(safe-area-inset-bottom,0px))}
@@ -208,15 +207,6 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 #miTurnoView .mt-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%}
 #miTurnoView .mt-dot.chg{background:#dc2626}
 #miTurnoView .mt-dot.cmp{background:#ea580c;right:13px}
-#miTurnoView .mt-week{width:100%;min-width:0!important;border-collapse:collapse;table-layout:fixed;background:#fff;box-shadow:0 2px 10px #0001;margin:0 0 16px}
-#miTurnoView .mt-week th{position:static;background:#eef0f3;font-size:12px;line-height:1.15;padding:5px 0;border:1px solid #d0d5dd;color:#14213d}
-#miTurnoView .mt-week th small{display:block;font-size:10px;font-weight:normal;opacity:.8}
-#miTurnoView .mt-week th.mt-off{background:#e6e9ed}
-#miTurnoView .mt-week th.mt-now{background:#dc2626;color:#fff}
-#miTurnoView .mt-week td{height:48px;text-align:center;font-size:16px;font-weight:bold;border:1px solid #d0d5dd;background:#fff;color:#14213d}
-#miTurnoView .mt-week td.mt-off{background:#e6e9ed}
-#miTurnoView .mt-week td.chg{background:#f8d7da;color:#8b0015}
-#miTurnoView .mt-week td.cmp{background:#fdba74;color:#7c2d12;box-shadow:inset 0 0 0 2px #ea580c}
 #miToast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:90%;z-index:9100;background:#fff;color:#14213d;border:1px solid #d0d5dd;border-radius:14px;padding:10px 14px;font:14px Arial,sans-serif;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.25)}
 #miTurnoView .mt-c{cursor:pointer}
 #miTurnoView .mt-c .mt-note-ic{position:absolute;bottom:2px;right:3px;font-size:11px;line-height:1}
@@ -332,7 +322,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 <div id="compensationWrap" style="position:relative;display:none">
   <button id="compensationBtn" onclick="toggleCompensationPanel()">⚖️ Compensación</button>
 </div>
-<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="miTurnoBtn" class="change-request-btn" onclick="openMiTurno()">👤 Mi turno</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="miTurnoBtn" class="change-request-btn" style="-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation" onclick="miBtnClick()">👤 Mi turno</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
 <div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta dos meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
 <div id="pdfPrintArea" style="display:none"></div>
@@ -525,23 +515,26 @@ function miChoose(i){
 }
 function miMonth(delta){miMonthOffset+=delta;renderMiTurno()}
 function miChangeName(){miPicking=true;renderMiTurno()}
+/* Pulsación larga (unos 2 segundos) en "Mi turno": abre la pantalla de "¿Quién eres?" sin botón visible. */
+let miLongTimer=null,miLongFired=false;
+function miBtnClick(){if(miLongFired){miLongFired=false;return}openMiTurno()}
+function miLongStart(){
+  miLongFired=false;clearTimeout(miLongTimer);
+  miLongTimer=setTimeout(()=>{miLongFired=true;try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}miOpen=true;miPicking=true;renderMiTurno()},2000);
+}
+function miLongCancel(){clearTimeout(miLongTimer)}
+(function(){
+  const b=document.getElementById("miTurnoBtn");if(!b)return;
+  b.addEventListener("pointerdown",miLongStart);
+  ["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,miLongCancel));
+  b.addEventListener("contextmenu",e=>e.preventDefault());
+})();
 function miToggleAuto(on){miSet(MT_KEY_AUTO,on?"1":"0")}
 function maybeAutoOpenMiTurno(){
   if(miAutoChecked)return;miAutoChecked=true;
   const byUrl=/[?&]mi=1(&|$)/.test(location.search);
   const name=miGet(MT_KEY_NAME),auto=miGet(MT_KEY_AUTO)!=="0";
   if(byUrl||(name&&auto&&!isAdmin)){miAutoOpened=!byUrl;openMiTurno()}
-}
-function miWeekHtml(name,today){
-  let th="",td="";
-  for(let k=0;k<=7;k++){
-    const dt=new Date(today);dt.setDate(dt.getDate()+k);
-    const i=miDayInfo(dt,name),c=MT_COLORS[i.code];
-    const wd=["D","L","M","X","J","V","S"][dt.getDay()];
-    th+=`<th class="${k===0?"mt-now":(i.off?"mt-off":"")}">${dt.getDate()}<br>${wd}${dt.getDate()===1?`<small>${months[dt.getMonth()].slice(0,3).toLowerCase()}</small>`:""}</th>`;
-    td+=`<td class="${i.comp?"cmp":(i.changed?"chg":((i.off&&!c)?"mt-off":""))}"${(!i.comp&&!i.changed&&c)?` style="background:${c}"`:""} title="${escapeHtml(miDesc(i))}">${escapeHtml(i.code)}</td>`;
-  }
-  return `<table class="mt-week"><thead><tr>${th}</tr></thead><tbody><tr>${td}</tr></tbody></table>`;
 }
 function miToast(msg){
   let t=document.getElementById("miToast");if(t)t.remove();
@@ -653,7 +646,7 @@ function renderMiTurno(){
   const today=new Date();today.setHours(0,0,0,0);
   const roster=getWorkersAtDate(fmt(today)),name=miGet(MT_KEY_NAME);
   const company=escapeHtml(getCompanyName()||"Cuadrante de turnos");
-  const keepScroll=el.scrollTop,closeBtn='<button class="mt-x" onclick="closeApp()">✕ Cerrar</button>';
+  const keepScroll=el.scrollTop,closeBtn='';
   if(miPicking||!name||!roster.includes(name)){
     miRoster=roster;
     const lost=(!miPicking&&name&&!roster.includes(name))?`<p class="mt-note">No encuentro a «${escapeHtml(name)}» en el cuadrante actual. Elige tu nombre.</p>`:"";
@@ -661,7 +654,7 @@ function renderMiTurno(){
     el.scrollTop=keepScroll;return;
   }
   const auto=miGet(MT_KEY_AUTO)!=="0";
-  el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-name">${escapeHtml(name)}</div></div><div class="mt-body">${miWeekHtml(name,today)}${miMonthHtml(name,today)}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button><button onclick="miChangeName()">✏️ Cambiar de nombre</button></div><label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
+  el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-name">${escapeHtml(name)}</div></div><div class="mt-body">${miMonthHtml(name,today)}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button><button onclick="closeApp()">✕ Cerrar</button></div><label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
   el.scrollTop=keepScroll;
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&miOpen)renderMiTurno()});
