@@ -114,14 +114,13 @@ td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;col
 
 .worker-code{width:34px;min-width:34px;max-width:34px;text-align:center;font-weight:bold;text-transform:uppercase}
 .worker-code-cell{width:34px;min-width:34px;text-align:center;font-weight:bold}
-@media (min-width:701px){.worker-code-cell,th.worker-code-cell,td.worker-code-cell{width:54px;min-width:54px;font-size:14px;white-space:nowrap}}
 #grid.hide-type-col .worker-code-cell{display:none}
 td:not(.worker-code-cell){font-size:13px}
 .worker-edit-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}
 .worker-edit-row input.worker-name{min-width:160px;flex:1}
 .worker-edit-row input.worker-code{flex:0 0 34px}
 .add-worker-btn{background:#d1e7dd;font-weight:bold}
-.change-request-btn{background:#e8eefc;font-weight:bold}.change-request-btn.pending{background:#28a745;color:#fff;border-color:#1e7e34}#editBtn.pending-green{background:#28a745!important;color:#fff!important;border-color:#1e7e34!important;font-weight:bold}
+.change-request-btn{background:#e8eefc;font-weight:bold}.change-request-btn.pending{background:#28a745;color:#fff;border-color:#1e7e34}
 .change-request-panel .request-card{border:1px solid #ddd;border-radius:7px;padding:10px;margin:8px 0;background:#fafafa}.change-request-panel .request-card.pending{border-left:5px solid #62b77b}.change-request-panel .request-card.accepted{border-left:5px solid #d33;background:#fde2e2}.change-request-panel .request-card.denied{border-left:5px solid #999;opacity:.7}.change-request-panel .request-card.cancelled{border-left:5px solid #999;opacity:.55;text-decoration:line-through}.change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}
 .balance-alert{display:block;background:#fff3cd;border-color:#ffe69c;color:#7a5b00}.balance-alert b{color:#7a5b00}.balance-badge{background:#fff;border-color:#e0b400;color:#7a5b00;font-weight:bold}
 .imbalance-col{box-shadow:inset 0 0 0 9999px rgba(255,193,7,.35)}
@@ -184,7 +183,6 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 @media print{#panelBackdrop,#cloudBanner{display:none!important}body{overflow:visible!important}}
 #miTurnoView{position:fixed;inset:0;z-index:8000;background:#f5f6f8;overflow:auto;overscroll-behavior:contain;font-family:Arial,sans-serif;color:#14213d;-webkit-overflow-scrolling:touch}
 #miTurnoView .mt-head{position:sticky;top:0;z-index:2;background:#123a6b;color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px}
-#miTurnoView .mt-hbtns{display:flex;gap:8px;justify-content:center;margin-top:10px}#miTurnoView .mt-hbtns button{flex:1;max-width:220px;padding:10px 12px;font-size:15px;font-weight:bold}
 #miTurnoView .mt-company{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.8}
 #miTurnoView .mt-name{font-size:24px;font-weight:bold;margin-top:4px}
 #miTurnoView .mt-body{max-width:520px;margin:0 auto;padding:14px 14px calc(24px + env(safe-area-inset-bottom,0px))}
@@ -209,7 +207,6 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 #miTurnoView .mt-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%}
 #miTurnoView .mt-dot.chg{background:#dc2626}
 #miTurnoView .mt-dot.cmp{background:#ea580c;right:13px}
-#miToast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:90%;z-index:9100;background:#fff;color:#14213d;border:1px solid #d0d5dd;border-radius:14px;padding:10px 14px;font:14px Arial,sans-serif;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.25)}
 #miTurnoView .mt-c{cursor:pointer}
 #miTurnoView .mt-c .mt-note-ic{position:absolute;bottom:2px;right:3px;font-size:11px;line-height:1}
 #miNoteBg,#miRemBg{position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 14px 14px;overflow:auto;font-family:Arial,sans-serif}
@@ -230,7 +227,16 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 .mt-dlg .mt-rem-item span{font-size:13px;color:#475467}
 .mt-dlg .mt-rem-item p{margin:4px 0 0;white-space:pre-wrap;word-break:break-word;font-size:16px}
 .mt-dlg .mt-rem-item .mt-dlg-btns{margin-top:10px}
-@media print{#miTurnoView,#miToast,#miNoteBg,#miRemBg{display:none!important}}
+@media print{#miTurnoView,#miNoteBg,#miRemBg{display:none!important}}
+#editBtn.edit-pending{background:#16a34a!important;color:#fff!important;border-color:#15803d!important;font-weight:bold}
+@media (min-width:701px){
+#workerRows .worker-edit-row select.worker-code{flex:0 0 78px;width:78px;min-width:78px;max-width:78px;padding:7px 4px;font-size:15px}
+#workerRows .worker-edit-row input.worker-name{flex:0 1 320px;min-width:160px}
+}
+#miTurnoBtn{max-width:62vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#miTurnoView .mt-company{font-size:22px;font-weight:800;letter-spacing:.3px;text-transform:none;opacity:1}
+#miTurnoView .mt-hrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+#miTurnoView .mt-hbtn{font:inherit;font-size:15px;padding:9px 14px;border:1px solid #bbb;border-radius:6px;background:#fff;color:#14213d}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -275,7 +281,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
   <div class="header-title-row"><h1 id="companyTitle" title="En modo edición puedes cambiar el nombre">Cuadrante de Turnos</h1></div>
   <div class="header-actions-row">
     <span id="editState">Consulta</span>
-    <button id="editBtn" onclick="edit()">✎ Edición</button>
+    <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición</button>
     <div id="statsMenuWrap" style="position:relative">
       <button id="statsMenuBtn" onclick="toggleStatsMenu()">📊 Estadísticas ▾</button>
       <div id="statsMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:280px;overflow:hidden">
@@ -509,11 +515,14 @@ function miDesc(i){
 }
 function openMiTurno(){miOpen=true;miPicking=false;miMonthOffset=0;renderMiTurno()}
 function closeMiTurno(){miOpen=false;miAutoOpened=false;const el=document.getElementById("miTurnoView");if(el)el.remove()}
-function miUpdateBtn(){const b=document.getElementById("miTurnoBtn");if(!b)return;const n=miGet(MT_KEY_NAME);b.textContent="👤 "+(n||"Mi turno")}
+function miUpdateBtn(){
+  const b=document.getElementById("miTurnoBtn");if(!b)return;
+  const n=miGet(MT_KEY_NAME);b.textContent=n?"👤 "+n:"👤 Mi turno";b.title=n?"Mi turno ("+n+")":"Mi turno";
+}
 function miChoose(i){
   const w=miRoster[i];if(w===undefined)return;
-  miSet(MT_KEY_NAME,w);miUpdateBtn();if(miGet(MT_KEY_AUTO)===null)miSet(MT_KEY_AUTO,"1");
-  miPicking=false;miMonthOffset=0;renderMiTurno();
+  miSet(MT_KEY_NAME,w);if(miGet(MT_KEY_AUTO)===null)miSet(MT_KEY_AUTO,"1");
+  miPicking=false;miMonthOffset=0;miUpdateBtn();renderMiTurno();
 }
 function miMonth(delta){miMonthOffset+=delta;renderMiTurno()}
 function miChangeName(){miPicking=true;renderMiTurno()}
@@ -537,16 +546,6 @@ function maybeAutoOpenMiTurno(){
   const byUrl=/[?&]mi=1(&|$)/.test(location.search);
   const name=miGet(MT_KEY_NAME),auto=miGet(MT_KEY_AUTO)!=="0";
   if(byUrl||(name&&auto&&!isAdmin)){miAutoOpened=!byUrl;openMiTurno()}
-}
-function miToast(msg){
-  let t=document.getElementById("miToast");if(t)t.remove();
-  t=document.createElement("div");t.id="miToast";t.textContent=msg;document.body.appendChild(t);
-  setTimeout(()=>{if(t.parentNode)t.remove()},6000);
-}
-function closeApp(){
-  // Una página web solo puede cerrarse a sí misma si el navegador lo permite (suele funcionar con la app instalada).
-  try{window.close()}catch(e){}
-  setTimeout(()=>{if(!document.hidden)miToast("Tu navegador no permite cerrar la aplicación desde aquí. Ciérrala con el botón de inicio o recientes de tu móvil.")},400);
 }
 /* ====== Notas y recordatorios personales (se guardan solo en este móvil) ====== */
 const MT_KEY_NOTES="cuadrante_mis_notas_v1",MT_KEY_SEEN="cuadrante_notas_vistas_v1";
@@ -642,22 +641,21 @@ function miMonthHtml(name,today){
   return `<div class="mt-mnav"><button onclick="miMonth(-1)" aria-label="Mes anterior">‹</button><span>${months[m]} ${y}</span><button onclick="miMonth(1)" aria-label="Mes siguiente">›</button></div><div class="mt-grid">${["L","M","X","J","V","S","D"].map(x=>`<div class="mt-wd">${x}</div>`).join("")}${cells}</div>`;
 }
 function renderMiTurno(){
-  miUpdateBtn();
   if(!miOpen)return;
   let el=document.getElementById("miTurnoView");
   if(!el){el=document.createElement("div");el.id="miTurnoView";document.body.appendChild(el)}
   const today=new Date();today.setHours(0,0,0,0);
   const roster=getWorkersAtDate(fmt(today)),name=miGet(MT_KEY_NAME);
   const company=escapeHtml(getCompanyName()||"Cuadrante de turnos");
-  const keepScroll=el.scrollTop,closeBtn='';
+  const keepScroll=el.scrollTop;
   if(miPicking||!name||!roster.includes(name)){
     miRoster=roster;
     const lost=(!miPicking&&name&&!roster.includes(name))?`<p class="mt-note">No encuentro a «${escapeHtml(name)}» en el cuadrante actual. Elige tu nombre.</p>`:"";
-    el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-name">¿Quién eres?</div></div><div class="mt-body">${lost}<p class="mt-note">Elige tu nombre para ver solo tu turno. Se recordará en este móvil.</p>${roster.map((w,i)=>`<button class="mt-pick" onclick="miChoose(${i})">${escapeHtml(w)}</button>`).join("")||'<p class="mt-note">Todavía no hay trabajadores en el cuadrante.</p>'}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button></div></div>`;
+    el.innerHTML=`<div class="mt-head"><div class="mt-company">${company}</div><div class="mt-name">¿Quién eres?</div></div><div class="mt-body">${lost}<p class="mt-note">Elige tu nombre para ver solo tu turno. Se recordará en este móvil.</p>${roster.map((w,i)=>`<button class="mt-pick" onclick="miChoose(${i})">${escapeHtml(w)}</button>`).join("")||'<p class="mt-note">Todavía no hay trabajadores en el cuadrante.</p>'}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button></div></div>`;
     el.scrollTop=keepScroll;return;
   }
   const auto=miGet(MT_KEY_AUTO)!=="0";
-  el.innerHTML=`<div class="mt-head">${closeBtn}<div class="mt-company">${company}</div><div class="mt-hbtns"><button onclick="closeMiTurno()">← Volver al cuadrante</button><button onclick="exitApp()">🚪 Salir</button></div></div><div class="mt-body">${miMonthHtml(name,today)}<label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
+  el.innerHTML=`<div class="mt-head"><div class="mt-company">${company}</div><div class="mt-hrow"><button class="mt-hbtn" onclick="closeMiTurno()">↩ Volver al cuadrante</button><button class="mt-hbtn" onclick="exitApp()">🚪 Salir</button></div></div><div class="mt-body">${miMonthHtml(name,today)}<label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
   el.scrollTop=keepScroll;
 }
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&miOpen)renderMiTurno()});
@@ -1348,7 +1346,7 @@ function printSelectedMonths(){
 }
 function render(){
  applyCloudGate();
- miUpdateBtn();maybeAutoOpenMiTurno();if(miOpen)renderMiTurno();maybeCheckReminders();
+ maybeAutoOpenMiTurno();if(miOpen)renderMiTurno();maybeCheckReminders();
  checkYearRollover();
  initCompanyTitle();initPrintSelectors();
  document.getElementById("holidayYear").textContent=year;
@@ -1367,9 +1365,9 @@ function render(){
    ms.dataset.filled="1";
  }
  ms.value=month;
- document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const mtb=document.getElementById("miTurnoBtn");if(mtb)mtb.style.display=editing?"none":"inline-block";const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const mtb=document.getElementById("miTurnoBtn");if(mtb)mtb.style.display=editing?"none":"inline-block";miUpdateBtn();const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
  const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
- const eb=document.getElementById("editBtn");if(eb)eb.classList.toggle("pending-green",!!(!editing&&isAdmin&&(pendingChanges||pendingPermissions)));
+ const editBtnEl=document.getElementById("editBtn");if(editBtnEl)editBtnEl.classList.toggle("edit-pending",!editing&&isAdmin&&(pendingChanges||pendingPermissions));
  const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
  for(let d=1;d<=n;d++){const date=new Date(year,month,d);workerSets.push(getWorkersAtDate(fmt(date)))}
  const imbalances=computeImbalances(year,month),imbalanceDays=new Set(imbalances.map(x=>x.d));
@@ -1399,6 +1397,9 @@ function render(){
    s+="</tr>";
  }
  s+="</tbody>";document.getElementById("grid").innerHTML=s;document.getElementById("grid").classList.toggle("hide-type-col",!editing);
+
+ if(editing&&!prevEditingForScroll)scrolledToToday=false; // al entrar en edición se vuelve a colocar en el día actual
+ prevEditingForScroll=editing;
  renderBalanceAlert(imbalances);
  scrollToTodayOnce();
  if(document.getElementById("changeRequestPanel")?.style.display==="block")renderChangeRequestHistory();
@@ -1909,10 +1910,6 @@ function openStatView(kind){
   }else if(kind==="fridayAll"){
     title="🗓️ Viernes de tarde — cómputo general";
     rows=ws.map(w=>[w,effectiveFridayGeneralCount(w,Math.max(year,new Date().getFullYear()))]).sort((a,b)=>a[1]-b[1]);
-  }else if(kind==="changes"){
-    title="🔄 Cambios grabados";
-    const accepted=getChangeRequests().filter(r=>r.status==="accepted");
-    rows=ws.map(w=>[w,accepted.filter(r=>r.from===w).length]);
   }else if(kind==="mornings"){
     title=`🌅 Mañanas trabajadas en ${year}`;
     rows=ws.map(w=>[w,countCodeYear(year,w,"M")]);
@@ -1939,7 +1936,7 @@ function onYearChanged(newYear){
     set("q_friday_last_balance_year",String(newYear));
   }
 }
-let scrolledToToday=false;
+let scrolledToToday=false,prevEditingForScroll=false;
 function scrollToTodayOnce(){
   if(scrolledToToday)return;
   const now=new Date();
