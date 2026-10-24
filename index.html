@@ -222,11 +222,18 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 .mt-dlg button.mt-ok{background:#d1e7dd;font-weight:bold}
 .mt-dlg button.mt-del{background:#f8d7da}
 .mt-dlg .mt-dlg-hint{font-size:12px;color:#667085;margin-top:10px}
-.mt-dlg .mt-rem-item{border:1px solid #d0d5dd;border-radius:10px;padding:8px 10px;margin:8px 0;background:#fffbeb}
-.mt-dlg .mt-rem-item b{display:block;font-size:14px}
-.mt-dlg .mt-rem-item span{font-size:13px;color:#475467}
-.mt-dlg .mt-rem-item p{margin:4px 0 0;white-space:pre-wrap;word-break:break-word;font-size:16px}
-.mt-dlg .mt-rem-item .mt-dlg-btns{margin-top:10px}
+.mt-dlg .mt-rem-item{border:1px solid #98a2b3;border-radius:12px;overflow:hidden;margin:12px 0;background:#fff}
+.mt-dlg .mt-rem-head{background:#123a6b;color:#fff;padding:9px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mt-dlg .mt-rem-kind{font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;border-radius:6px;padding:3px 9px;background:#dc2626;color:#fff}
+.mt-dlg .mt-rem-kind.man{background:#f59e0b;color:#14213d}
+.mt-dlg .mt-rem-date{font-size:17px;font-weight:bold}
+.mt-dlg .mt-rem-shift{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid #d0d5dd}
+.mt-dlg .mt-rem-code{min-width:58px;text-align:center;font-size:30px;line-height:1;font-weight:bold;border-radius:10px;padding:9px 6px;background:#ffffffc0;border:2px solid #14213d}
+.mt-dlg .mt-rem-lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#475467}
+.mt-dlg .mt-rem-sname{font-size:19px;font-weight:bold}
+.mt-dlg .mt-rem-note{padding:10px 12px 4px}
+.mt-dlg .mt-rem-note p{margin:3px 0 0;white-space:pre-wrap;word-break:break-word;font-size:17px}
+.mt-dlg .mt-rem-item .mt-dlg-btns{margin:0;padding:8px 12px 12px}
 @media print{#miTurnoView,#miNoteBg,#miRemBg{display:none!important}}
 #editBtn.edit-pending{background:#16a34a!important;color:#fff!important;border-color:#15803d!important;font-weight:bold}
 @media (min-width:701px){
@@ -618,7 +625,8 @@ function miCheckReminders(){
     const btns=r.key.endsWith("|b")
       ?`<button class="mt-ok" onclick="miRemAck('${k}','keep',this)">Aceptar</button><button class="mt-del" onclick="miRemAck('${k}','never',this)">No volver a avisar</button>`
       :`<button class="mt-ok" onclick="miRemAck('${k}','seen',this)">Entendido</button>`;
-    return `<div class="mt-rem-item"><b>${r.kind} · ${escapeHtml(miNiceDate(r.dt))}</b><span>Turno: ${escapeHtml(i.code||"—")} · ${escapeHtml(miDesc(i))}</span><p>${escapeHtml(r.t)}</p><div class="mt-dlg-btns">${btns}</div></div>`;
+    const bgc=MT_COLORS[i.code]||(i.off?"#e6e9ed":"#f3f4f6");
+    return `<div class="mt-rem-item"><div class="mt-rem-head"><span class="mt-rem-kind${r.kind==="Hoy"?"":" man"}">${r.kind}</span><span class="mt-rem-date">${escapeHtml(miNiceDate(r.dt))}</span></div><div class="mt-rem-shift" style="background:${bgc}"><div class="mt-rem-code">${escapeHtml(i.code||"—")}</div><div><div class="mt-rem-lbl">Turno</div><div class="mt-rem-sname">${escapeHtml(miDesc(i))}</div></div></div><div class="mt-rem-note"><div class="mt-rem-lbl">📝 Anotación</div><p>${escapeHtml(r.t)}</p></div><div class="mt-dlg-btns">${btns}</div></div>`;
   }).join("");
   const bg=document.createElement("div");bg.id="miRemBg";
   bg.innerHTML=`<div class="mt-dlg"><h4>🔔 Recordatorios</h4>${items}</div>`;
