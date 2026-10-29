@@ -588,7 +588,6 @@ function miOpenNote(ds){
   document.getElementById("miNoteText").value=n?n.t:"";
   document.getElementById("miRemB").checked=n?!!n.b:true;
   document.getElementById("miRemS").checked=n?!!n.s:true;
-  bg.addEventListener("click",e=>{if(e.target===bg)closeMiNote()});
   if(!n)document.getElementById("miNoteText").focus();
 }
 function miClearSeen(ds){
@@ -1270,7 +1269,7 @@ async function applyCompensation(){
 }
 async function confirmDismissImbalance(d){
   if(!editing)return;
-  if(await askConfirm({title:"¿Desmarcar el descuadre?",text:"Se marcará como descuadre por necesidades del servicio.",yes:"Desmarcar"})){
+  if(await askConfirm({title:"¿Desmarcar el descuadre?",text:"Se desmarcará como descuadre por necesidades del servicio.",yes:"Desmarcar"})){
     set(imbalanceOverrideKey(year,month,d),"1");
     render();
   }
@@ -1488,7 +1487,6 @@ function askConfirm(o){
     const done=v=>{bg.remove();document.removeEventListener("keydown",onKey);resolve(v)};
     document.addEventListener("keydown",onKey);
     no.onclick=()=>done(false);yes.onclick=()=>done(true);
-    bg.addEventListener("click",e=>{if(e.target===bg)done(false)});
   });
 }
 const nativeAlert=window.alert.bind(window);
@@ -1508,7 +1506,6 @@ function appAlert(text,title){
     const done=()=>{bg.remove();document.removeEventListener("keydown",onKey,true);resolve()};
     document.addEventListener("keydown",onKey,true);
     ok.onclick=done;
-    bg.addEventListener("click",e=>{if(e.target===bg)done()});
     try{ok.focus()}catch(e){}
   }));
   return alertQueue;
@@ -1594,7 +1591,7 @@ function openPanelAsModal(id,always,wide){
   const el=document.getElementById(id);if(!el)return;
   el.style.display="block";
   if(editing&&!always)return; // solicitudes: en modo edición el panel se queda dentro de la página, como antes
-  const bd=document.createElement("div");bd.id="panelBackdrop";bd.onclick=closePanels;document.body.appendChild(bd);
+  const bd=document.createElement("div");bd.id="panelBackdrop";document.body.appendChild(bd);
   el.classList.add("panel-modal");if(wide)el.classList.add("panel-modal-wide");
   document.body.style.overflow="hidden";
 }
@@ -1806,7 +1803,7 @@ async function manualCompensateFridayYear(){
     alert("El trabajador nuevo ya queda con 0. No había una cantidad positiva que compensar en los trabajadores anteriores.");
     return;
   }
-  if(!(await askConfirm({title:`¿Resetear la compensación de viernes desde ${start}?`,text:`Se tomará como referencia el trabajador anterior con menos viernes (${amount}). A los trabajadores anteriores se les restarán ${amount}; el trabajador nuevo quedará en 0. La misma compensación se aplicará al cómputo general.`,yes:"Resetear",danger:true})))return;
+  if(!(await askConfirm({title:`¿Resetear la compensación de viernes desde ${start}?`,text:`Se tomará como referencia el trabajador con menos viernes (${amount}) que quedará a 0, al resto de trabajadores se les restarán ${amount}; el trabajador nuevo quedará en 0. La misma compensación se aplicará al cómputo general.`,yes:"Resetear",danger:true})))return;
   yearOffsets=getFridayYearOffsets();
   existing.forEach(w=>{yearOffsets[w]=(yearOffsets[w]||0)+amount;});
   newcomers.forEach(w=>{yearOffsets[w]=countFridayT(refYear,w);});
