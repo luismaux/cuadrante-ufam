@@ -117,9 +117,11 @@ td{min-width:34px;height:30px}.weekend,.holiday{background:#e6e6e6!important;col
 #grid.hide-type-col .worker-code-cell{display:none}
 td:not(.worker-code-cell){font-size:13px}
 .worker-edit-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:7px 0}
-.worker-edit-row input.worker-name{min-width:160px;flex:1}
+.worker-edit-row input.worker-name{min-width:160px;flex:0 1 260px}
+#workerRows .worker-edit-row select.worker-code{flex:0 0 72px;width:72px;min-width:72px;max-width:72px;padding:6px 4px}
 .worker-edit-row input.worker-code{flex:0 0 34px}
 .add-worker-btn{background:#d1e7dd;font-weight:bold}
+#editBtn.has-pending{background:#28a745!important;color:#fff!important;border-color:#1e7e34!important;font-weight:bold}
 .change-request-btn{background:#e8eefc;font-weight:bold}.change-request-btn.pending{background:#28a745;color:#fff;border-color:#1e7e34}
 .change-request-panel .request-card{border:1px solid #ddd;border-radius:7px;padding:10px;margin:8px 0;background:#fafafa}.change-request-panel .request-card.pending{border-left:5px solid #62b77b}.change-request-panel .request-card.accepted{border-left:5px solid #d33;background:#fde2e2}.change-request-panel .request-card.denied{border-left:5px solid #999;opacity:.7}.change-request-panel .request-card.cancelled{border-left:5px solid #999;opacity:.55;text-decoration:line-through}.change-red{background:#f8d7da!important;color:#8b0015!important;font-weight:bold}
 .balance-alert{display:block;background:#fff3cd;border-color:#ffe69c;color:#7a5b00}.balance-alert b{color:#7a5b00}.balance-badge{background:#fff;border-color:#e0b400;color:#7a5b00;font-weight:bold}
@@ -181,80 +183,6 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 .btn-txt,.hol-tag{display:none}
 }
 @media print{#panelBackdrop,#cloudBanner{display:none!important}body{overflow:visible!important}}
-#miTurnoView{position:fixed;inset:0;z-index:8000;background:#f5f6f8;overflow:auto;overscroll-behavior:contain;font-family:Arial,sans-serif;color:#14213d;-webkit-overflow-scrolling:touch}
-#miTurnoView .mt-head{position:sticky;top:0;z-index:2;background:#123a6b;color:#fff;text-align:center;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px}
-#miTurnoView .mt-company{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.8}
-#miTurnoView .mt-name{font-size:24px;font-weight:bold;margin-top:4px}
-#miTurnoView .mt-body{max-width:520px;margin:0 auto;padding:14px 14px calc(24px + env(safe-area-inset-bottom,0px))}
-#miTurnoView h3{margin:18px 4px 8px;font-size:15px;color:#475467}
-#miTurnoView .mt-actions{display:flex;flex-direction:column;gap:8px;margin-top:16px}
-#miTurnoView button{font-size:16px;padding:12px;border-radius:12px;border:1px solid #b8bec9;background:#fff;color:#14213d}
-#miTurnoView button.mt-pick{display:block;width:100%;margin-bottom:8px;font-size:18px;font-weight:bold;text-align:left;padding:14px 16px}
-#miTurnoView .mt-note{font-size:14px;color:#475467;margin:10px 4px}
-#miTurnoView .mt-auto{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:14px;color:#475467}
-#miTurnoView .mt-auto input{width:20px;height:20px}
-#miTurnoView .mt-mnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-#miTurnoView .mt-mnav span{font-size:17px;font-weight:bold}
-#miTurnoView .mt-mnav button{padding:6px 16px;font-size:20px;line-height:1}
-#miTurnoView .mt-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-#miTurnoView .mt-wd{text-align:center;font-size:12px;font-weight:bold;color:#475467;padding:2px 0}
-#miTurnoView .mt-c{position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1.05;border-radius:8px;border:1px solid #d0d5dd;background:#fff;min-width:0}
-#miTurnoView .mt-c.mt-empty{border:0;background:transparent}
-#miTurnoView .mt-c.mt-off{background:#e6e9ed}
-#miTurnoView .mt-c.mt-now{box-shadow:inset 0 0 0 3px #dc2626}
-#miTurnoView .mt-c .mt-n{position:absolute;top:2px;left:4px;font-size:10px;color:#475467}
-#miTurnoView .mt-c b{font-size:15px}
-#miTurnoView .mt-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%}
-#miTurnoView .mt-dot.chg{background:#dc2626}
-#miTurnoView .mt-dot.cmp{background:#ea580c;right:13px}
-#miTurnoView .mt-c{cursor:pointer}
-#miTurnoView .mt-c .mt-note-ic{position:absolute;bottom:2px;right:3px;font-size:11px;line-height:1}
-#miNoteBg,#miRemBg{position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 14px 14px;overflow:auto;font-family:Arial,sans-serif}
-#miRemBg{z-index:9300}
-.mt-dlg{background:#fff;color:#14213d;border-radius:14px;max-width:460px;width:100%;margin-top:5vh;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35);box-sizing:border-box}
-.mt-dlg h4{margin:0 0 4px;font-size:18px}
-.mt-dlg .mt-dlg-sub{font-size:14px;color:#475467;margin-bottom:10px}
-.mt-dlg textarea{width:100%;box-sizing:border-box;font:16px Arial,sans-serif;padding:10px;border:1px solid #b8bec9;border-radius:10px;resize:vertical;min-height:90px}
-.mt-dlg .mt-chk{display:flex;align-items:center;gap:8px;font-size:15px;margin-top:10px}
-.mt-dlg .mt-chk input{width:20px;height:20px}
-.mt-dlg .mt-dlg-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.mt-dlg button{font-size:16px;padding:10px 14px;border-radius:10px;border:1px solid #b8bec9;background:#fff;color:#14213d}
-.mt-dlg button.mt-ok{background:#d1e7dd;font-weight:bold}
-.mt-dlg button.mt-del{background:#f8d7da}
-.mt-dlg .mt-dlg-hint{font-size:12px;color:#667085;margin-top:10px}
-.mt-dlg .mt-rem-item{border:1px solid #98a2b3;border-radius:12px;overflow:hidden;margin:12px 0;background:#fff}
-.mt-dlg .mt-rem-kind{font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;border-radius:6px;padding:3px 9px;background:#dc2626;color:#fff}
-.mt-dlg .mt-rem-kind.man{background:#f59e0b;color:#14213d}
-.mt-dlg .mt-rem-date{font-size:17px;font-weight:bold}
-.mt-dlg .mt-rem-head,.mt-dlg .mt-rem-shift{height:44px;box-sizing:border-box;padding:0 12px;display:flex;align-items:center;gap:10px}
-.mt-dlg .mt-rem-head{background:#123a6b;color:#fff}
-.mt-dlg .mt-rem-shift{border-bottom:1px solid #d0d5dd}
-.mt-dlg .mt-rem-code{min-width:30px;text-align:center;font-size:20px;line-height:1;font-weight:bold;border-radius:8px;padding:4px 8px;background:#ffffffc0;border:2px solid #14213d}
-.mt-dlg .mt-rem-lbl{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#475467}
-.mt-dlg .mt-rem-sname{font-size:17px;font-weight:bold}
-.mt-dlg .mt-rem-note{padding:14px 14px 6px}
-.mt-dlg .mt-rem-nlbl{font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#475467}
-.mt-dlg .mt-rem-note p{margin:6px 0 0;white-space:pre-wrap;word-break:break-word;font-size:22px;line-height:1.3}
-.mt-dlg .mt-rem-item .mt-dlg-btns{margin:0;padding:8px 14px 14px}
-#askDlgBg{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Arial,sans-serif}
-.ask-dlg{text-align:center;max-width:380px;margin:0}
-.ask-dlg img{width:60px;height:60px;border-radius:12px;margin-bottom:6px}
-.ask-dlg h4{font-size:21px;margin:4px 0 0}
-.ask-dlg p{margin:8px 0 0;color:#475467;font-size:16px;white-space:pre-wrap}
-.ask-dlg .mt-dlg-btns{justify-content:center;margin-top:18px}
-.ask-dlg button{min-width:125px;font-size:17px;padding:12px 16px}
-.ask-dlg button.ask-yes{background:#123a6b;color:#fff;border-color:#123a6b;font-weight:bold}
-.ask-dlg button.ask-yes.danger-yes{background:#b42318;border-color:#b42318}
-@media print{#miTurnoView,#miNoteBg,#miRemBg,#askDlgBg{display:none!important}}
-#editBtn.edit-pending{background:#16a34a!important;color:#fff!important;border-color:#15803d!important;font-weight:bold}
-@media (min-width:701px){
-#workerRows .worker-edit-row select.worker-code{flex:0 0 78px;width:78px;min-width:78px;max-width:78px;padding:7px 4px;font-size:15px}
-#workerRows .worker-edit-row input.worker-name{flex:0 1 320px;min-width:160px}
-}
-#miTurnoBtn{max-width:62vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#miTurnoView .mt-company{font-size:22px;font-weight:800;letter-spacing:.3px;text-transform:none;opacity:1}
-#miTurnoView .mt-hrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-#miTurnoView .mt-hbtn{font:inherit;font-size:15px;padding:9px 14px;border:1px solid #bbb;border-radius:6px;background:#fff;color:#14213d}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -299,12 +227,13 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
   <div class="header-title-row"><h1 id="companyTitle" title="En modo edición puedes cambiar el nombre">Cuadrante de Turnos</h1></div>
   <div class="header-actions-row">
     <span id="editState">Consulta</span>
-    <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición</button>
+    <button id="editBtn" style="position:relative" onclick="edit()">✎ Edición<span id="editBtnDot" style="display:none;position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #123a6b"></span></button>
     <div id="statsMenuWrap" style="position:relative">
       <button id="statsMenuBtn" onclick="toggleStatsMenu()">📊 Estadísticas ▾</button>
       <div id="statsMenu" style="display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #bbb;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:50;min-width:280px;overflow:hidden">
         <button type="button" onclick="openStatView('fridayYear')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px">🗓️ Viernes tarde — año actual</button>
         <button type="button" onclick="openStatView('fridayAll')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🗓️ Viernes tarde — cómputo general</button>
+        <button type="button" onclick="openStatView('changes')" style="display:block;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🔄 Cambios grabados</button>
         <button id="statMenuMornings" type="button" onclick="openStatView('mornings')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌅 Mañanas trabajadas</button>
         <button id="statMenuAfternoons" type="button" onclick="openStatView('afternoons')" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee">🌇 Tardes trabajadas</button>
         <button id="statMenuResetFriday" type="button" onclick="closeStatsMenu();resetFridayOffsets()" style="display:none;width:100%;text-align:left;border:0;border-radius:0;background:#fff;padding:9px 12px;border-top:1px solid #eee;color:#b00020">🔄 Resetear compensación de viernes</button>
@@ -347,7 +276,7 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 <div id="compensationWrap" style="position:relative;display:none">
   <button id="compensationBtn" onclick="toggleCompensationPanel()">⚖️ Compensación</button>
 </div>
-<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="miTurnoBtn" class="change-request-btn" style="-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation" onclick="miBtnClick()">👤 Mi turno</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
+<button id="statsBtn" onclick="toggleStats()" style="display:none">📊 Resumen</button><button id="noticeBtn" onclick="toggleNoticePanel()" style="display:none">📣 Aviso</button><button id="changeRequestBtn" class="change-request-btn" onclick="toggleChangeRequests()">🔄 Grabar cambio</button><button id="permissionRequestBtn" class="change-request-btn" onclick="togglePermissionRequests()">📄 Solicitar permiso</button></div>
 
 <div id="printPanel" class="panel"><h3>📄 Generar PDF</h3><div class="small">Elige el mes inicial y el mes final. Se colocarán hasta dos meses por página horizontal, ajustando el tamaño para que el cuadrante completo quede limpio y legible.</div><div class="row"><label>Desde: <select id="printStartMonth"></select></label><label>Año: <select id="printStartYear"></select></label><label>Hasta: <select id="printEndMonth"></select></label><label>Año: <select id="printEndYear"></select></label><button class="print-btn" type="button" onclick="printSelectedMonths()">📄 PDF</button><button type="button" onclick="closePanels()">Cerrar</button></div></div>
 <div id="pdfPrintArea" style="display:none"></div>
@@ -512,172 +441,6 @@ function applyCloudGate(){
   });
   updateCloudBanner();
 }
-/* ====== Mi turno: vista personal de cada trabajador ====== */
-const MT_KEY_NAME="cuadrante_mi_nombre",MT_KEY_AUTO="cuadrante_mi_auto";
-const MT_NAMES={M:"Mañana",T:"Tarde",N:"Noche",AP:"Asuntos propios",V:"Vacaciones",SS:"Semana Santa",NAV:"Navidad",LC:"Libre compensado",B:"Baja",LE:"Permiso enfermedad",CS:"Comisión",INC:"Incidencia"};
-const MT_COLORS={AP:"#fff3cd",V:"#d1e7dd",SS:"#cfe2ff",NAV:"#e2d9f3",LC:"#cff4fc",N:"#e9d5ff",B:"#f8d7da",LE:"#fde2e2",CS:"#d9f2e6",INC:"#fce4ec"};
-const MT_WD=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-let miOpen=false,miAutoChecked=false,miAutoOpened=false,miPicking=false,miRoster=[],miMonthOffset=0;
-function miGet(k){try{return window.localStorage.getItem(k)}catch(e){return null}}
-function miSet(k,v){try{window.localStorage.setItem(k,v)}catch(e){}}
-function miDayInfo(date,w){
-  const y=date.getFullYear(),m=date.getMonth(),d=date.getDate(),ds=fmt(date),dow=date.getDay();
-  const holiday=allHolidays(y).has(ds),weekend=dow===0||dow===6;
-  return {date,y,m,d,ds,holiday,weekend,off:holiday||weekend,code:getShift(y,m,d,w)||"",changed:isAcceptedChange(y,m,d,w),comp:isCompensated(y,m,d,w)};
-}
-function miDesc(i){
-  if(i.code)return MT_NAMES[i.code]||i.code;
-  if(i.holiday)return "Festivo";
-  if(i.weekend)return "Fin de semana";
-  return "Sin turno";
-}
-function openMiTurno(){miOpen=true;miPicking=false;miMonthOffset=0;renderMiTurno()}
-function closeMiTurno(){miOpen=false;miAutoOpened=false;const el=document.getElementById("miTurnoView");if(el)el.remove()}
-function miUpdateBtn(){
-  const b=document.getElementById("miTurnoBtn");if(!b)return;
-  const n=miGet(MT_KEY_NAME);b.textContent=n?"👤 "+n:"👤 Mi turno";b.title=n?"Mi turno ("+n+")":"Mi turno";
-}
-function miChoose(i){
-  const w=miRoster[i];if(w===undefined)return;
-  miSet(MT_KEY_NAME,w);if(miGet(MT_KEY_AUTO)===null)miSet(MT_KEY_AUTO,"1");
-  miPicking=false;miMonthOffset=0;miUpdateBtn();renderMiTurno();
-}
-function miMonth(delta){miMonthOffset+=delta;renderMiTurno()}
-function miChangeName(){miPicking=true;renderMiTurno()}
-/* Pulsación larga (unos 2 segundos) en "Mi turno": abre la pantalla de "¿Quién eres?" sin botón visible. */
-let miLongTimer=null,miLongFired=false;
-function miBtnClick(){if(miLongFired){miLongFired=false;return}openMiTurno()}
-function miLongStart(){
-  miLongFired=false;clearTimeout(miLongTimer);
-  miLongTimer=setTimeout(()=>{miLongFired=true;try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}miOpen=true;miPicking=true;renderMiTurno()},2000);
-}
-function miLongCancel(){clearTimeout(miLongTimer)}
-(function(){
-  const b=document.getElementById("miTurnoBtn");if(!b)return;
-  b.addEventListener("pointerdown",miLongStart);
-  ["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,miLongCancel));
-  b.addEventListener("contextmenu",e=>e.preventDefault());
-})();
-function miToggleAuto(on){miSet(MT_KEY_AUTO,on?"1":"0")}
-function maybeAutoOpenMiTurno(){
-  if(miAutoChecked)return;miAutoChecked=true;
-  const byUrl=/[?&]mi=1(&|$)/.test(location.search);
-  const name=miGet(MT_KEY_NAME),auto=miGet(MT_KEY_AUTO)!=="0";
-  if(byUrl||(name&&auto&&!isAdmin)){miAutoOpened=!byUrl;openMiTurno()}
-}
-/* ====== Notas y recordatorios personales (se guardan solo en este móvil) ====== */
-const MT_KEY_NOTES="cuadrante_mis_notas_v1",MT_KEY_SEEN="cuadrante_notas_vistas_v1";
-let miRemChecked=false;
-function miJson(k){try{const o=JSON.parse(miGet(k)||"{}");return(o&&typeof o==="object")?o:{}}catch(e){return{}}}
-function miNotes(name){return miJson(MT_KEY_NOTES)[name]||{}}
-function miSaveNote(name,ds,note){
-  const all=miJson(MT_KEY_NOTES);all[name]=all[name]||{};
-  if(note)all[name][ds]=note;else delete all[name][ds];
-  miSet(MT_KEY_NOTES,JSON.stringify(all));
-}
-function miNiceDate(dt){return MT_WD[dt.getDay()][0].toUpperCase()+MT_WD[dt.getDay()].slice(1)+" "+dt.getDate()+" de "+months[dt.getMonth()].toLowerCase()}
-function closeMiNote(){const e=document.getElementById("miNoteBg");if(e)e.remove()}
-function miOpenNote(ds){
-  const name=miGet(MT_KEY_NAME);if(!name)return;
-  const dt=new Date(ds+"T00:00:00");if(Number.isNaN(dt.getTime()))return;
-  const i=miDayInfo(dt,name),n=miNotes(name)[ds];
-  closeMiNote();
-  const bg=document.createElement("div");bg.id="miNoteBg";
-  bg.innerHTML=`<div class="mt-dlg"><h4>${escapeHtml(miNiceDate(dt))}</h4><div class="mt-dlg-sub">Turno: ${escapeHtml(i.code||"—")} · ${escapeHtml(miDesc(i))}</div><textarea id="miNoteText" maxlength="300" placeholder="Escribe aquí tu anotación…"></textarea><label class="mt-chk"><input type="checkbox" id="miRemB"> 🔔 Recordarme el día anterior</label><label class="mt-chk"><input type="checkbox" id="miRemS"> 🔔 Recordarme el mismo día</label><div class="mt-dlg-btns"><button class="mt-ok" onclick="miSaveNoteUI('${ds}')">Guardar</button>${n?`<button class="mt-del" onclick="miDeleteNote('${ds}')">🗑 Borrar</button>`:""}<button onclick="closeMiNote()">Cancelar</button></div><div class="mt-dlg-hint">La nota se guarda solo en este móvil.</div></div>`;
-  document.body.appendChild(bg);
-  document.getElementById("miNoteText").value=n?n.t:"";
-  document.getElementById("miRemB").checked=n?!!n.b:true;
-  document.getElementById("miRemS").checked=n?!!n.s:true;
-  bg.addEventListener("click",e=>{if(e.target===bg)closeMiNote()});
-  if(!n)document.getElementById("miNoteText").focus();
-}
-function miClearSeen(ds){
-  // Al guardar o borrar una nota, sus avisos se "rearman": vuelven a poder salir aunque antes se hubieran silenciado.
-  const seen=miJson(MT_KEY_SEEN);delete seen[ds+"|b"];delete seen[ds+"|s"];miSet(MT_KEY_SEEN,JSON.stringify(seen));
-}
-function miSaveNoteUI(ds){
-  const name=miGet(MT_KEY_NAME);if(!name)return;
-  const t=document.getElementById("miNoteText").value.trim();
-  miSaveNote(name,ds,t?{t,b:document.getElementById("miRemB").checked,s:document.getElementById("miRemS").checked}:null);
-  miClearSeen(ds);
-  closeMiNote();renderMiTurno();
-}
-function miDeleteNote(ds){const name=miGet(MT_KEY_NAME);if(!name)return;miSaveNote(name,ds,null);miClearSeen(ds);closeMiNote();renderMiTurno()}
-function miPruneOld(){
-  // Se olvidan las notas y avisos de hace más de 60 días para no acumular datos.
-  const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-60);const limS=fmt(lim);
-  const all=miJson(MT_KEY_NOTES);let ch=false;
-  Object.keys(all).forEach(w=>Object.keys(all[w]||{}).forEach(ds=>{if(ds<limS){delete all[w][ds];ch=true}}));
-  if(ch)miSet(MT_KEY_NOTES,JSON.stringify(all));
-  const seen=miJson(MT_KEY_SEEN);let ch2=false;
-  Object.keys(seen).forEach(k=>{if(k.slice(0,10)<limS){delete seen[k];ch2=true}});
-  if(ch2)miSet(MT_KEY_SEEN,JSON.stringify(seen));
-}
-function miRemindersDue(name){
-  const today=new Date();today.setHours(0,0,0,0);const tom=new Date(today);tom.setDate(tom.getDate()+1);
-  const tds=fmt(today),mds=fmt(tom),notes=miNotes(name),seen=miJson(MT_KEY_SEEN),out=[];
-  if(notes[tds]&&notes[tds].s&&!seen[tds+"|s"])out.push({key:tds+"|s",kind:"Hoy",dt:today,t:notes[tds].t});
-  if(notes[mds]&&notes[mds].b&&!seen[mds+"|b"])out.push({key:mds+"|b",kind:"Mañana",dt:tom,t:notes[mds].t});
-  return out;
-}
-function miRemAck(key,mode,btn){
-  // "keep" (Aceptar): no se marca como visto, volverá a salir la próxima vez que se abra la app.
-  // "seen" (Entendido) y "never" (No volver a avisar): no vuelve a avisar de ese recordatorio.
-  if(mode!=="keep"){const seen=miJson(MT_KEY_SEEN);seen[key]=1;miSet(MT_KEY_SEEN,JSON.stringify(seen))}
-  const item=btn.closest(".mt-rem-item");if(item)item.remove();
-  if(!document.querySelector("#miRemBg .mt-rem-item")){const bg=document.getElementById("miRemBg");if(bg)bg.remove()}
-}
-function miCheckReminders(){
-  if(document.getElementById("miRemBg"))return;
-  const name=miGet(MT_KEY_NAME);if(!name)return;
-  const due=miRemindersDue(name);if(!due.length)return;
-  const items=due.map(r=>{
-    const i=miDayInfo(r.dt,name),k=escapeHtml(r.key);
-    const btns=r.key.endsWith("|b")
-      ?`<button class="mt-ok" onclick="miRemAck('${k}','keep',this)">Aceptar</button><button class="mt-del" onclick="miRemAck('${k}','never',this)">No volver a avisar</button>`
-      :`<button class="mt-ok" onclick="miRemAck('${k}','seen',this)">Entendido</button>`;
-    const bgc=MT_COLORS[i.code]||(i.off?"#e6e9ed":"#f3f4f6");
-    return `<div class="mt-rem-item"><div class="mt-rem-head"><span class="mt-rem-kind${r.kind==="Hoy"?"":" man"}">${r.kind}</span><span class="mt-rem-date">${escapeHtml(miNiceDate(r.dt))}</span></div><div class="mt-rem-shift" style="background:${bgc}"><div class="mt-rem-code">${escapeHtml(i.code||"—")}</div><span class="mt-rem-lbl">Turno</span><span class="mt-rem-sname">${escapeHtml(miDesc(i))}</span></div><div class="mt-rem-note"><div class="mt-rem-nlbl">📝 Anotación</div><p>${escapeHtml(r.t)}</p></div><div class="mt-dlg-btns">${btns}</div></div>`;
-  }).join("");
-  const bg=document.createElement("div");bg.id="miRemBg";
-  bg.innerHTML=`<div class="mt-dlg"><h4>🔔 Recordatorios</h4>${items}</div>`;
-  document.body.appendChild(bg);
-}
-function maybeCheckReminders(){
-  if(miRemChecked)return;miRemChecked=true;
-  miPruneOld();miCheckReminders();
-}
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)miCheckReminders()});
-function miMonthHtml(name,today){
-  const notes=miNotes(name),base=new Date(today.getFullYear(),today.getMonth()+miMonthOffset,1);
-  const y=base.getFullYear(),m=base.getMonth(),n=new Date(y,m+1,0).getDate(),lead=(base.getDay()+6)%7,todayStr=fmt(today);
-  let cells="";
-  for(let i=0;i<lead;i++)cells+='<div class="mt-c mt-empty"></div>';
-  for(let d=1;d<=n;d++){
-    const dt=new Date(y,m,d),i=miDayInfo(dt,name),c=MT_COLORS[i.code];
-    cells+=`<div class="mt-c${(i.off&&!c)?" mt-off":""}${fmt(dt)===todayStr?" mt-now":""}"${c?` style="background:${c}"`:""} title="${escapeHtml(miDesc(i))}" onclick="miOpenNote('${i.ds}')"><span class="mt-n">${d}</span><b>${escapeHtml(i.code)}</b>${i.changed?'<i class="mt-dot chg"></i>':""}${i.comp?'<i class="mt-dot cmp"></i>':""}${notes[i.ds]?'<span class="mt-note-ic">📝</span>':""}</div>`;
-  }
-  return `<div class="mt-mnav"><button onclick="miMonth(-1)" aria-label="Mes anterior">‹</button><span>${months[m]} ${y}</span><button onclick="miMonth(1)" aria-label="Mes siguiente">›</button></div><div class="mt-grid">${["L","M","X","J","V","S","D"].map(x=>`<div class="mt-wd">${x}</div>`).join("")}${cells}</div>`;
-}
-function renderMiTurno(){
-  if(!miOpen)return;
-  let el=document.getElementById("miTurnoView");
-  if(!el){el=document.createElement("div");el.id="miTurnoView";document.body.appendChild(el)}
-  const today=new Date();today.setHours(0,0,0,0);
-  const roster=getWorkersAtDate(fmt(today)),name=miGet(MT_KEY_NAME);
-  const company=escapeHtml(getCompanyName()||"Cuadrante de turnos");
-  const keepScroll=el.scrollTop;
-  if(miPicking||!name||!roster.includes(name)){
-    miRoster=roster;
-    const lost=(!miPicking&&name&&!roster.includes(name))?`<p class="mt-note">No encuentro a «${escapeHtml(name)}» en el cuadrante actual. Elige tu nombre.</p>`:"";
-    el.innerHTML=`<div class="mt-head"><div class="mt-company">${company}</div><div class="mt-name">¿Quién eres?</div></div><div class="mt-body">${lost}<p class="mt-note">Elige tu nombre para ver solo tu turno. Se recordará en este móvil.</p>${roster.map((w,i)=>`<button class="mt-pick" onclick="miChoose(${i})">${escapeHtml(w)}</button>`).join("")||'<p class="mt-note">Todavía no hay trabajadores en el cuadrante.</p>'}<div class="mt-actions"><button onclick="closeMiTurno()">📅 Ver cuadrante completo</button></div></div>`;
-    el.scrollTop=keepScroll;return;
-  }
-  const auto=miGet(MT_KEY_AUTO)!=="0";
-  el.innerHTML=`<div class="mt-head"><div class="mt-company">${company}</div><div class="mt-hrow"><button class="mt-hbtn" onclick="closeMiTurno()">↩ Volver al cuadrante</button><button class="mt-hbtn" onclick="exitApp()">🚪 Salir</button></div></div><div class="mt-body">${miMonthHtml(name,today)}<label class="mt-auto"><input type="checkbox" ${auto?"checked":""} onchange="miToggleAuto(this.checked)"> Abrir siempre en Mi turno</label></div>`;
-  el.scrollTop=keepScroll;
-}
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&miOpen)renderMiTurno()});
 let appInitialized=false;
 dbRef.on("value",snap=>{
   const val=snap.val()||{};
@@ -716,7 +479,6 @@ setTimeout(()=>{
 },0);
 auth.onAuthStateChanged(user=>{
   isAdmin=!!user;
-  if(isAdmin&&miAutoOpened)closeMiTurno(); // un administrador no debe quedarse en la vista personal si se abrió sola
   if(!isAdmin){
     editing=false;pendingEdit=false;sessionStorage.removeItem("quadEdit");
   }else if(sessionStorage.getItem("quadEdit")==="1"){
@@ -1369,7 +1131,6 @@ function printSelectedMonths(){
 }
 function render(){
  applyCloudGate();
- maybeAutoOpenMiTurno();if(miOpen)renderMiTurno();maybeCheckReminders();
  checkYearRollover();
  initCompanyTitle();initPrintSelectors();
  document.getElementById("holidayYear").textContent=year;
@@ -1388,9 +1149,9 @@ function render(){
    ms.dataset.filled="1";
  }
  ms.value=month;
- document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const mtb=document.getElementById("miTurnoBtn");if(mtb)mtb.style.display=editing?"none":"inline-block";miUpdateBtn();const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
+ document.getElementById("editState").textContent=editing?"EDICIÓN":"Consulta";document.getElementById("editBtn").style.display=editing?"none":"inline-block";document.getElementById("saveBtn").style.display=editing?"inline-block":"none";document.getElementById("securityMenuWrap").style.display=(isAdmin&&editing)?"inline-block":"none";document.getElementById("gestionWrap").style.display=editing?"inline-block":"none";document.getElementById("compensationWrap").style.display=editing?"inline-block":"none";document.getElementById("statsBtn").style.display="none";document.getElementById("noticeBtn").style.display=editing?"inline-block":"none";const pendingChanges=getChangeRequests().some(r=>r.status==="pending");const crb=document.getElementById("changeRequestBtn");if(crb){const showPending=editing&&pendingChanges;crb.classList.toggle("pending",showPending);crb.textContent=showPending?"🔄 Cambio solicitado":"🔄 Grabar cambio";crb.style.display=editing?(pendingChanges?"inline-block":"none"):"inline-block"}
  const pendingPermissions=getPermissionRequests().some(r=>r.status==="pending");const prb=document.getElementById("permissionRequestBtn");if(prb){const showPending=editing&&pendingPermissions;prb.classList.toggle("pending",showPending);prb.textContent=showPending?"📄 Permiso solicitado":"📄 Solicitar permiso";prb.style.display=editing?(pendingPermissions?"inline-block":"none"):"inline-block"}
- const editBtnEl=document.getElementById("editBtn");if(editBtnEl)editBtnEl.classList.toggle("edit-pending",!editing&&isAdmin&&(pendingChanges||pendingPermissions));
+ const editDot=document.getElementById("editBtnDot");if(editDot)editDot.style.display="none";const editBtnEl=document.getElementById("editBtn");if(editBtnEl)editBtnEl.classList.toggle("has-pending",!editing&&isAdmin&&(pendingChanges||pendingPermissions));
  const hol=allHolidays(year),n=daysInMonth(year,month),workerSets=[];
  for(let d=1;d<=n;d++){const date=new Date(year,month,d);workerSets.push(getWorkersAtDate(fmt(date)))}
  const imbalances=computeImbalances(year,month),imbalanceDays=new Set(imbalances.map(x=>x.d));
@@ -1420,9 +1181,6 @@ function render(){
    s+="</tr>";
  }
  s+="</tbody>";document.getElementById("grid").innerHTML=s;document.getElementById("grid").classList.toggle("hide-type-col",!editing);
-
- if(editing&&!prevEditingForScroll)scrolledToToday=false; // al entrar en edición se vuelve a colocar en el día actual
- prevEditingForScroll=editing;
  renderBalanceAlert(imbalances);
  scrollToTodayOnce();
  if(document.getElementById("changeRequestPanel")?.style.display==="block")renderChangeRequestHistory();
@@ -1468,27 +1226,6 @@ function submitLogin(){
   }).catch(()=>{
     errEl.textContent="Correo o contraseña incorrectos.";
     errEl.style.display="block";
-  });
-}
-function saveAndView(){editing=false;sessionStorage.removeItem("quadEdit");closePanels();render();alert("Cambios guardados y modo consulta activado.")}
-function logout(){auth.signOut();editing=false;sessionStorage.removeItem("quadEdit");closePanels();render()}
-function askConfirm(o){
-  // Ventana propia de confirmación (el cuadro del navegador no se puede personalizar). Devuelve una promesa true/false.
-  return new Promise(resolve=>{
-    if(document.getElementById("askDlgBg")){resolve(false);return}
-    const bg=document.createElement("div");bg.id="askDlgBg";
-    const dlg=document.createElement("div");dlg.className="mt-dlg ask-dlg";dlg.setAttribute("role","dialog");dlg.setAttribute("aria-modal","true");
-    dlg.innerHTML='<img src="icon-192.png" alt=""><h4></h4><p></p><div class="mt-dlg-btns"><button class="ask-no"></button><button class="ask-yes"></button></div>';
-    dlg.querySelector("h4").textContent=o.title||"¿Seguro?";
-    const p=dlg.querySelector("p");if(o.text)p.textContent=o.text;else p.remove();
-    const no=dlg.querySelector(".ask-no"),yes=dlg.querySelector(".ask-yes");
-    no.textContent=o.no||"Cancelar";yes.textContent=o.yes||"Aceptar";if(o.danger)yes.classList.add("danger-yes");
-    bg.appendChild(dlg);document.body.appendChild(bg);
-    const onKey=e=>{if(e.key==="Escape")done(false)};
-    const done=v=>{bg.remove();document.removeEventListener("keydown",onKey);resolve(v)};
-    document.addEventListener("keydown",onKey);
-    no.onclick=()=>done(false);yes.onclick=()=>done(true);
-    bg.addEventListener("click",e=>{if(e.target===bg)done(false)});
   });
 }
 async function exitApp(){
@@ -1755,7 +1492,7 @@ function applyWorkers(){
   render();
   alert(`Cambios aplicados desde ${start}. Se mantienen en todos los meses siguientes; los cuadrantes anteriores conservan los trabajadores y categorías anteriores.`);
 }
-async function manualCompensateFridayYear(){
+function manualCompensateFridayYear(){
   if(!editing)return;
   const start=document.getElementById("workerStart").value;
   if(!start){alert("Indica primero, arriba, la fecha desde la que se aplica el cambio de trabajadores.");return}
@@ -1770,7 +1507,7 @@ async function manualCompensateFridayYear(){
   const existing=currentEligible.filter(w=>previousEligible.includes(w));
   const newcomers=currentEligible.filter(w=>!previousEligible.includes(w));
   if(!existing.length){alert("No hay trabajadores anteriores sobre los que aplicar la compensación.");return}
-  let yearOffsets=getFridayYearOffsets();
+  const yearOffsets=getFridayYearOffsets();
   const displayed=existing.map(w=>Math.max(0,countFridayT(refYear,w)-(yearOffsets[w]||0)));
   const amount=Math.min(...displayed);
   if(amount<=0){
@@ -1783,8 +1520,7 @@ async function manualCompensateFridayYear(){
     alert("El trabajador nuevo ya queda con 0. No había una cantidad positiva que compensar en los trabajadores anteriores.");
     return;
   }
-  if(!(await askConfirm({title:`¿Resetear la compensación de viernes desde ${start}?`,text:`Se tomará como referencia el trabajador anterior con menos viernes (${amount}). A los trabajadores anteriores se les restarán ${amount}; el trabajador nuevo quedará en 0. La misma compensación se aplicará al cómputo general.`,yes:"Resetear",danger:true})))return;
-  yearOffsets=getFridayYearOffsets();
+  if(!confirm(`¿Resetear la compensación de viernes desde ${start}? Se tomará como referencia el trabajador anterior con menos viernes (${amount}). A los trabajadores anteriores se les restarán ${amount}; el trabajador nuevo quedará en 0. La misma compensación se aplicará al cómputo general.`))return;
   existing.forEach(w=>{yearOffsets[w]=(yearOffsets[w]||0)+amount;});
   newcomers.forEach(w=>{yearOffsets[w]=countFridayT(refYear,w);});
   saveFridayYearOffsets(yearOffsets);
@@ -1955,6 +1691,10 @@ function openStatView(kind){
   }else if(kind==="fridayAll"){
     title="🗓️ Viernes de tarde — cómputo general";
     rows=ws.map(w=>[w,effectiveFridayGeneralCount(w,Math.max(year,new Date().getFullYear()))]).sort((a,b)=>a[1]-b[1]);
+  }else if(kind==="changes"){
+    title="🔄 Cambios grabados";
+    const accepted=getChangeRequests().filter(r=>r.status==="accepted");
+    rows=ws.map(w=>[w,accepted.filter(r=>r.from===w).length]);
   }else if(kind==="mornings"){
     title=`🌅 Mañanas trabajadas en ${year}`;
     rows=ws.map(w=>[w,countCodeYear(year,w,"M")]);
@@ -1981,7 +1721,7 @@ function onYearChanged(newYear){
     set("q_friday_last_balance_year",String(newYear));
   }
 }
-let scrolledToToday=false,prevEditingForScroll=false;
+let scrolledToToday=false;
 function scrollToTodayOnce(){
   if(scrolledToToday)return;
   const now=new Date();
@@ -2067,22 +1807,22 @@ function toggleNoticePanel(){
   document.getElementById("noticeText").value=(current&&current.text)||"";
   document.getElementById("noticePanel").style.display="flex";
 }
-async function publishNotice(){
+function publishNotice(){
   if(!isAdmin)return;
   const text=document.getElementById("noticeText").value.trim();
   if(!text){alert("Escribe el texto del aviso antes de publicarlo.");return}
-  if(!(await askConfirm({title:"¿Publicar este aviso?",text:"A todos los trabajadores les aparecerá en una ventana cada vez que abran la aplicación, hasta que lo quites.",yes:"Publicar"})))return;
+  if(!confirm("¿Publicar este aviso?\n\nA todos los trabajadores les aparecerá en una ventana cada vez que abran la aplicación, hasta que lo quites."))return;
   const ts=String(Date.now());
   set("q_notice",JSON.stringify({text,ts}));
   lastKnownNoticeTs=ts;
   document.getElementById("noticePanel").style.display="none";
   alert("Aviso publicado.");
 }
-async function removeNotice(){
+function removeNotice(){
   if(!isAdmin)return;
   let current;try{current=JSON.parse(q("q_notice")||"null")}catch(err){current=null}
   if(!current){alert("No hay ningún aviso publicado ahora mismo.");return}
-  if(!(await askConfirm({title:"¿Quitar el aviso?",text:"Dejará de aparecerles a los trabajadores.",yes:"Quitar",danger:true})))return;
+  if(!confirm("¿Quitar el aviso? Dejará de aparecerles a los trabajadores."))return;
   localStorage.removeItem("q_notice");
   lastKnownNoticeTs=null;
   document.getElementById("noticeText").value="";
@@ -2160,3 +1900,4 @@ if("serviceWorker" in navigator){
 </script>
 </body>
 </html>
+
