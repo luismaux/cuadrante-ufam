@@ -236,15 +236,16 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 .mt-dlg .mt-rem-nlbl{font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#475467}
 .mt-dlg .mt-rem-note p{margin:6px 0 0;white-space:pre-wrap;word-break:break-word;font-size:22px;line-height:1.3}
 .mt-dlg .mt-rem-item .mt-dlg-btns{margin:0;padding:8px 14px 14px}
-#exitDlgBg{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Arial,sans-serif}
-.exit-dlg{text-align:center;max-width:380px;margin:0}
-.exit-dlg img{width:60px;height:60px;border-radius:12px;margin-bottom:6px}
-.exit-dlg h4{font-size:21px;margin:4px 0 0}
-.exit-dlg p{margin:8px 0 0;color:#475467;font-size:16px}
-.exit-dlg .mt-dlg-btns{justify-content:center;margin-top:18px}
-.exit-dlg button{min-width:125px;font-size:17px;padding:12px 16px}
-.exit-dlg button.exit-yes{background:#123a6b;color:#fff;border-color:#123a6b;font-weight:bold}
-@media print{#miTurnoView,#miNoteBg,#miRemBg,#exitDlgBg{display:none!important}}
+#askDlgBg{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Arial,sans-serif}
+.ask-dlg{text-align:center;max-width:380px;margin:0}
+.ask-dlg img{width:60px;height:60px;border-radius:12px;margin-bottom:6px}
+.ask-dlg h4{font-size:21px;margin:4px 0 0}
+.ask-dlg p{margin:8px 0 0;color:#475467;font-size:16px;white-space:pre-wrap}
+.ask-dlg .mt-dlg-btns{justify-content:center;margin-top:18px}
+.ask-dlg button{min-width:125px;font-size:17px;padding:12px 16px}
+.ask-dlg button.ask-yes{background:#123a6b;color:#fff;border-color:#123a6b;font-weight:bold}
+.ask-dlg button.ask-yes.danger-yes{background:#b42318;border-color:#b42318}
+@media print{#miTurnoView,#miNoteBg,#miRemBg,#askDlgBg{display:none!important}}
 #editBtn.edit-pending{background:#16a34a!important;color:#fff!important;border-color:#15803d!important;font-weight:bold}
 @media (min-width:701px){
 #workerRows .worker-edit-row select.worker-code{flex:0 0 78px;width:78px;min-width:78px;max-width:78px;padding:7px 4px;font-size:15px}
@@ -779,7 +780,7 @@ function getPatterns(){
  }catch(e){}
  const x=JSON.parse(JSON.stringify(defaultPatternsV6)); set("q_patterns_v6",JSON.stringify(x)); return x;
 }
-function eliminarFilaPatron(btn){
+async function eliminarFilaPatron(btn){
   const tr=btn.closest("tr");
   if(!tr)return;
   const tbody=tr.parentElement;
@@ -789,8 +790,8 @@ function eliminarFilaPatron(btn){
     return;
   }
   const nombre=(tr.querySelector(".pattern-name")?.textContent||"").replace("✕","").trim();
-  if(confirm("¿Eliminar esta fila del patrón"+(nombre?": "+nombre:"")+"?")){
-    tr.remove();
+  if(await askConfirm({title:"¿Eliminar esta fila del patrón?",text:nombre||"",yes:"Eliminar",danger:true})){
+    if(tr.isConnected)tr.remove();
   }
 }
 
@@ -880,21 +881,21 @@ function addPatternRow(){
  const next=p.rows.length+1;p.rows.push({name:"",shifts:Array(patternLength(p)).fill("")});
  savePatterns(ps);loadPatternEditor();
 }
-function removePatternRow(r){
+async function removePatternRow(r){
  let ps=getPatterns();if(!ps.length)return;
  let i=+document.getElementById("patternSelect").value||0,p=ps[i];
  if(p.rows.length<=1){alert("El patrón debe tener al menos una fila.");return}
- if(confirm("¿Eliminar esta fila del patrón?")){readPatternFromEditor();p=ps[i];p.rows.splice(r,1);savePatterns(ps);loadPatternEditor();}
+ if(await askConfirm({title:"¿Eliminar esta fila del patrón?",yes:"Eliminar",danger:true})){readPatternFromEditor();p=ps[i];p.rows.splice(r,1);savePatterns(ps);loadPatternEditor();}
 }
-function deletePattern(){
+async function deletePattern(){
  let ps=getPatterns();
  if(!ps.length)return;
  let i=+document.getElementById("patternSelect").value||0;
  if(ps.length<=1){
-   if(confirm("¿Eliminar este patrón? No quedará ningún patrón guardado.")){ps.splice(i,1);savePatterns(ps);fillPatternSelect();loadPatternEditor();}
+   if(await askConfirm({title:"¿Eliminar este patrón?",text:"No quedará ningún patrón guardado.",yes:"Eliminar",danger:true})){ps.splice(i,1);savePatterns(ps);fillPatternSelect();loadPatternEditor();}
    return;
  }
- if(confirm("¿Eliminar este patrón?")){ps.splice(i,1);savePatterns(ps);fillPatternSelect();loadPatternEditor();}
+ if(await askConfirm({title:"¿Eliminar este patrón?",yes:"Eliminar",danger:true})){ps.splice(i,1);savePatterns(ps);fillPatternSelect();loadPatternEditor();}
 }
 function applyPatternByWorkers(){
  const p=readPatternFromEditor();
@@ -999,10 +1000,12 @@ function resolveChangeRequest(id,status){
   if(formWrap)formWrap.style.display=editing?"none":"block";
   renderChangeRequestHistory();
 }
-function cancelChangeRequest(id){
-  const rs=getChangeRequests(),r=rs.find(x=>x.id===id);
+async function cancelChangeRequest(id){
+  let rs=getChangeRequests(),r=rs.find(x=>x.id===id);
   if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
-  if(!confirm("¿Anular esta solicitud de cambio? "+(r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"")))return;
+  if(!(await askConfirm({title:"¿Anular esta solicitud de cambio?",text:r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"",yes:"Anular",danger:true})))return;
+  rs=getChangeRequests();r=rs.find(x=>x.id===id);
+  if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
   beginBatch();
   if(r.status==="accepted"){
     const dt=new Date(r.date+"T00:00:00");
@@ -1150,10 +1153,12 @@ function resolvePermissionRequest(id,status){
   if(formWrap)formWrap.style.display=editing?"none":"block";
   renderPermissionRequestHistory();
 }
-function cancelPermissionRequest(id){
-  const rs=getPermissionRequests(),r=rs.find(x=>x.id===id);
+async function cancelPermissionRequest(id){
+  let rs=getPermissionRequests(),r=rs.find(x=>x.id===id);
   if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
-  if(!confirm("¿Anular esta solicitud de permiso? "+(r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"")))return;
+  if(!(await askConfirm({title:"¿Anular esta solicitud de permiso?",text:r.status==="accepted"?"El cuadrante volverá a su estado anterior.":"",yes:"Anular",danger:true})))return;
+  rs=getPermissionRequests();r=rs.find(x=>x.id===id);
+  if(!r||(r.status!=="pending"&&r.status!=="accepted"))return;
   if(r.status==="accepted"&&Array.isArray(r.applied)){
     beginBatch();
     r.applied.forEach(a=>setShift(a.y,a.m,a.d,r.worker,a.prev));
@@ -1247,7 +1252,7 @@ function renderCompensationWorkers(){
   }
   wsel.innerHTML=workers.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)} (ahora ${dir==="M"?"Mañana":"Tarde"})</option>`).join("");
 }
-function applyCompensation(){
+async function applyCompensation(){
   if(!editing)return;
   const d=+document.getElementById("compensationDay").value||0;
   const w=document.getElementById("compensationWorker").value;
@@ -1256,16 +1261,16 @@ function applyCompensation(){
   const dir=imbalanceDirection(year,month,d,ds);
   if(!dir){alert("Ese día ya no está descompensado.");renderCompensationDays();return}
   const newShift=dir==="M"?"T":"M";
-  if(!confirm(`¿Cambiar el turno de ${w} el día ${d} de ${dir==="M"?"Mañana":"Tarde"} a ${newShift==="M"?"Mañana":"Tarde"} para compensar el cuadrante?`))return;
+  if(!(await askConfirm({title:"¿Compensar este turno?",text:`Cambiar el turno de ${w} el día ${d} de ${dir==="M"?"Mañana":"Tarde"} a ${newShift==="M"?"Mañana":"Tarde"} para compensar el cuadrante.`,yes:"Compensar"})))return;
   setShift(year,month,d,w,newShift);
   markCompensated(year,month,d,w);
   closePanels();
   render();
   alert("Turno compensado.");
 }
-function confirmDismissImbalance(d){
+async function confirmDismissImbalance(d){
   if(!editing)return;
-  if(confirm("¿Desmarcar descuadre por necesidades del servicio?")){
+  if(await askConfirm({title:"¿Desmarcar el descuadre?",text:"Se marcará como descuadre por necesidades del servicio.",yes:"Desmarcar"})){
     set(imbalanceOverrideKey(year,month,d),"1");
     render();
   }
@@ -1467,18 +1472,28 @@ function submitLogin(){
 }
 function saveAndView(){editing=false;sessionStorage.removeItem("quadEdit");closePanels();render();alert("Cambios guardados y modo consulta activado.")}
 function logout(){auth.signOut();editing=false;sessionStorage.removeItem("quadEdit");closePanels();render()}
-function exitApp(){
-  // Ventana propia (el cuadro de confirmación del navegador no se puede personalizar).
-  if(document.getElementById("exitDlgBg"))return;
-  const bg=document.createElement("div");bg.id="exitDlgBg";
-  bg.innerHTML='<div class="mt-dlg exit-dlg" role="dialog" aria-modal="true"><img src="icon-192.png" alt=""><h4>¿Salir del cuadrante?</h4><p>Se cerrará la aplicación.</p><div class="mt-dlg-btns"><button id="exitNo">Cancelar</button><button id="exitYes" class="exit-yes">Salir</button></div></div>';
-  document.body.appendChild(bg);
-  const closeDlg=()=>bg.remove();
-  document.getElementById("exitNo").onclick=closeDlg;
-  bg.addEventListener("click",e=>{if(e.target===bg)closeDlg()});
-  document.getElementById("exitYes").onclick=()=>{closeDlg();doExit()};
+function askConfirm(o){
+  // Ventana propia de confirmación (el cuadro del navegador no se puede personalizar). Devuelve una promesa true/false.
+  return new Promise(resolve=>{
+    if(document.getElementById("askDlgBg")){resolve(false);return}
+    const bg=document.createElement("div");bg.id="askDlgBg";
+    const dlg=document.createElement("div");dlg.className="mt-dlg ask-dlg";dlg.setAttribute("role","dialog");dlg.setAttribute("aria-modal","true");
+    dlg.innerHTML='<img src="icon-192.png" alt=""><h4></h4><p></p><div class="mt-dlg-btns"><button class="ask-no"></button><button class="ask-yes"></button></div>';
+    dlg.querySelector("h4").textContent=o.title||"¿Seguro?";
+    const p=dlg.querySelector("p");if(o.text)p.textContent=o.text;else p.remove();
+    const no=dlg.querySelector(".ask-no"),yes=dlg.querySelector(".ask-yes");
+    no.textContent=o.no||"Cancelar";yes.textContent=o.yes||"Aceptar";if(o.danger)yes.classList.add("danger-yes");
+    bg.appendChild(dlg);document.body.appendChild(bg);
+    const onKey=e=>{if(e.key==="Escape")done(false)};
+    const done=v=>{bg.remove();document.removeEventListener("keydown",onKey);resolve(v)};
+    document.addEventListener("keydown",onKey);
+    no.onclick=()=>done(false);yes.onclick=()=>done(true);
+    bg.addEventListener("click",e=>{if(e.target===bg)done(false)});
+  });
 }
-document.addEventListener("keydown",e=>{const d=document.getElementById("exitDlgBg");if(e.key==="Escape"&&d)d.remove()});
+async function exitApp(){
+  if(await askConfirm({title:"¿Salir del cuadrante?",text:"Se cerrará la aplicación.",yes:"Salir"}))doExit();
+}
 function doExit(){
   window.close();
   setTimeout(()=>{
@@ -1740,7 +1755,7 @@ function applyWorkers(){
   render();
   alert(`Cambios aplicados desde ${start}. Se mantienen en todos los meses siguientes; los cuadrantes anteriores conservan los trabajadores y categorías anteriores.`);
 }
-function manualCompensateFridayYear(){
+async function manualCompensateFridayYear(){
   if(!editing)return;
   const start=document.getElementById("workerStart").value;
   if(!start){alert("Indica primero, arriba, la fecha desde la que se aplica el cambio de trabajadores.");return}
@@ -1755,7 +1770,7 @@ function manualCompensateFridayYear(){
   const existing=currentEligible.filter(w=>previousEligible.includes(w));
   const newcomers=currentEligible.filter(w=>!previousEligible.includes(w));
   if(!existing.length){alert("No hay trabajadores anteriores sobre los que aplicar la compensación.");return}
-  const yearOffsets=getFridayYearOffsets();
+  let yearOffsets=getFridayYearOffsets();
   const displayed=existing.map(w=>Math.max(0,countFridayT(refYear,w)-(yearOffsets[w]||0)));
   const amount=Math.min(...displayed);
   if(amount<=0){
@@ -1768,7 +1783,8 @@ function manualCompensateFridayYear(){
     alert("El trabajador nuevo ya queda con 0. No había una cantidad positiva que compensar en los trabajadores anteriores.");
     return;
   }
-  if(!confirm(`¿Resetear la compensación de viernes desde ${start}? Se tomará como referencia el trabajador anterior con menos viernes (${amount}). A los trabajadores anteriores se les restarán ${amount}; el trabajador nuevo quedará en 0. La misma compensación se aplicará al cómputo general.`))return;
+  if(!(await askConfirm({title:`¿Resetear la compensación de viernes desde ${start}?`,text:`Se tomará como referencia el trabajador anterior con menos viernes (${amount}). A los trabajadores anteriores se les restarán ${amount}; el trabajador nuevo quedará en 0. La misma compensación se aplicará al cómputo general.`,yes:"Resetear",danger:true})))return;
+  yearOffsets=getFridayYearOffsets();
   existing.forEach(w=>{yearOffsets[w]=(yearOffsets[w]||0)+amount;});
   newcomers.forEach(w=>{yearOffsets[w]=countFridayT(refYear,w);});
   saveFridayYearOffsets(yearOffsets);
@@ -1846,9 +1862,9 @@ function saveFridayGeneralOffsets(x){set("q_friday_general_offsets",JSON.stringi
 function effectiveFridayYearCount(y,w){const offsets=getFridayYearOffsets();return Math.max(0,countFridayT(y,w)-(offsets[w]||0))}
 function sumFridayRaw(w,uptoYear){let total=0;for(let y=2026;y<=uptoYear;y++)total+=countFridayT(y,w);return total}
 function effectiveFridayGeneralCount(w,uptoYear){const offsets=getFridayGeneralOffsets();return Math.max(0,sumFridayRaw(w,uptoYear)-(offsets[w]||0))}
-function resetFridayOffsets(){
+async function resetFridayOffsets(){
   if(!editing)return;
-  if(!confirm("¿Resetear toda la compensación de viernes de tarde (año actual y cómputo general)? Ambos conteos volverán a ser los números reales, y la compensación se irá reconstruyendo desde cero a partir de ahora."))return;
+  if(!(await askConfirm({title:"¿Resetear la compensación de viernes de tarde?",text:"Afecta al año actual y al cómputo general. Ambos conteos volverán a ser los números reales, y la compensación se irá reconstruyendo desde cero a partir de ahora.",yes:"Resetear",danger:true})))return;
   set("q_friday_year_offsets","{}");
   set("q_friday_general_offsets","{}");
   set("q_friday_last_balance_year",String(new Date().getFullYear()));
@@ -2051,22 +2067,22 @@ function toggleNoticePanel(){
   document.getElementById("noticeText").value=(current&&current.text)||"";
   document.getElementById("noticePanel").style.display="flex";
 }
-function publishNotice(){
+async function publishNotice(){
   if(!isAdmin)return;
   const text=document.getElementById("noticeText").value.trim();
   if(!text){alert("Escribe el texto del aviso antes de publicarlo.");return}
-  if(!confirm("¿Publicar este aviso?\n\nA todos los trabajadores les aparecerá en una ventana cada vez que abran la aplicación, hasta que lo quites."))return;
+  if(!(await askConfirm({title:"¿Publicar este aviso?",text:"A todos los trabajadores les aparecerá en una ventana cada vez que abran la aplicación, hasta que lo quites.",yes:"Publicar"})))return;
   const ts=String(Date.now());
   set("q_notice",JSON.stringify({text,ts}));
   lastKnownNoticeTs=ts;
   document.getElementById("noticePanel").style.display="none";
   alert("Aviso publicado.");
 }
-function removeNotice(){
+async function removeNotice(){
   if(!isAdmin)return;
   let current;try{current=JSON.parse(q("q_notice")||"null")}catch(err){current=null}
   if(!current){alert("No hay ningún aviso publicado ahora mismo.");return}
-  if(!confirm("¿Quitar el aviso? Dejará de aparecerles a los trabajadores."))return;
+  if(!(await askConfirm({title:"¿Quitar el aviso?",text:"Dejará de aparecerles a los trabajadores.",yes:"Quitar",danger:true})))return;
   localStorage.removeItem("q_notice");
   lastKnownNoticeTs=null;
   document.getElementById("noticeText").value="";
