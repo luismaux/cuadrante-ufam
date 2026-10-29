@@ -236,16 +236,16 @@ th.today{background:#dc2626!important;color:#fff!important;outline:none;font-wei
 .mt-dlg .mt-rem-nlbl{font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#475467}
 .mt-dlg .mt-rem-note p{margin:6px 0 0;white-space:pre-wrap;word-break:break-word;font-size:22px;line-height:1.3}
 .mt-dlg .mt-rem-item .mt-dlg-btns{margin:0;padding:8px 14px 14px}
-#askDlgBg{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Arial,sans-serif}
+#askDlgBg,#askAlertBg{position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Arial,sans-serif}
 .ask-dlg{text-align:center;max-width:380px;margin:0}
 .ask-dlg img{width:60px;height:60px;border-radius:12px;margin-bottom:6px}
 .ask-dlg h4{font-size:21px;margin:4px 0 0}
 .ask-dlg p{margin:8px 0 0;color:#475467;font-size:16px;white-space:pre-wrap}
 .ask-dlg .mt-dlg-btns{justify-content:center;margin-top:18px}
 .ask-dlg button{min-width:125px;font-size:17px;padding:12px 16px}
-.ask-dlg button.ask-yes{background:#123a6b;color:#fff;border-color:#123a6b;font-weight:bold}
+.ask-dlg button.ask-ok,.ask-dlg button.ask-yes{background:#123a6b;color:#fff;border-color:#123a6b;font-weight:bold}
 .ask-dlg button.ask-yes.danger-yes{background:#b42318;border-color:#b42318}
-@media print{#miTurnoView,#miNoteBg,#miRemBg,#askDlgBg{display:none!important}}
+@media print{#miTurnoView,#miNoteBg,#miRemBg,#askDlgBg,#askAlertBg{display:none!important}}
 #editBtn.edit-pending{background:#16a34a!important;color:#fff!important;border-color:#15803d!important;font-weight:bold}
 @media (min-width:701px){
 #workerRows .worker-edit-row select.worker-code{flex:0 0 78px;width:78px;min-width:78px;max-width:78px;padding:7px 4px;font-size:15px}
@@ -1491,6 +1491,29 @@ function askConfirm(o){
     bg.addEventListener("click",e=>{if(e.target===bg)done(false)});
   });
 }
+const nativeAlert=window.alert.bind(window);
+let alertQueue=Promise.resolve();
+function appAlert(text,title){
+  // Ventana propia de aviso informativo (sustituye al alert() del navegador). Se encolan si hay varias.
+  if(!document.body)return Promise.resolve(nativeAlert(text));
+  alertQueue=alertQueue.then(()=>new Promise(resolve=>{
+    const bg=document.createElement("div");bg.id="askAlertBg";
+    const dlg=document.createElement("div");dlg.className="mt-dlg ask-dlg";dlg.setAttribute("role","alertdialog");dlg.setAttribute("aria-modal","true");
+    dlg.innerHTML='<img src="icon-192.png" alt=""><h4></h4><p></p><div class="mt-dlg-btns"><button class="ask-ok"></button></div>';
+    dlg.querySelector("h4").textContent=title||"Aviso";
+    dlg.querySelector("p").textContent=String(text==null?"":text);
+    const ok=dlg.querySelector(".ask-ok");ok.textContent="Aceptar";
+    bg.appendChild(dlg);document.body.appendChild(bg);
+    const onKey=e=>{if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();done()}};
+    const done=()=>{bg.remove();document.removeEventListener("keydown",onKey,true);resolve()};
+    document.addEventListener("keydown",onKey,true);
+    ok.onclick=done;
+    bg.addEventListener("click",e=>{if(e.target===bg)done()});
+    try{ok.focus()}catch(e){}
+  }));
+  return alertQueue;
+}
+window.alert=function(text){appAlert(text)};
 async function exitApp(){
   if(await askConfirm({title:"¿Salir del cuadrante?",text:"Se cerrará la aplicación.",yes:"Salir"}))doExit();
 }
